@@ -1,0 +1,10 @@
+-keep class com.yandex.metrica.** { *; }
+-keep class com.facebook.internal.* {*;}
+-keep class com.facebook.* {*;}
+-keep class com.unity.androidnotifications.* {*;}
+-keep class com.unity.** { *;}
+-keep class com.applovin.** { *;}
+-keep class com.unity.purchasing.** { *;}
+-keep class com.unity.purchasing.googleplay.** { *;}
+-keep class com.unity.purchasing.googleplay.GooglePlayPurchasing { *; }
+-keep class com.google.android.play.core.** { *; }

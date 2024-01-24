@@ -1,0 +1,33 @@
+<dependencies>
+  <packages>
+    <package>com.android.installreferrer:installreferrer:2.1</package>
+    <package>com.applovin.mediation:facebook-adapter:[6.16.0.2]</package>
+    <package>com.applovin.mediation:google-adapter:[22.6.0.0]</package>
+    <package>com.applovin.mediation:ironsource-adapter:7.6.0.0.0</package>
+    <package>com.applovin.mediation:unityads-adapter:4.9.2.0</package>
+    <package>com.applovin:applovin-sdk:12.1.0</package>
+    <package>com.appsflyer:adrevenue:6.9.1</package>
+    <package>com.appsflyer:af-android-sdk:6.12.2</package>
+    <package>com.appsflyer:unity-adrevenue-generic-wrapper:6.9.1</package>
+    <package>com.appsflyer:unity-wrapper:6.12.21</package>
+    <package>com.yandex.android:mobmetricalib:5.2.0</package>
+  </packages>
+  <files />
+  <settings>
+    <setting name="androidAbis" value="armeabi-v7a" />
+    <setting name="bundleId" value="com.madpixel.example.project" />
+    <setting name="explodeAars" value="True" />
+    <setting name="gradleBuildEnabled" value="True" />
+    <setting name="gradlePropertiesTemplateEnabled" value="True" />
+    <setting name="gradleTemplateEnabled" value="True" />
+    <setting name="installAndroidPackages" value="True" />
+    <setting name="localMavenRepoDir" value="Assets/GeneratedLocalRepo" />
+    <setting name="packageDir" value="Assets/Plugins/Android" />
+    <setting name="patchAndroidManifest" value="True" />
+    <setting name="patchMainTemplateGradle" value="True" />
+    <setting name="projectExportEnabled" value="False" />
+    <setting name="useFullCustomMavenRepoPathWhenExport" value="True" />
+    <setting name="useFullCustomMavenRepoPathWhenNotExport" value="False" />
+    <setting name="useJetifier" value="True" />
+  </settings>
+</dependencies>
