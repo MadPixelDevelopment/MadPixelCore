@@ -14,6 +14,7 @@ namespace MAXHelper {
         private const string MEDIATIONS_PATH = "Assets/MAXSdk/Mediation/";
         private const string AMAZON_PATH = "Assets/Amazon/Plugins";
         private const string MPC_FOLDER = "https://github.com/MadPixelDevelopment/MadPixelCore/releases";
+        private const string MAX_PACK_INDEPENDENT = "https://github.com/MadPixelDevelopment/MadPixelCore/raw/main/Assets/MadPixel/MAXHelper/Configs/MaximumPack.unitypackage";
 
         private const string ADS_DOC =
             "https://docs.google.com/document/d/1lx9wWCD4s8v4aXH1pb0oQENz01UszdalHtnznmQv2vc/edit#heading=h.y039lv8byi2i";
@@ -243,17 +244,32 @@ namespace MAXHelper {
             using (new EditorGUILayout.VerticalScope("box")) {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
-                GUI.enabled = false;
-                if (GUILayout.Button(new GUIContent("Minimum pack is installed"), buttonFieldWidth)) {
-                    // nothing here
+
+                if (!MackPackUnitypackageExists()) {
+                    EditorGUILayout.LabelField("You dont have MaximunPack.unitypackage in your project. Probably your git added it to gitignore", sdkKeyTextFieldWidthOption);
+                    
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(10);
+
+                    if (GUILayout.Button(new GUIContent("Download latest Maximum mediations package"), adMobUnitTextWidthOption)) {
+                        Application.OpenURL(MAX_PACK_INDEPENDENT);
+                    }
+
+                    GUILayout.EndHorizontal();
+                    GUILayout.Space(10);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(10);
                 }
 
-                GUI.enabled = true;
-
-                GUILayout.Space(5);
-                GUILayout.Space(10);
-                GUI.enabled = !bMaxVariantInstalled;
-                if (GUILayout.Button(new GUIContent(bMaxVariantInstalled ? "Maximum pack is installed" : "Install maximum pack"), buttonFieldWidth)) {
+                GUI.enabled = MackPackUnitypackageExists();
+                if (bMaxVariantInstalled) {
+                    EditorGUILayout.LabelField("You have installed default Maximum pack of mediations", sdkKeyTextFieldWidthOption);
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(10);
+                }
+                if (GUILayout.Button(new GUIContent(bMaxVariantInstalled ? "Reimport maximum pack" : "Install maximum pack"), buttonFieldWidth)) {
                     AssetDatabase.ImportPackage(PACKAGE_PATH, true);
                     CheckMaxVersion();
                 }
@@ -470,6 +486,10 @@ namespace MAXHelper {
             else {
                 MAXHelperDefineSymbols.DefineSymbols(false);
             }
+        }
+
+        private bool MackPackUnitypackageExists() {
+            return File.Exists(PACKAGE_PATH);
         }
 
         #endregion
