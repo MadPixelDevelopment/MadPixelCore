@@ -13,7 +13,7 @@ namespace MAXHelper {
         private const string AMAZON_PACKAGE_PATH = "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage";
         private const string MEDIATIONS_PATH = "Assets/MAXSdk/Mediation/";
         private const string AMAZON_PATH = "Assets/Amazon/Plugins";
-        private const string MPC_FOLDER = "https://drive.google.com/drive/u/0/folders/1Mo36yT_dWR36lZvRWmkLHArtxna1zzS2";
+        private const string MPC_FOLDER = "https://github.com/MadPixelDevelopment/MadPixelCore/releases";
 
         private const string ADS_DOC =
             "https://docs.google.com/document/d/1lx9wWCD4s8v4aXH1pb0oQENz01UszdalHtnznmQv2vc/edit#heading=h.y039lv8byi2i";
