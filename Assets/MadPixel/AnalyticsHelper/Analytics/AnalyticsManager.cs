@@ -8,7 +8,7 @@ namespace MadPixelAnalytics {
 
     public class AnalyticsManager : MonoBehaviour {
         #region Fields
-        public const string VERSION = "1.0.6";
+        public const string VERSION = "1.0.7";
 
         public bool bUseAutoInit = true;
         public bool bSubscribeOnStart = true;

@@ -1,18 +1,17 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.Security;
+using UnityEngine.Serialization;
 
 namespace MadPixel.InApps {
     [RequireComponent(typeof(GamingServices))]
-    public class MobileInAppPurchaser : MonoBehaviour, IStoreListener {
+    public class MobileInAppPurchaser : MonoBehaviour, IDetailedStoreListener {
         #region Fields
-        public const string VERSION = "1.0.3";
+        public const string VERSION = "1.0.4";
 
         private IStoreController StoreController;
         private IExtensionProvider StoreExstensionProvider;
@@ -20,7 +19,11 @@ namespace MadPixel.InApps {
         [SerializeField] private bool bInitOnStart;
         [SerializeField] private bool bDebugLogging;
         [SerializeField] private string adsFreeSKU;
-        [SerializeField] private List<string> productsSKUs; 
+        [SerializeField] private List<string> otherNonConsumablesSKUs;
+        [FormerlySerializedAs("productsSKUs")] 
+        [SerializeField] private List<string> consumablesSKUs;
+        [SerializeField] private List<string> subscriptionsSKUs;
+
         [SerializeField] private GamingServices GamingServices;
 
         public static string AdsFreeSKU {
@@ -35,7 +38,27 @@ namespace MadPixel.InApps {
         public static List<string> ConsumablesList {
             get {
                 if (Exist) {
-                    return Instance.productsSKUs;
+                    return Instance.consumablesSKUs;
+                }
+
+                return null;
+            }
+        }
+
+        public static List<string> NonConsumablesList {
+            get {
+                if (Exist) {
+                    return Instance.otherNonConsumablesSKUs;
+                }
+
+                return null;
+            }
+        }
+
+        public static List<string> SubscriptionsList {
+            get {
+                if (Exist) {
+                    return Instance.subscriptionsSKUs;
                 }
 
                 return null;
@@ -97,15 +120,18 @@ namespace MadPixel.InApps {
                 GamingServices.Initialize();
             } else {
                 GameObject.Destroy(gameObject);
-                Debug.LogError($"Already have Analytics on scene!");
+                Debug.LogError($"Already have MobileInAppPurchaser on scene!");
             }
         }
 
 
         private void Start() {
             if (bInitOnStart) {
-                if (!string.IsNullOrEmpty(AdsFreeSKU) || (ConsumablesList != null && ConsumablesList.Count > 0)) {
-                    Init(AdsFreeSKU, ConsumablesList);
+                if (!string.IsNullOrEmpty(AdsFreeSKU) 
+                    || (ConsumablesList != null && ConsumablesList.Count > 0) 
+                    || (NonConsumablesList != null && NonConsumablesList.Count > 0) 
+                    || (SubscriptionsList != null && SubscriptionsList.Count > 0)) {
+                    Init(AdsFreeSKU, ConsumablesList, SubscriptionsList);
                 }
                 else {
                     Debug.LogWarning("Cant init InApps with null Data!");
@@ -117,24 +143,61 @@ namespace MadPixel.InApps {
 
 
         /// <summary>
-        /// Initializes Consumables and Non-Consumables
+        /// Initializes Consumables, Non-Consumables and Subscriptions
         /// </summary>
+        /// <param name="SubscriptionSKUs">all subscription SKUs from your configs, which are valid while the subscription is active (like extra lives, accelerated construction time)</param>
         /// <param name="ConsumableSKUs">all consumable SKUs from your configs, that you can purchase multiple times (like coins, gems)</param>
         /// <param name="AdsFreeSKU">non consumable SKU for a one-time AdsFree purchase</param>
-        public void Init(string AdsFreeSKU, List<string> ConsumableSKUs = null) {
-            StartCoroutine(InitCoroutine(AdsFreeSKU, ConsumableSKUs));
+        public void Init(string AdsFreeSKU, List<string> ConsumableSKUs, List<string> NonConsumableSKUs = null, List<string> SubscriptionSKUs = null) {
+            if (!string.IsNullOrEmpty(AdsFreeSKU)) {
+                if (NonConsumableSKUs == null) {
+                    NonConsumableSKUs = new List<string>() { AdsFreeSKU };
+                }
+                else {
+                    if (!NonConsumableSKUs.Contains(AdsFreeSKU)) {
+                        NonConsumableSKUs.Add(AdsFreeSKU);
+                    }
+                }
+            }
+
+            Init(NonConsumableSKUs, ConsumableSKUs, SubscriptionSKUs);
         }
 
-        private IEnumerator InitCoroutine(string AdsFreeSKU, List<string> ConsumableSKUs = null) {
+
+        /// <summary>
+        /// Initializes Consumables, Non-Consumables and Subscriptions
+        /// </summary>
+        /// <param name="SubscriptionSKUs">all subscription SKUs from your configs, which are valid while the subscription is active (like extra lives, accelerated construction time)</param>
+        /// <param name="ConsumableSKUs">all consumable SKUs from your configs, that you can purchase multiple times (like coins, gems)</param>
+        /// <param name="NonConsumableSKUs">all non consumable SKUs from your configs, for a one-time purchase (like AdsFree)</param>
+        public void Init(List<string> NonConsumableSKUs, List<string> ConsumableSKUs, List<string> SubscriptionSKUs = null) {
+            StartCoroutine(InitCoroutine(NonConsumableSKUs, ConsumableSKUs, SubscriptionSKUs));
+        }
+
+        private IEnumerator InitCoroutine(List<string> NonConsumableSKUs, List<string> ConsumableSKUs, List<string> SubscriptionSKUs) {
             ConfigurationBuilder Builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-            if (!string.IsNullOrEmpty(AdsFreeSKU)) {
-                Builder.AddProduct(AdsFreeSKU, ProductType.NonConsumable);
+            if (NonConsumableSKUs != null && NonConsumableSKUs.Count > 0) {
+                foreach (string SKU in NonConsumableSKUs) {
+                    Builder.AddProduct(SKU, ProductType.NonConsumable);
+                }
             }
 
             if (ConsumableSKUs != null && ConsumableSKUs.Count > 0) {
                 foreach (string SKU in ConsumableSKUs) {
                     Builder.AddProduct(SKU, ProductType.Consumable);
+                }
+            }
+
+            if (SubscriptionSKUs != null && SubscriptionSKUs.Count > 0) {
+                foreach (string SKU in SubscriptionSKUs) {
+                    Builder.AddProduct(SKU, ProductType.Subscription);
+                }
+            }
+
+            if (bDebugLogging) {
+                foreach (var product in Builder.products) {
+                    Debug.Log($"Added product: {product.id}, type; {product.type}");
                 }
             }
 
@@ -167,6 +230,27 @@ namespace MadPixel.InApps {
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Use <c>IsSubscribedTo</c> to check if the subscription is active.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// if(IsSubscribedTo("com.company.game.speed_boost")) speed *= 2;
+        /// </code>
+        /// </example>
+        /// </summary>
+        public bool IsSubscribedTo(string SKU) {
+            Product product = GetProduct(SKU);
+            if (product.receipt == null) {
+                return false;
+            }
+
+            var subscriptionManager = new SubscriptionManager(product, null);
+            var info = subscriptionManager.getSubscriptionInfo();
+
+            return info.isSubscribed() == Result.True;
         }
 
         /// <summary>
@@ -281,8 +365,17 @@ namespace MadPixel.InApps {
             OnPurchaseResult?.Invoke(null);
         }
 
+        public void OnPurchaseFailed(Product Prod, PurchaseFailureDescription FailureDescription) {
+            string ProductSKU = Prod.definition.id;
 
+            if (bDebugLogging) {
+                Debug.LogWarning($"[MobileInAppPurchaser] OnPurchaseFailed: FAIL. Product: '{ProductSKU}' Receipt: {Prod.receipt}" +
+                    $" Purchase failure reason: {FailureDescription.reason}," +
+                    $" Purchase failure details: {FailureDescription.message}");
+            }
 
+            OnPurchaseResult?.Invoke(null);
+        }
 
         // Proccess purchase and use Unity validation to check it for freud
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs E) {

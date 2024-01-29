@@ -1,4 +1,6 @@
-﻿
+﻿# Version 1.0.4 - January 29, 2024
+* Added non-consumables list to Mobile InApps 
+
 # Version 1.0.3 - April 05, 2023
 * Send Analytics event on purchase succeed
 

@@ -5,7 +5,7 @@
 
 #import "MAUnityAdManager.h"
 
-#define VERSION @"6.1.1"
+#define VERSION @"6.1.2"
 
 #define KEY_WINDOW [UIApplication sharedApplication].keyWindow
 #define DEVICE_SPECIFIC_ADVIEW_AD_FORMAT ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? MAAdFormat.leader : MAAdFormat.banner
@@ -1318,13 +1318,17 @@ static ALUnityBackgroundCallback backgroundCallback;
     max_unity_dispatch_on_main_thread(^{
         [self log: @"Setting width %f for \"%@\" with ad unit identifier \"%@\"", width, adFormat, adUnitIdentifier];
         
-        CGFloat minWidth = adFormat.size.width;
+        BOOL isBannerOrLeader = adFormat.isBannerOrLeaderAd;
+        
+        // Banners and leaders need to be at least 320pts wide.
+        CGFloat minWidth = isBannerOrLeader ? MAAdFormat.banner.size.width : adFormat.size.width;
         if ( width < minWidth )
         {
-            [self log: @"The provided with: %f is smaller than the minimum required width: %f for ad format: %@. Please set the width higher than the minimum required.", width, minWidth, adFormat];
+            [self log: @"The provided width: %f is smaller than the minimum required width: %f for ad format: %@. Automatically setting width to %f.", width, minWidth, adFormat, minWidth];
         }
         
-        self.adViewWidths[adUnitIdentifier] = @(width);
+        CGFloat widthToSet = MAX( minWidth, width );
+        self.adViewWidths[adUnitIdentifier] = @(widthToSet);
         [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     });
 }

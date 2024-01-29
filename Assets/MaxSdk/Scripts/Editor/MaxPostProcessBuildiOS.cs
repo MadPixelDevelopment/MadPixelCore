@@ -67,31 +67,6 @@ namespace AppLovinMax.Scripts.Editor
             "OMSDK_Smaato.xcframework"
         };
 
-        private static List<string> SwiftLanguageNetworks
-        {
-            get
-            {
-                var swiftLanguageNetworks = new List<string>();
-                if (AppLovinIntegrationManager.IsAdapterInstalled("Facebook", "6.9.0.0"))
-                {
-                    swiftLanguageNetworks.Add("Facebook");
-                }
-
-                if (AppLovinIntegrationManager.IsAdapterInstalled("UnityAds", "4.4.0.0"))
-                {
-                    swiftLanguageNetworks.Add("UnityAds");
-                }
-
-                return swiftLanguageNetworks;
-            }
-        }
-
-        private static readonly List<string> EmbedSwiftStandardLibrariesNetworks = new List<string>
-        {
-            "Facebook",
-            "UnityAds"
-        };
-
         private static string PluginMediationDirectory
         {
             get
@@ -135,8 +110,7 @@ namespace AppLovinMax.Scripts.Editor
             var userTrackingUsageDescriptionZhHant = internalSettingsEnabled ? AppLovinInternalSettings.Instance.UserTrackingUsageDescriptionZhHant : AppLovinSettings.Instance.UserTrackingUsageDescriptionZhHant;
             LocalizeUserTrackingDescriptionIfNeeded(userTrackingUsageDescriptionZhHant, "zh-Hant", buildPath, project, unityMainTargetGuid);
 
-            AddSwiftSupportIfNeeded(buildPath, project, unityFrameworkTargetGuid);
-            EmbedSwiftStandardLibrariesIfNeeded(buildPath, project, unityMainTargetGuid);
+            AddSwiftSupport(buildPath, project, unityFrameworkTargetGuid, unityMainTargetGuid);
             AddYandexSettingsIfNeeded(project, unityMainTargetGuid);
 
             project.WriteToFile(projectPath);
@@ -264,62 +238,26 @@ namespace AppLovinMax.Scripts.Editor
                 && !settings.ConsentFlowEnabled || !settings.UserTrackingUsageLocalizationEnabled;
         }
 
-        private static void AddSwiftSupportIfNeeded(string buildPath, PBXProject project, string targetGuid)
+        private static void AddSwiftSupport(string buildPath, PBXProject project, string unityFrameworkTargetGuid, string unityMainTargetGuid)
         {
             var swiftFileRelativePath = "Classes/MAXSwiftSupport.swift";
             var swiftFilePath = Path.Combine(buildPath, swiftFileRelativePath);
-            var maxMediationDirectory = PluginMediationDirectory;
-            var hasSwiftLanguageNetworksInProject = SwiftLanguageNetworks.Any(network => Directory.Exists(Path.Combine(maxMediationDirectory, network)));
-
-            // Remove Swift file if no need to support Swift
-            if (!hasSwiftLanguageNetworksInProject)
-            {
-                if (File.Exists(swiftFilePath))
-                {
-                    MaxSdkLogger.UserDebug("Removing Swift file references.");
-
-                    var fileGuid = project.FindFileGuidByRealPath(swiftFilePath, PBXSourceTree.Source);
-                    if (!string.IsNullOrEmpty(fileGuid))
-                    {
-                        project.RemoveFile(fileGuid);
-                        project.RemoveFileFromBuild(targetGuid, fileGuid);
-
-                        FileUtil.DeleteFileOrDirectory(swiftFilePath);
-                    }
-                }
-
-                return;
-            }
 
             // Add Swift file
             CreateSwiftFile(swiftFilePath);
             var swiftFileGuid = project.AddFile(swiftFileRelativePath, swiftFileRelativePath, PBXSourceTree.Source);
-            project.AddFileToBuild(targetGuid, swiftFileGuid);
+            project.AddFileToBuild(unityFrameworkTargetGuid, swiftFileGuid);
 
             // Add Swift version property if needed
-            var swiftVersion = project.GetBuildPropertyForAnyConfig(targetGuid, "SWIFT_VERSION");
+            var swiftVersion = project.GetBuildPropertyForAnyConfig(unityFrameworkTargetGuid, "SWIFT_VERSION");
             if (string.IsNullOrEmpty(swiftVersion))
             {
-                project.SetBuildProperty(targetGuid, "SWIFT_VERSION", "5.0");
+                project.SetBuildProperty(unityFrameworkTargetGuid, "SWIFT_VERSION", "5.0");
             }
 
             // Enable Swift modules
-            project.AddBuildProperty(targetGuid, "CLANG_ENABLE_MODULES", "YES");
-        }
-
-        /// <summary>
-        /// For Swift 5+ code that uses the standard libraries, the Swift Standard Libraries MUST be embedded for iOS < 12.2
-        /// Swift 5 introduced ABI stability, which allowed iOS to start bundling the standard libraries in the OS starting with iOS 12.2
-        /// Issue Reference: https://github.com/facebook/facebook-sdk-for-unity/issues/506
-        /// </summary>
-        private static void EmbedSwiftStandardLibrariesIfNeeded(string buildPath, PBXProject project, string mainTargetGuid)
-        {
-            var maxMediationDirectory = PluginMediationDirectory;
-            var hasEmbedSwiftStandardLibrariesNetworksInProject = EmbedSwiftStandardLibrariesNetworks.Any(network => Directory.Exists(Path.Combine(maxMediationDirectory, network)));
-            if (!hasEmbedSwiftStandardLibrariesNetworksInProject) return;
-
-            // This needs to be added the main target. App Store may reject builds if added to UnityFramework (i.e. MoPub in FT).
-            project.AddBuildProperty(mainTargetGuid, "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "YES");
+            project.AddBuildProperty(unityFrameworkTargetGuid, "CLANG_ENABLE_MODULES", "YES");
+            project.AddBuildProperty(unityMainTargetGuid, "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "YES");
         }
 
         private static void CreateSwiftFile(string swiftFilePath)

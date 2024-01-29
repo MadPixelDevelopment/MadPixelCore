@@ -793,7 +793,6 @@ public class MaxSdkAndroid : MaxSdkBase
     /// <param name="value">The value for the extra parameter. Accepts the following types: <see cref="AndroidJavaObject"/>, <c>null</c>, <c>IList</c>, <c>IDictionary</c>, <c>string</c>, primitive types</param>
     public static void SetInterstitialLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
-        Debug.Log("interstitail local extra");
         ValidateAdUnitIdentifier(adUnitIdentifier, "set interstitial local extra parameter");
 
         if (value == null || value is AndroidJavaObject)

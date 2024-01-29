@@ -135,7 +135,7 @@ extern "C"
         
         if ( _mutedToSet != nil)
         {
-            _sdk.settings.muted = _mutedToSet.boolValue;
+            settings.muted = _mutedToSet.boolValue;
             _mutedToSet = nil;
         }
         

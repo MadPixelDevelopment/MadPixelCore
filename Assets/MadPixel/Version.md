@@ -1,4 +1,10 @@
-﻿# Version 121 - December 12, 2023
+﻿# Version 122 - January 29, 2024
+* Added non-consumables list to Mobile InApps 
+* af_purchase sends revenue via InvariantCulture now
+* Applovin (Unity 3D) updated
+* Maximum pack link and git link added
+
+# Version 121 - December 12, 2023
 * UMP implemented (See docs to use it)
 * Analytics is initialized on AdsManger initialized (no need to init Analytics on your own!)
 * Applovin updated to 12.1.0

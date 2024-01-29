@@ -748,7 +748,7 @@ public class MaxSdkiOS : MaxSdkBase
     /// <param name="value">The value for the local extra parameter. Accepts the following types: <see cref="IntPtr"/>, <c>null</c>, <c>IList</c>, <c>IDictionary</c>, <c>string</c>, primitive types</param>
     public static void SetMRecLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
-        ValidateAdUnitIdentifier(adUnitIdentifier, "set banner local extra parameter");
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set MREC local extra parameter");
 
         if (value == null || value is IntPtr)
         {
@@ -989,7 +989,7 @@ public class MaxSdkiOS : MaxSdkBase
     /// <param name="value">The value for the local extra parameter. Accepts the following types: <see cref="IntPtr"/>, <c>null</c>, <c>IList</c>, <c>IDictionary</c>, <c>string</c>, primitive types</param>
     public static void SetInterstitialLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
-        ValidateAdUnitIdentifier(adUnitIdentifier, "set banner local extra parameter");
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set interstitial local extra parameter");
 
         if (value == null || value is IntPtr)
         {
@@ -1085,7 +1085,7 @@ public class MaxSdkiOS : MaxSdkBase
     /// <param name="value">The value for the local extra parameter. Accepts the following types: <see cref="IntPtr"/>, <c>null</c>, <c>IList</c>, <c>IDictionary</c>, <c>string</c>, primitive types</param>
     public static void SetAppOpenAdLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
-        ValidateAdUnitIdentifier(adUnitIdentifier, "set banner local extra parameter");
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set app open ad local extra parameter");
 
         if (value == null || value is IntPtr)
         {
@@ -1181,7 +1181,7 @@ public class MaxSdkiOS : MaxSdkBase
     /// <param name="value">The value for the local extra parameter. Accepts the following types: <see cref="IntPtr"/>, <c>null</c>, <c>IList</c>, <c>IDictionary</c>, <c>string</c>, primitive types</param>
     public static void SetRewardedAdLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
-        ValidateAdUnitIdentifier(adUnitIdentifier, "set banner local extra parameter");
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set rewarded ad local extra parameter");
 
         if (value == null || value is IntPtr)
         {
@@ -1277,7 +1277,7 @@ public class MaxSdkiOS : MaxSdkBase
     /// <param name="value">The value for the local extra parameter. Accepts the following types: <see cref="IntPtr"/>, <c>null</c>, <c>IList</c>, <c>IDictionary</c>, <c>string</c>, primitive types</param>
     public static void SetRewardedInterstitialAdLocalExtraParameter(string adUnitIdentifier, string key, object value)
     {
-        ValidateAdUnitIdentifier(adUnitIdentifier, "set banner local extra parameter");
+        ValidateAdUnitIdentifier(adUnitIdentifier, "set rewarded interstitial ad local extra parameter");
 
         if (value == null || value is IntPtr)
         {
