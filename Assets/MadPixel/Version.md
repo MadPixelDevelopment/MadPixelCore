@@ -1,4 +1,7 @@
-﻿# Version 122 - January 29, 2024
+﻿# Version 123 - February 05, 2024
+* Removed Amazon
+
+# Version 122 - January 29, 2024
 * Added non-consumables list to Mobile InApps 
 * af_purchase sends revenue via InvariantCulture now
 * Applovin (Unity 3D) updated

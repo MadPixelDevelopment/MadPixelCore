@@ -106,8 +106,6 @@ namespace MAXHelper {
 
                     DrawInstallButtons();
 
-                    DrawAmazon();
-
                     DrawLinks();
                 }
             }
@@ -333,90 +331,6 @@ namespace MAXHelper {
             GUILayout.Space(4);
 
             return text;
-        }
-
-        private void DrawAmazon() {
-            GUILayout.Space(16);
-            EditorGUILayout.LabelField("5. Amazon", titleLabelStyle);
-            using (new EditorGUILayout.VerticalScope("box")) {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(4);
-                bool bHasFolder = Directory.Exists(AMAZON_PATH);
-
-                if (bHasFolder) {
-                    EditorGUILayout.LabelField("Amazon plugin is installed", adMobUnitTextWidthOption);
-                    bUseAmazon = MAXHelperDefineSymbols.HasAmazonActivated();
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(4);
-                    EditorGUILayout.LabelField(
-                        bUseAmazon ? "Amazon is used by AdsManager" : "You dont have Amazon initialized",
-                        adMobUnitTextWidthOption);
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(4);
-                    if (GUILayout.Button(new GUIContent(bUseAmazon ? "Deactivate Amazon" : "Activate Amazon"),
-                            adMobUnitTextWidthOption)) {
-                        OnActivateAmazonClick();
-                    }
-
-                    if (bUseAmazon) {
-                        DrawAmazonValues();
-                    }
-                }
-                else {
-                    EditorGUILayout.LabelField("You dont have Amazon Plugin installed", adMobUnitTextWidthOption);
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(4);
-                    if (GUILayout.Button(new GUIContent("Install Amazon plugin"), adMobUnitTextWidthOption)) {
-                        OnInstallAmazonPluginClick();
-                    }
-
-                    if (bUseAmazon) {
-                        GUILayout.EndHorizontal();
-
-                        GUILayout.BeginHorizontal();
-                        GUILayout.Space(4);
-                        if (GUILayout.Button(new GUIContent(bUseAmazon ? "Deactivate Amazon" : "Activate Amazon"),
-                                adMobUnitTextWidthOption)) {
-                            OnActivateAmazonClick();
-                        }
-                    }
-                }
-
-                GUILayout.EndHorizontal();
-            }
-        }
-
-        private void DrawAmazonValues() {
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(4);
-            CustomSettings.AmazonSDKKey = DrawTextField("Amazon SDK key (Android)", CustomSettings.AmazonSDKKey, buttonFieldWidth, adMobUnitTextWidthOption);
-            CustomSettings.AmazonSDKKey_IOS = DrawTextField("Amazon SDK key (iOS)", CustomSettings.AmazonSDKKey_IOS, buttonFieldWidth, adMobUnitTextWidthOption);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(4);
-            CustomSettings.AmazonRewardedID = DrawTextField("Rewarded Ad Unit (Android)", CustomSettings.AmazonRewardedID, buttonFieldWidth, adMobUnitTextWidthOption);
-            CustomSettings.AmazonRewardedID_IOS = DrawTextField("Rewarded Ad Unit (iOS)", CustomSettings.AmazonRewardedID_IOS, buttonFieldWidth, adMobUnitTextWidthOption);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(4);
-            CustomSettings.AmazonInterstitialID = DrawTextField("Interstitial Ad Unit (Android)", CustomSettings.AmazonInterstitialID, buttonFieldWidth, adMobUnitTextWidthOption);
-            CustomSettings.AmazonInterstitialID_IOS = DrawTextField("Interstitial Ad Unit (iOS)", CustomSettings.AmazonInterstitialID_IOS, buttonFieldWidth, adMobUnitTextWidthOption);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(4);
-            CustomSettings.AmazonBannerID = DrawTextField("Banner Ad Unit (Android)", CustomSettings.AmazonBannerID, buttonFieldWidth, adMobUnitTextWidthOption);
-            CustomSettings.AmazonBannerID_IOS = DrawTextField("Banner Ad Unit (iOS)", CustomSettings.AmazonBannerID_IOS, buttonFieldWidth, adMobUnitTextWidthOption);
         }
 
         #endregion

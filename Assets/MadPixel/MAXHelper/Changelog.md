@@ -1,4 +1,7 @@
-﻿# Version 1.2.8 - November 28, 2023
+﻿# Version 1.2.9 - February 05, 2024
+* Removed Amazon
+
+# Version 1.2.8 - November 28, 2023
 * Analytics is initialized on Applovin initialized
 * UMP implemented (Applovin 12.1.0)
 

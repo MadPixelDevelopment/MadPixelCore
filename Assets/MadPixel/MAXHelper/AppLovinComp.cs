@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-#if MADPIXEL_AMAZON_DROID
-using AmazonAds;
-#endif
+
 #if UNITY_IOS
 using Unity.Advertisement.IosSupport; // NOTE: Import "com.unity.ads.ios-support" from Package Manager, if it's missing
 #endif
@@ -113,41 +111,15 @@ namespace MAXHelper {
             } else {
                 Debug.LogError("[MadPixel] Banner ID in Settings is Empty!");
             }
-            string amazonID = Settings.AmazonBannerID;
 #else
             if (!string.IsNullOrEmpty(Settings.BannerID_IOS)) {
                 BannerID = Settings.BannerID_IOS;
             } else {
                 Debug.LogError("Banner ID in Settings is Empty!");
             }
-            string amazonID = Settings.AmazonBannerID_IOS;
 #endif
 
-#if MADPIXEL_AMAZON_DROID && !UNITY_EDITOR
-            int width = 320;
-            int height = 50;
 
-            if (!string.IsNullOrEmpty(amazonID)) {
-                var apsBanner = new APSBannerAdRequest(width, height, amazonID);
-                apsBanner.onSuccess += (adResponse) => {
-                    Debug.LogWarning($"[MadPixel] Banners. Amazon.onSuccess!");
-                    MaxSdk.SetBannerLocalExtraParameter(BannerID, "amazon_ad_response", adResponse.GetResponse());
-                    MaxSdk.CreateBanner(BannerID, MaxSdkBase.BannerPosition.BottomCenter);
-                    MaxSdk.SetBannerBackgroundColor(BannerID, Settings.BannerBackground);
-                    OnBannerInitialized?.Invoke();
-                };
-                apsBanner.onFailedWithError += (adError) => {
-                    Debug.LogWarning($"[MadPixel] Banners. Amazon.onFailedWithError!");
-                    MaxSdk.SetBannerLocalExtraParameter(BannerID, "amazon_ad_error", adError.GetAdError());
-                    MaxSdk.CreateBanner(BannerID, MaxSdkBase.BannerPosition.BottomCenter);
-                    MaxSdk.SetBannerBackgroundColor(BannerID, Settings.BannerBackground);
-                    OnBannerInitialized?.Invoke();
-                };
-
-                apsBanner.LoadAd();
-                return;
-            }
-#endif
             MaxSdk.CreateBanner(BannerID, MaxSdkBase.BannerPosition.BottomCenter);
             MaxSdk.SetBannerBackgroundColor(BannerID, Settings.BannerBackground);
             OnBannerInitialized?.Invoke();
@@ -214,32 +186,11 @@ namespace MAXHelper {
                 else {
                     Debug.LogError("[MadPixel] Interstitial ID in Settings is Empty!");
                 }
-                string amazonID = Settings.AmazonInterstitialID;
 #else
                 if (!string.IsNullOrEmpty(Settings.InterstitialID_IOS)) {
                     InterstitialID = Settings.InterstitialID_IOS;
                 } else {
                     Debug.LogError("Interstitial ID in Settings is Empty!");
-                }
-                string amazonID = Settings.AmazonInterstitialID_IOS;
-#endif
-
-#if MADPIXEL_AMAZON_DROID && !UNITY_EDITOR
-                // APS LoadAd only needs to be called once.
-                if (!string.IsNullOrEmpty(amazonID)) {
-                    var interstitialVideoAdRequest = new APSVideoAdRequest(320, 480, amazonID);
-                    interstitialVideoAdRequest.onSuccess += (adResponse) => {
-                        Debug.LogWarning($"[MadPixel] Inters. Amazon.onSuccess!");
-                        MaxSdk.SetInterstitialLocalExtraParameter(InterstitialID, "amazon_ad_response", adResponse.GetResponse());
-                        MaxSdk.LoadInterstitial(InterstitialID);
-                    };
-                    interstitialVideoAdRequest.onFailedWithError += (adError) => {
-                        Debug.LogWarning($"[MadPixel] Inters. Amazon.onFailedWithError!");
-                        MaxSdk.SetInterstitialLocalExtraParameter(InterstitialID, "amazon_ad_error", adError.GetAdError());
-                        MaxSdk.LoadInterstitial(InterstitialID);
-                    };
-                    interstitialVideoAdRequest.LoadAd();
-                    return;
                 }
 #endif
             }
@@ -307,33 +258,11 @@ namespace MAXHelper {
                 else {
                     Debug.LogError("[MadPixel] Rewarded ID in Settings is Empty!");
                 }
-                string amazonID = Settings.AmazonRewardedID;
 #else
                 if (!string.IsNullOrEmpty(Settings.RewardedID_IOS)) {
                     RewardedID = Settings.RewardedID_IOS;
                 } else {
                     Debug.LogError("Rewarded ID in Settings is Empty!");
-                }
-                string amazonID = Settings.AmazonRewardedID_IOS;
-#endif
-
-#if MADPIXEL_AMAZON_DROID && !UNITY_EDITOR
-                // APS LoadAd only needs to be called once.
-                if (!string.IsNullOrEmpty(amazonID)) {
-                    var rewardedVideoAdRequest = new APSVideoAdRequest(320, 480, amazonID);
-                    rewardedVideoAdRequest.onSuccess += (adResponse) => {
-                        Debug.LogWarning($"[MadPixel] Rewardeds. Amazon.onSuccess!");
-                        MaxSdk.SetRewardedAdLocalExtraParameter(RewardedID, "amazon_ad_response",
-                            adResponse.GetResponse());
-                        MaxSdk.LoadRewardedAd(RewardedID);
-                    };
-                    rewardedVideoAdRequest.onFailedWithError += (adError) => {
-                        Debug.LogWarning($"[MadPixel] Rewardeds. Amazon.onFailedWithError!");
-                        MaxSdk.SetRewardedAdLocalExtraParameter(RewardedID, "amazon_ad_error", adError.GetAdError());
-                        MaxSdk.LoadRewardedAd(RewardedID);
-                    };
-                    rewardedVideoAdRequest.LoadAd();
-                    return;
                 }
 #endif
             }

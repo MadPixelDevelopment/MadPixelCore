@@ -28,6 +28,7 @@ namespace MAXHelper {
                 }
             }
 
+
             PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.Android, string.Join(";", scriptingDefinesStringList.ToArray()));
         }
 

@@ -6,21 +6,24 @@ using System.Security.Cryptography;
 using System.Text;
 using static UnityEngine.GraphicsBuffer;
 using System.IO;
+using MAXHelper;
 
 [InitializeOnLoad]
 public class MPCChecker {
-#if UNITY_ANDROID
-    private static string appKey = null;
-    private static string Key {
-        get {
-            if (string.IsNullOrEmpty(appKey)) {
-                appKey = GetMd5Hash(Application.dataPath) + "MPCv";
-            }
+    private static readonly List<string> ObsoleteDirectoriesToDelete = new List<string> {
+        "Assets/Amazon",
+    };    
+    
+    private static readonly List<string> ObsoleteFilesToDelete = new List<string> {
+        "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage",
+        "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage.meta",
+        "Assets/Amazon.meta",
+    };
 
-            return appKey;
-        }
-    }
     static MPCChecker() {
+        CheckObsoleteFiles();
+
+#if UNITY_ANDROID
         int target = (int)PlayerSettings.Android.targetSdkVersion;
         if (target == 0) {
             int highestInstalledVersion = GetHigestInstalledSDK();
@@ -40,6 +43,20 @@ public class MPCChecker {
             }
         }
         SaveKey();
+#endif
+    }
+
+
+#if UNITY_ANDROID
+    private static string appKey = null;
+    private static string Key {
+        get {
+            if (string.IsNullOrEmpty(appKey)) {
+                appKey = GetMd5Hash(Application.dataPath) + "MPCv";
+            }
+
+            return appKey;
+        }
     }
 
     private static void ShowSwitchTargetWindow(int target) {
@@ -88,4 +105,37 @@ public class MPCChecker {
         return EditorPrefs.GetString("AndroidSdkRoot");
     }
 #endif
+
+
+    private static void CheckObsoleteFiles() {
+        bool changesMade = false;
+        foreach (var pathToDelete in ObsoleteFilesToDelete) {
+            if (CheckExistence(pathToDelete)) {
+                FileUtil.DeleteFileOrDirectory(pathToDelete);
+                changesMade = true;
+            }
+        }
+
+        foreach (string directory in ObsoleteDirectoriesToDelete) {
+            if (CheckExistence(directory)) {
+                FileUtil.DeleteFileOrDirectory(directory);
+                changesMade = true;
+            }
+        }
+
+        MAXHelperDefineSymbols.DefineSymbols(false);
+
+        if (changesMade) {
+            AssetDatabase.Refresh();
+            Debug.LogWarning("ATTENTION: Amazon removed from this project");
+        }
+    }
+
+
+    private static bool CheckExistence(string location) {
+        return File.Exists(location) ||
+               Directory.Exists(location) ||
+               (location.EndsWith("/*") && Directory.Exists(Path.GetDirectoryName(location)));
+    }
+
 }

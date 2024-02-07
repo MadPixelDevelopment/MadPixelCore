@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-#if MADPIXEL_AMAZON_DROID && !UNITY_EDITOR
-using AmazonAds;
-#endif
+
 
 namespace MAXHelper {
     
     [RequireComponent(typeof(TermsAndATT))]
     [RequireComponent(typeof(AppLovinComp))]
     public class AdsManager : MonoBehaviour {
-        private const string version = "1.2.8";
+        private const string version = "1.2.9";
         public enum EResultCode {OK = 0, NOT_LOADED, ADS_FREE, ON_COOLDOWN, ERROR}
         public enum EAdType {REWARDED, INTER, BANNER}
 
@@ -456,9 +454,6 @@ namespace MAXHelper {
         }
         
         private void InitApplovinInternal() {
-#if MADPIXEL_AMAZON_DROID && !UNITY_EDITOR
-            InitAmazon();
-#endif
             LastInterShown = -CooldownBetweenInterstitials;
 
             AppLovin.Init(CustomSettings);
@@ -479,29 +474,6 @@ namespace MAXHelper {
             AdsInstigatorObj = objectRef;
             CallbackPending = Callback;
         }
-
-#if MADPIXEL_AMAZON_DROID && !UNITY_EDITOR
-        public void InitAmazon() {
-#if UNITY_ANDROID
-            string amazonSDKKey = CustomSettings.AmazonSDKKey;
-#else
-            string amazonSDKKey = CustomSettings.AmazonSDKKey_IOS;
-#endif
-
-            if (!string.IsNullOrEmpty(amazonSDKKey)) {
-                Amazon.Initialize(amazonSDKKey);
-                Debug.Log($"[MadPixel] Amazon Init");
-
-                Amazon.EnableLogging(false);
-                Amazon.EnableTesting(false);
-
-                Amazon.SetAdNetworkInfo(new AdNetworkInfo(DTBAdNetwork.MAX));
-            }
-            else {
-                Debug.LogError($"[MadPixel] Amazon cant init! SDK is empty!");
-            }
-        }
-#endif
 
         private void ShowAdInner(EAdType AdType, string Placement) {
             CurrentAdInfo = new AdInfo(Placement, AdType);
