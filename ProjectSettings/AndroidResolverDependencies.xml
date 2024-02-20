@@ -6,10 +6,8 @@
     <package>com.applovin.mediation:ironsource-adapter:7.6.0.0.0</package>
     <package>com.applovin.mediation:unityads-adapter:4.9.2.0</package>
     <package>com.applovin:applovin-sdk:12.1.0</package>
-    <package>com.appsflyer:adrevenue:6.9.1</package>
-    <package>com.appsflyer:af-android-sdk:6.12.2</package>
-    <package>com.appsflyer:unity-adrevenue-generic-wrapper:6.9.1</package>
-    <package>com.appsflyer:unity-wrapper:6.12.21</package>
+    <package>com.appsflyer:af-android-sdk:6.13.0</package>
+    <package>com.appsflyer:unity-wrapper:6.13.01</package>
     <package>com.yandex.android:mobmetricalib:5.2.0</package>
   </packages>
   <files />
