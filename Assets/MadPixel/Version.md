@@ -1,4 +1,10 @@
-﻿# Version 123 - February 05, 2024
+﻿# Version 124 - February 20, 2024
+* Analytics version 1.0.8
+* AppsFlyer SDK updated to 6.13.0
+* AppsFlyer AdRevenue updated to 6.9.42
+* AppsFlyer: enable TCF data collection
+
+# Version 123 - February 05, 2024
 * Removed Amazon
 
 # Version 122 - January 29, 2024
