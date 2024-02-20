@@ -21,15 +21,5 @@ namespace MAXHelper {
         public string RewardedID_IOS;
 
         public Color BannerBackground;
-
-        public string AmazonSDKKey;
-        public string AmazonRewardedID;
-        public string AmazonInterstitialID;
-        public string AmazonBannerID;
-
-        public string AmazonSDKKey_IOS;
-        public string AmazonRewardedID_IOS;
-        public string AmazonInterstitialID_IOS;
-        public string AmazonBannerID_IOS;
     }
 }

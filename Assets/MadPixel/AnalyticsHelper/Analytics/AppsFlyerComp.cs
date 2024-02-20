@@ -27,6 +27,8 @@ namespace MadPixelAnalytics {
 #else
             AppsFlyer.initSDK(AppsFlyerDevKey, AppID_IOs, this);
 #endif
+            AppsFlyer.enableTCFDataCollection(true);
+
             AppsFlyer.startSDK();
 
             AppsFlyerAdRevenue.start();
