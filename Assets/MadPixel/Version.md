@@ -1,4 +1,8 @@
-﻿# Version 124 - February 20, 2024
+﻿# Version 125 - March 08, 2024
+* Analytics version 1.0.9
+* AppsFlyer SDK updated to 6.13.10
+
+# Version 124 - February 20, 2024
 * Analytics version 1.0.8
 * AppsFlyer SDK updated to 6.13.0
 * AppsFlyer AdRevenue updated to 6.9.42
