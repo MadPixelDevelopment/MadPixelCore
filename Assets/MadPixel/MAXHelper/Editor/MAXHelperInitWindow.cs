@@ -369,7 +369,8 @@ namespace MAXHelper {
                 return "--";
             }
 
-            versionText = versionText.Substring(10, 4);
+            int subLength = versionText.IndexOf('-');
+            versionText = versionText.Substring(10, subLength - 10);
             return versionText;
         }
 

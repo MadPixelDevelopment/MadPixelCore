@@ -11,7 +11,7 @@ namespace MadPixel.InApps {
     [RequireComponent(typeof(GamingServices))]
     public class MobileInAppPurchaser : MonoBehaviour, IDetailedStoreListener {
         #region Fields
-        public const string VERSION = "1.0.4";
+        public const string VERSION = "1.0.5";
 
         private IStoreController StoreController;
         private IExtensionProvider StoreExstensionProvider;
@@ -131,7 +131,7 @@ namespace MadPixel.InApps {
                     || (ConsumablesList != null && ConsumablesList.Count > 0) 
                     || (NonConsumablesList != null && NonConsumablesList.Count > 0) 
                     || (SubscriptionsList != null && SubscriptionsList.Count > 0)) {
-                    Init(AdsFreeSKU, ConsumablesList, SubscriptionsList);
+                    Init(AdsFreeSKU, ConsumablesList, NonConsumablesList, SubscriptionsList);
                 }
                 else {
                     Debug.LogWarning("Cant init InApps with null Data!");

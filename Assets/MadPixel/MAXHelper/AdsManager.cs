@@ -444,6 +444,15 @@ namespace MAXHelper {
 
             return 0;
         }
+
+        /// <summary>
+        /// Restarts interstitial cooldown (it already restarts automatically after an ad is watched)
+        /// </summary>
+        public static void RestartInterstitialCooldown() {
+            if (Exist) {
+                Instance.RestartInterCooldown();
+            }
+        }
         #endregion
 
         #region Helpers

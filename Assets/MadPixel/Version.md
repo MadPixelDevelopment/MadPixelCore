@@ -1,4 +1,8 @@
-﻿# Version 125 - March 08, 2024
+﻿# Version 125.1 - March 15, 2024
+* Fix mobile in apps typo
+* RestartInterstitialCooldown is public method
+
+# Version 125 - March 08, 2024
 * Analytics version 1.0.9
 * AppsFlyer SDK updated to 6.13.10
 
