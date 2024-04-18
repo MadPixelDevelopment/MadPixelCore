@@ -1,4 +1,9 @@
-﻿# Version 125.1 - March 15, 2024
+﻿# Version 126 - April 18, 2024
+* Applovin updated
+* AppsFlyer updated to 6.14.0
+* External dependency manager updated to 1.2.179
+
+# Version 125.1 - March 15, 2024
 * Fix mobile in apps typo
 * RestartInterstitialCooldown is public method
 

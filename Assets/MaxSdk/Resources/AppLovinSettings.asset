@@ -16,6 +16,8 @@ MonoBehaviour:
   sdkKey: Some_SDK_Key_from_MadPixel_Managers
   setAttributionReportEndpoint: 1
   addApsSkAdNetworkIds: 0
+  customGradleVersionUrl: 
+  customGradleToolsVersion: 
   consentFlowEnabled: 0
   consentFlowPlatform: 0
   consentFlowPrivacyPolicyUrl: 
