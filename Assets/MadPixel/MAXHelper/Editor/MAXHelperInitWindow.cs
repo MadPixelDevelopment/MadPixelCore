@@ -8,11 +8,10 @@ using System.IO;
 namespace MAXHelper {
     public class MAXHelperInitWindow : EditorWindow {
         #region Fields
-        private const string CONFIGS_PATH = "Assets/MadPixel/MAXHelper/Configs/MAXCustomSettings.asset";
-        private const string PACKAGE_PATH = "Assets/MadPixel/MAXHelper/Configs/MaximumPack.unitypackage";
-        private const string AMAZON_PACKAGE_PATH = "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage";
+        private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
+        private const string MAXPACK_PACKAGE_PATH = "Assets/MadPixel/MAXHelper/Configs/MaximumPack.unitypackage";
         private const string MEDIATIONS_PATH = "Assets/MAXSdk/Mediation/";
-        private const string AMAZON_PATH = "Assets/Amazon/Plugins";
+
         private const string MPC_FOLDER = "https://github.com/MadPixelDevelopment/MadPixelCore/releases";
         private const string MAX_PACK_INDEPENDENT = "https://github.com/MadPixelDevelopment/MadPixelCore/raw/main/Assets/MadPixel/MAXHelper/Configs/MaximumPack.unitypackage";
 
@@ -46,9 +45,9 @@ namespace MAXHelper {
         #endregion
 
         #region Menu Item
-        [MenuItem("Mad Pixel/Setup Ads", priority = 0)]
+        [MenuItem("Mad Pixel/SDK Setup", priority = 0)]
         public static void ShowWindow() {
-            var Window = EditorWindow.GetWindow<MAXHelperInitWindow>("Mad Pixel. Setup Ads", true);
+            var Window = EditorWindow.GetWindow<MAXHelperInitWindow>("Mad Pixel. SDK Setup", true);
 
             Window.Setup();
         }
@@ -106,6 +105,8 @@ namespace MAXHelper {
 
                     DrawInstallButtons();
 
+                    DrawAnalyticsKeys();
+
                     DrawLinks();
                 }
             }
@@ -119,7 +120,7 @@ namespace MAXHelper {
 
         private void OnDisable() {
             if (CustomSettings != null) {
-                AppLovinSettings.Instance.SdkKey = CustomSettings.SDKKey;
+                AppLovinSettings.Instance.SdkKey = MAXCustomSettings.APPLOVIN_SDK_KEY;
             }
 
             AssetDatabase.SaveAssets();
@@ -131,7 +132,6 @@ namespace MAXHelper {
         #region Draw Functions
         private void DrawSDKKeyPart() {
             GUI.enabled = true;
-            CustomSettings.SDKKey = DrawTextField("AppLovin SDK Key", CustomSettings.SDKKey, sdkKeyLabelFieldWidthOption, sdkKeyTextFieldWidthOption);
 
             using (new EditorGUILayout.VerticalScope("box")) {
                 GUILayout.Space(4);
@@ -268,7 +268,7 @@ namespace MAXHelper {
                     GUILayout.Space(10);
                 }
                 if (GUILayout.Button(new GUIContent(bMaxVariantInstalled ? "Reimport maximum pack" : "Install maximum pack"), buttonFieldWidth)) {
-                    AssetDatabase.ImportPackage(PACKAGE_PATH, true);
+                    AssetDatabase.ImportPackage(MAXPACK_PACKAGE_PATH, true);
                     CheckMaxVersion();
                 }
 
@@ -290,6 +290,21 @@ namespace MAXHelper {
                     GUILayout.EndHorizontal();
                 //}
             }
+        }
+
+        private void DrawAnalyticsKeys() {
+            GUILayout.Space(16);
+            EditorGUILayout.LabelField("5. Insert analytics info", titleLabelStyle);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(10);
+
+            CustomSettings.appmetricaKey = DrawTextField("AppmetricaKey",
+                CustomSettings.appmetricaKey, adMobLabelFieldWidthOption, adMobUnitTextWidthOption);
+            CustomSettings.appsFlyerID_ios = DrawTextField("IOS App ID",
+                CustomSettings.appsFlyerID_ios, adMobLabelFieldWidthOption, adMobUnitTextWidthOption);
+
+            GUILayout.Space(5);
+            GUILayout.EndHorizontal();
         }
 
         private void DrawLinks() {
@@ -337,13 +352,13 @@ namespace MAXHelper {
 
         #region Helpers
         private void LoadConfigFromFile() {
-            var Obj = AssetDatabase.LoadAssetAtPath(CONFIGS_PATH, typeof(MAXCustomSettings));
+            var Obj = AssetDatabase.LoadAssetAtPath(NEW_CONFIGS_PATH, typeof(MAXCustomSettings));
             if (Obj != null) {
                 CustomSettings = (MAXCustomSettings)Obj;
             } else {
                 Debug.Log("CustomSettings file doesn't exist, creating a new one...");
                 var Instance = MAXCustomSettings.CreateInstance("MAXCustomSettings");
-                AssetDatabase.CreateAsset(Instance, CONFIGS_PATH);
+                AssetDatabase.CreateAsset(Instance, NEW_CONFIGS_PATH);
             }
         }
 
@@ -389,22 +404,8 @@ namespace MAXHelper {
             };
         }
 
-        private void OnInstallAmazonPluginClick() {
-            AssetDatabase.ImportPackage(AMAZON_PACKAGE_PATH, true);
-        }
-        
-        private void OnActivateAmazonClick() {
-            bUseAmazon = !bUseAmazon;
-            if (bUseAmazon) {
-                MAXHelperDefineSymbols.DefineSymbols();
-            }
-            else {
-                MAXHelperDefineSymbols.DefineSymbols(false);
-            }
-        }
-
         private bool MackPackUnitypackageExists() {
-            return File.Exists(PACKAGE_PATH);
+            return File.Exists(MAXPACK_PACKAGE_PATH);
         }
 
         #endregion

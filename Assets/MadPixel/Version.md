@@ -1,4 +1,11 @@
-﻿# Version 126 - April 18, 2024
+﻿# Version 130 - August 2, 2024
+* Applovin updated
+* AppsFlyer AdRevenue updated to 6.14.3
+* AppMetrica via package manager
+* External dependency manager via package manager
+* MAXCustomSettings via Resources
+
+# Version 126 - April 18, 2024
 * Applovin updated
 * AppsFlyer updated to 6.14.0
 * External dependency manager updated to 1.2.179

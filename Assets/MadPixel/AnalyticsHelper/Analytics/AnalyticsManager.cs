@@ -250,18 +250,7 @@ namespace MadPixelAnalytics {
                 Debug.LogError("[Mad Pixel] Analytics Manager doesn't exist!");
             }
         }
-        public static void ABTestGroup(string GroupID) {
-            if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.ABTestInitMetricaAttributes(GroupID);
-                } else {
-                    Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
-                }
-            }
-            else {
-                Debug.LogError("[Mad Pixel] Analytics Manager doesn't exist!");
-            }
-        }
+
         
         public static void CustomEvent(string eventName, Dictionary<string, object> parameters, bool bSendEventsBuffer = false) {
             if (Exist) {

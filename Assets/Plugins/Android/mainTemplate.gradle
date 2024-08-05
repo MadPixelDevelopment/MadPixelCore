@@ -28,17 +28,18 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
+    implementation 'androidx.annotation:annotation:1.7.1' // Packages/io.appmetrica.analytics/Editor/AppMetricaDependencies.xml:5
     implementation 'com.android.installreferrer:installreferrer:2.1' // Assets/AppsFlyer/Editor/AppsFlyerDependencies.xml:10
     implementation 'com.applovin.mediation:facebook-adapter:[6.17.0.0]' // Assets/MaxSdk/Mediation/Facebook/Editor/Dependencies.xml:8
-    implementation 'com.applovin.mediation:google-adapter:[23.0.0.1]' // Assets/MaxSdk/Mediation/Google/Editor/Dependencies.xml:5
-    implementation 'com.applovin.mediation:ironsource-adapter:8.0.0.0.0' // Assets/MaxSdk/Mediation/IronSource/Editor/Dependencies.xml:8
-    implementation 'com.applovin.mediation:unityads-adapter:4.10.0.0' // Assets/MaxSdk/Mediation/UnityAds/Editor/Dependencies.xml:4
-    implementation 'com.applovin:applovin-sdk:12.4.2' // Assets/MaxSdk/AppLovin/Editor/Dependencies.xml:4
+    implementation 'com.applovin.mediation:google-adapter:[23.2.0.0]' // Assets/MaxSdk/Mediation/Google/Editor/Dependencies.xml:5
+    implementation 'com.applovin.mediation:ironsource-adapter:8.2.1.0.0' // Assets/MaxSdk/Mediation/IronSource/Editor/Dependencies.xml:8
+    implementation 'com.applovin.mediation:unityads-adapter:4.12.1.0' // Assets/MaxSdk/Mediation/UnityAds/Editor/Dependencies.xml:4
+    implementation 'com.applovin:applovin-sdk:12.6.0' // Assets/MaxSdk/AppLovin/Editor/Dependencies.xml:4
     implementation 'com.appsflyer:adrevenue:6.9.1' // Assets/AppsFlyer/Editor/AppsFlyerAdRevenueDependencies.xml:4
     implementation 'com.appsflyer:af-android-sdk:6.13.0' // Assets/AppsFlyer/Editor/AppsFlyerDependencies.xml:6
     implementation 'com.appsflyer:unity-adrevenue-generic-wrapper:6.9.1' // Assets/AppsFlyer/Editor/AppsFlyerAdRevenueDependencies.xml:5
     implementation 'com.appsflyer:unity-wrapper:6.14.0' // Assets/AppsFlyer/Editor/AppsFlyerDependencies.xml:8
-    implementation 'com.yandex.android:mobmetricalib:5.2.0' // Assets/AppMetrica/Editor/AppMetricaDependencies.xml:4
+    implementation 'io.appmetrica.analytics:analytics:7.0.0' // Packages/io.appmetrica.analytics/Editor/AppMetricaDependencies.xml:4
 // Android Resolver Dependencies End
 **DEPS**}
 

@@ -68,7 +68,9 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             "MaxSdk/Scripts/MaxVariableServiceiOS.cs",
             "MaxSdk/Scripts/MaxVariableServiceiOS.cs.meta",
             "MaxSdk/Scripts/MaxVariableServiceUnityEditor.cs",
-            "MaxSdk/Scripts/MaxVariableServiceUnityEditor.cs.meta"
+            "MaxSdk/Scripts/MaxVariableServiceUnityEditor.cs.meta",
+
+            // TODO: Add MaxTargetingData and MaxUserSegment when the plugin has enough traction.
         };
 
         static AppLovinInitialize()
@@ -95,8 +97,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                     changesMade = true;
                 }
             }
-
-            AppLovinIntegrationManager.AddLabelsToAssetsIfNeeded(pluginParentDir, isPluginOutsideAssetsDir);
 
             foreach (var obsoleteFileExportPathToDelete in ObsoleteFileExportPathsToDelete)
             {

@@ -43,6 +43,24 @@ public static class MaxSdkCallbacks
         }
     }
 
+    private static Action<bool> _onApplicationStateChangedEvent;
+    /// <summary>
+    /// Fired when the application is paused or resumed.
+    /// </summary>
+    public static event Action<bool> OnApplicationStateChangedEvent
+    {
+        add
+        {
+            LogSubscribedToEvent("OnApplicationStateChangedEvent");
+            _onApplicationStateChangedEvent += value;
+        }
+        remove
+        {
+            LogUnsubscribedToEvent("OnApplicationStateChangedEvent");
+            _onApplicationStateChangedEvent -= value;
+        }
+    }
+
     private static Action<string, MaxSdkBase.AdInfo> _onInterstitialAdLoadedEventV2;
     private static Action<string, MaxSdkBase.ErrorInfo> _onInterstitialAdLoadFailedEventV2;
     private static Action<string, MaxSdkBase.AdInfo> _onInterstitialAdDisplayedEventV2;
@@ -1227,6 +1245,11 @@ public static class MaxSdkCallbacks
             var errorProps = MaxSdkUtils.GetDictionaryFromDictionary(eventProps, "error");
             MaxCmpService.NotifyCompletedIfNeeded(errorProps);
         }
+        else if (eventName == "OnApplicationStateChanged")
+        {
+            var isPaused = MaxSdkUtils.GetBoolFromDictionary(eventProps, "isPaused");
+            InvokeEvent(_onApplicationStateChangedEvent, isPaused, eventName, keepInBackground);
+        }
         // Ad Events
         else
         {
@@ -1505,7 +1528,7 @@ public static class MaxSdkCallbacks
         if (!CanInvokeEvent(evt)) return;
 
         MaxSdkLogger.UserDebug("Invoking event: " + eventName);
-        if (keepInBackground)
+        if (ShouldInvokeInBackground(keepInBackground))
         {
             try
             {
@@ -1528,7 +1551,7 @@ public static class MaxSdkCallbacks
         if (!CanInvokeEvent(evt)) return;
 
         MaxSdkLogger.UserDebug("Invoking event: " + eventName + ". Param: " + param);
-        if (keepInBackground)
+        if (ShouldInvokeInBackground(keepInBackground))
         {
             try
             {
@@ -1551,7 +1574,7 @@ public static class MaxSdkCallbacks
         if (!CanInvokeEvent(evt)) return;
 
         MaxSdkLogger.UserDebug("Invoking event: " + eventName + ". Params: " + param1 + ", " + param2);
-        if (keepInBackground)
+        if (ShouldInvokeInBackground(keepInBackground))
         {
             try
             {
@@ -1574,7 +1597,7 @@ public static class MaxSdkCallbacks
         if (!CanInvokeEvent(evt)) return;
 
         MaxSdkLogger.UserDebug("Invoking event: " + eventName + ". Params: " + param1 + ", " + param2 + ", " + param3);
-        if (keepInBackground)
+        if (ShouldInvokeInBackground(keepInBackground))
         {
             try
             {
@@ -1603,6 +1626,11 @@ public static class MaxSdkCallbacks
         }
 
         return true;
+    }
+
+    private static bool ShouldInvokeInBackground(bool keepInBackground)
+    {
+        return MaxSdkBase.InvokeEventsOnUnityMainThread == null ? keepInBackground : !MaxSdkBase.InvokeEventsOnUnityMainThread.Value;
     }
 
     private static void LogSubscribedToEvent(string eventName)

@@ -1,12 +1,11 @@
 {
   "dependencies": {
-    "com.madpixel.madpixelcore": {
-      "version": "file:MadPixelCore",
+    "com.google.external-dependency-manager": {
+      "version": "https://github.com/google-unity/external-dependency-manager.git#1.2.181",
       "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.purchasing": "4.4.1"
-      }
+      "source": "git",
+      "dependencies": {},
+      "hash": "9dfddc784b6c85d2c733040530f5fe9676e2e679"
     },
     "com.unity.2d.animation": {
       "version": "9.1.0",
@@ -199,6 +198,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.mobile.android-logcat": {
+      "version": "1.4.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.2.1",
       "depth": 2,
@@ -280,6 +286,15 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "io.appmetrica.analytics": {
+      "version": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.2.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.177"
+      },
+      "hash": "e0fb22d2e1079a689c1ff13cd5b43b03bdbfce71"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

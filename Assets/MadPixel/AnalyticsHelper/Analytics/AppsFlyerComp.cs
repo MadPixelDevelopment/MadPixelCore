@@ -9,8 +9,6 @@ using System.Globalization;
 
 namespace MadPixelAnalytics {
     public class AppsFlyerComp : MonoBehaviour {
-        [SerializeField] private string AppsFlyerDevKey;
-        [SerializeField] private string AppID_IOs;
         [SerializeField] private bool bIsDebug;
         [SerializeField] private string monetizaionPubKey;
 
@@ -21,11 +19,16 @@ namespace MadPixelAnalytics {
                 AppsFlyer.setIsDebug(true);
             }
 
-
 #if UNITY_ANDROID
-            AppsFlyer.initSDK(AppsFlyerDevKey, null, this);
+            AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, null, this);
 #else
-            AppsFlyer.initSDK(AppsFlyerDevKey, AppID_IOs, this);
+            MAXCustomSettings customSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            if (customSettings == null || !string.IsNullOrEmpty(customSettings.appsFlyerID_ios)) {
+                AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, customSettings.appsFlyerID_ios, this);
+            }
+            else {
+                Debug.LogError($"Can not find IOS APP ID for appsflyer ios!");
+            }
 #endif
             AppsFlyer.enableTCFDataCollection(true);
 
@@ -62,15 +65,6 @@ namespace MadPixelAnalytics {
 
         public void onConversionDataSuccess(string conversionData) {
             AppsFlyer.AFLog("onConversionDataSuccess", conversionData);
-            Dictionary<string, object> conversionDataDictionary = AppsFlyer.CallbackStringToDictionary(conversionData);
-            conversionDataDictionary.TryGetValue("media_source", out object MediaSource);
-            if (MediaSource != null) {
-                AdsManager.AddMediaSource((string)MediaSource);
-            }
-            else {
-                AdsManager.AddMediaSource("Organic");
-                //Debug.Log("MediaSource is null");
-            }
             // add deferred deeplink logic here
         }
 
@@ -94,15 +88,15 @@ namespace MadPixelAnalytics {
         #region Events
 
         public void VerificateAndSendPurchase(MPReceipt receipt) {
-            if (string.IsNullOrEmpty(monetizaionPubKey)) {
-                return;
-            }
-
             string currency = receipt.Product.metadata.isoCurrencyCode;
             float revenue = (float)receipt.Product.metadata.localizedPrice;
             string revenueString = revenue.ToString(CultureInfo.InvariantCulture);
 
 #if UNITY_ANDROID
+            if (string.IsNullOrEmpty(monetizaionPubKey)) {
+                return;
+            }
+
             AppsFlyer.validateAndSendInAppPurchase(monetizaionPubKey,
                 receipt.Signature, receipt.Data, revenueString, currency, null, this);
 #endif

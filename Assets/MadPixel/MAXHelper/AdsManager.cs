@@ -17,7 +17,6 @@ namespace MAXHelper {
         #region Fields
 
         [SerializeField] private bool bInitializeOnStart = true;
-        [SerializeField] private MAXCustomSettings CustomSettings;
         [SerializeField] private int CooldownBetweenInterstitials = 30;
         [SerializeField] private bool bUseTermsAndATT = false;
 
@@ -25,6 +24,7 @@ namespace MAXHelper {
         private bool bIntersOn = true;
         private bool bHasInternet = true;
 
+        private MAXCustomSettings madPixelSettings;
         private TermsAndATT Terms;
         private AppLovinComp AppLovin;
         private AdInfo CurrentAdInfo;
@@ -464,8 +464,9 @@ namespace MAXHelper {
         
         private void InitApplovinInternal() {
             LastInterShown = -CooldownBetweenInterstitials;
-
-            AppLovin.Init(CustomSettings);
+            
+            madPixelSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            AppLovin.Init(madPixelSettings);
             AppLovin.onFinishAdsEvent += AppLovin_OnFinishAds;
             AppLovin.onAdLoadedEvent += AppLovin_OnAdLoaded;
             AppLovin.onInterDismissedEvent += AppLovin_OnInterDismissed;
@@ -533,20 +534,6 @@ namespace MAXHelper {
             this.bHasInternet = bHasInternet;
         }
 
-        #endregion
-
-        #region Keywords Handlers
-        public static void AddMediaSource(string mediaSource) {
-            if (Exist) {
-                mediaSource = MadPixel.ExtensionMethods.RemoveAllWhitespacesAndNewLines(mediaSource);
-                Instance.AppLovin.TryAddKeyword("media_source", mediaSource, true);
-            }
-        }
-        public static void AddPurchaseKeyword() {
-            if (Exist) {
-                Instance.AppLovin.TryAddKeyword("purchase", "purchase", true);
-            }
-        }
         #endregion
 
         #region CMP (Google UMP) flow

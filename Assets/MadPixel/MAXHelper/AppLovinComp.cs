@@ -18,7 +18,6 @@ namespace MAXHelper {
         private string InterstitialID = "empty";
         public bool bInitialized { get; private set; }
         [SerializeField] private bool bShowDebug;
-        private Dictionary<string, string> Keywords = new Dictionary<string, string>();
         #endregion
 
 
@@ -37,25 +36,17 @@ namespace MAXHelper {
         #region Initialization
         public void Init(MAXCustomSettings CustomSettings) {
             Settings = CustomSettings;
-            if (string.IsNullOrEmpty(Settings.SDKKey)) {
+            if (string.IsNullOrEmpty(MAXCustomSettings.APPLOVIN_SDK_KEY)) {
                 Debug.LogError("[MadPixel] Cant init SDK with a null SDK key!");
             }
             else {
                 MaxSdkCallbacks.OnSdkInitializedEvent += OnAppLovinInitialized;
                 InitSDK();
-
-                TryAddKeyword("tier", GetUpperLowerTierKeyword());
-                TryAddKeyword("app_version", Application.version.Replace(".", string.Empty));
-                if (PlayerPrefs.GetInt("FirstPurchaseWas", 0) == 1) { // NOTE: was set for appsflyer in AnalyticsManager
-                    TryAddKeyword("purchase", "purchase");
-                }
-
-                SetKeywordsToMax();
             }
         }
 
         private void InitSDK() {
-            MaxSdk.SetSdkKey(Settings.SDKKey);
+            MaxSdk.SetSdkKey(MAXCustomSettings.APPLOVIN_SDK_KEY);
             MaxSdk.InitializeSdk();
             MaxSdk.SetVerboseLogging(bShowDebug);
         }
@@ -383,60 +374,6 @@ namespace MAXHelper {
             }
         }
 
-        #endregion
-
-
-        #region Keywords
-        private string GetUpperLowerTierKeyword() {
-            bool bUpper = true;
-            if (SystemInfo.deviceType == DeviceType.Handheld) {
-                bUpper = SystemInfo.systemMemorySize > 5000 &&
-                         SystemInfo.graphicsMemorySize > 2000 &&
-                         SystemInfo.processorCount >= 8 &&
-                         Screen.currentResolution.height >= 1920 &&
-                         Screen.currentResolution.width >= 1080;
-
-            }
-
-            return bUpper ? "upper" : "lower";
-        }
-
-
-        public bool TryAddKeyword(string keyword, string newValue, bool a_forceSetToMax = false) {
-            Keywords.TryGetValue(keyword, out string v);
-            if (string.IsNullOrEmpty(v)) {
-                Keywords.Add(keyword, newValue);
-                if (a_forceSetToMax) {
-                    SetKeywordsToMax();
-                }
-                return true;
-            }
-            else if (v != newValue) {
-                Keywords[keyword] = newValue;
-                if (a_forceSetToMax) {
-                    SetKeywordsToMax();
-                }
-                return true;
-            }
-
-            return false;
-        }
-
-        private void SetKeywordsToMax() {
-            MaxSdk.TargetingData.Keywords = null;
-
-            List<string> list = new List<string>();
-            foreach (KeyValuePair<string, string> kvp in Keywords) {
-                list.Add($"{kvp.Key}:{kvp.Value}");
-            }
-            MaxSdk.TargetingData.Keywords = list.ToArray();
-
-            if (bShowDebug) {
-                foreach (string key in list) {
-                    Debug.Log($"Keyword recorded: {key}");
-                }
-            }
-        }
         #endregion
     }
 }

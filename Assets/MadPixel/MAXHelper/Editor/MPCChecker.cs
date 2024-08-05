@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEditor;
 using System.Security.Cryptography;
 using System.Text;
-using static UnityEngine.GraphicsBuffer;
 using System.IO;
 using MAXHelper;
 
@@ -19,8 +18,14 @@ public class MPCChecker {
         "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage.meta",
         "Assets/Amazon.meta",
     };
+    private const string OLD_CONFIGS_PATH = "Assets/MadPixel/MAXHelper/Configs/MAXCustomSettings.asset";
+    private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
+
+    private const string APPMETRICA_FOLDER = "Assets/AppMetrica";
+    private const string EDM4U_FOLDER = "Assets/ExternalDependencyManager";
 
     static MPCChecker() {
+        CheckPackagesExistence();
         CheckObsoleteFiles();
 
 #if UNITY_ANDROID
@@ -63,7 +68,7 @@ public class MPCChecker {
         MPCTargetCheckerWindow.ShowWindow(target, (int)PlayerSettings.Android.targetSdkVersion);
 
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
-        PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)33;
+        PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
     }
 
 
@@ -123,11 +128,35 @@ public class MPCChecker {
             }
         }
 
+        CheckNewResourcesFile();
+
         MAXHelperDefineSymbols.DefineSymbols(false);
 
         if (changesMade) {
             AssetDatabase.Refresh();
             Debug.LogWarning("ATTENTION: Amazon removed from this project");
+        }
+    }
+
+    private static void CheckNewResourcesFile() {
+        var oldConfig = AssetDatabase.LoadAssetAtPath(OLD_CONFIGS_PATH, typeof(MAXCustomSettings));
+        if (oldConfig != null) {
+            var resObj = AssetDatabase.LoadAssetAtPath(NEW_CONFIGS_PATH, typeof(MAXCustomSettings));
+            if (resObj == null) {
+                Debug.Log("MAXCustomSettings file doesn't exist, creating a new one...");
+                ScriptableObject so = MAXCustomSettings.CreateInstance("MAXCustomSettings");
+                AssetDatabase.CreateAsset(so, NEW_CONFIGS_PATH);
+                resObj = so;
+            }
+
+            var newCustomSettings = (MAXCustomSettings)resObj;
+            newCustomSettings.Set((MAXCustomSettings)oldConfig);
+
+            FileUtil.DeleteFileOrDirectory(OLD_CONFIGS_PATH);
+            EditorUtility.SetDirty(newCustomSettings);
+            AssetDatabase.SaveAssets();
+
+            Debug.Log("MAXCustomSettings migrated");
         }
     }
 
@@ -138,4 +167,57 @@ public class MPCChecker {
                (location.EndsWith("/*") && Directory.Exists(Path.GetDirectoryName(location)));
     }
 
+    #region Appmetrica and EDM as packages
+    private static void CheckPackagesExistence() {
+        var packageInfo = UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages();
+        bool hasDuplicatedAppmetrica = false;
+        bool hasDuplicatedEDM = false;
+        int amount = 0;
+
+        foreach (var package in packageInfo) {
+            if (package.name.Equals("com.google.external-dependency-manager")) {
+                amount++;
+                if (CheckExistence(EDM4U_FOLDER)) {
+                    hasDuplicatedEDM = true;
+                }
+            }
+            else if (package.name.Equals("io.appmetrica.analytics")) {
+                amount++;
+                if (CheckExistence(APPMETRICA_FOLDER)) {
+                    hasDuplicatedAppmetrica = true;
+                }
+            }
+
+            if (amount >= 2) {
+                break;
+            }
+        }
+
+        if (hasDuplicatedAppmetrica || hasDuplicatedEDM) {
+            MPCDeleteFoldersWindow.ShowWindow(hasDuplicatedAppmetrica, hasDuplicatedEDM);
+        }
+    }
+
+    public static void DeleteOldPackages(bool a_deleteOldPackages) {
+        if (a_deleteOldPackages) {
+            if (CheckExistence(APPMETRICA_FOLDER)) {
+                FileUtil.DeleteFileOrDirectory(APPMETRICA_FOLDER); 
+                
+                string meta = APPMETRICA_FOLDER + ".meta";
+                if (CheckExistence(meta)) {
+                    FileUtil.DeleteFileOrDirectory(meta);
+                }
+            }
+
+            if (CheckExistence(EDM4U_FOLDER)) {
+                FileUtil.DeleteFileOrDirectory(EDM4U_FOLDER);
+
+                string meta = EDM4U_FOLDER + ".meta";
+                if (CheckExistence(meta)) {
+                    FileUtil.DeleteFileOrDirectory(meta);
+                }
+            }
+        }
+    } 
+    #endregion
 }

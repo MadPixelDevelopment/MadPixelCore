@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using Io.AppMetrica;
+using Io.AppMetrica.Profile;
 using MadPixel;
 using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.MiniJSON;
 
 namespace MadPixelAnalytics {
-    [RequireComponent(typeof(AppMetrica))]
     public class AppMetricaComp : MonoBehaviour {
         [SerializeField] private bool bSendAdRevenue = false;
         [SerializeField] private bool bSendLatencyEvents = false;
@@ -13,10 +15,32 @@ namespace MadPixelAnalytics {
 #if UNITY_EDITOR
         [SerializeField] private bool bLogEventsInEditor = true;
 #endif
-        IYandexAppMetrica _yandexMetrica;
+
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Activate() {
+            MAXCustomSettings MAXCustomSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            Debug.Log(MAXCustomSettings.appmetricaKey);
+
+            Io.AppMetrica.AppMetrica.Activate(new AppMetricaConfig(MAXCustomSettings.appmetricaKey) {
+                // copy settings from prefab
+                CrashReporting = true, // prefab field 'Exceptions Reporting'
+                SessionTimeout = 300, // prefab field 'Session Timeout Sec'
+                LocationTracking = false, // prefab field 'Location Tracking'
+                Logs = false, // prefab field 'Logs'
+                FirstActivationAsUpdate = !IsFirstLaunch(), // prefab field 'Handle First Activation As Update'
+                DataSendingEnabled = true, // prefab field 'Statistics Sending'
+            });
+        }
+
+        private static bool IsFirstLaunch() {
+            // Implement logic to detect whether the app is opening for the first time.
+            // For example, you can check for files (settings, databases, and so on),
+            // which the app creates on its first launch.
+            return true;
+        }
 
         public void Init() {
-            _yandexMetrica = AppMetrica.Instance;
             if (bSendAdRevenue) {
                 MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
                 MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
@@ -49,7 +73,7 @@ namespace MadPixelAnalytics {
                 {"waterfall_name", adInfo.WaterfallInfo.TestName},
                 {"ad_type", "banner"},
             });
-        } 
+        }
         #endregion
 
 
@@ -68,7 +92,7 @@ namespace MadPixelAnalytics {
                 {"waterfall_name", errorInfo.WaterfallInfo.TestName},
                 {"ad_type", "rewarded"},
             });
-        } 
+        }
         #endregion
 
 
@@ -87,7 +111,7 @@ namespace MadPixelAnalytics {
                 {"waterfall_name", errorInfo.WaterfallInfo.TestName},
                 {"ad_type", "interstitial"},
             });
-        } 
+        }
         #endregion
 
 
@@ -112,10 +136,8 @@ namespace MadPixelAnalytics {
 
         #region Ads Related
         public void OnAdRevenuePaidEvent(string a_adUnit, MaxSdk.AdInfo a_adInfo) {
-            if (_yandexMetrica != null && a_adInfo.Revenue > 0) {
-                YandexAppMetricaAdRevenue adRevenue = new YandexAppMetricaAdRevenue(a_adInfo.Revenue, "USD");
-                _yandexMetrica.ReportAdRevenue(adRevenue);
-            }
+            AdRevenue adRevenue = new AdRevenue(a_adInfo.Revenue, "USD");
+            Io.AppMetrica.AppMetrica.ReportAdRevenue(adRevenue);
         }
 
         public void VideoAdWatched(AdInfo AdInfo) {
@@ -170,14 +192,11 @@ namespace MadPixelAnalytics {
             SendCustomEvent("rate_us", eventAttributes);
         }
 
-        public void ABTestInitMetricaAttributes(string Value) {
-            YandexAppMetricaUserProfile profile = new YandexAppMetricaUserProfile();
-            List<YandexAppMetricaUserProfileUpdate> profileUpdates = new List<YandexAppMetricaUserProfileUpdate>();
+        public void ABTestInitMetricaAttributes(string value) {
+            UserProfile profile = new UserProfile().Apply(Attribute.CustomString("ab_test_group").WithValue(value));
 
-            profileUpdates.Add(new YandexAppMetricaStringAttribute("ab_test_group").WithValue(Value));
-
-            _yandexMetrica.ReportUserProfile(profile.ApplyFromArray(profileUpdates));
-            _yandexMetrica.SendEventsBuffer();
+            Io.AppMetrica.AppMetrica.ReportUserProfile(profile);
+            Io.AppMetrica.AppMetrica.SendEventsBuffer();
         }
 
 
@@ -194,22 +213,23 @@ namespace MadPixelAnalytics {
         }
 
         public void HandlePurchase(Product Product, string data, string signature) {
-            YandexAppMetricaRevenue Revenue = new YandexAppMetricaRevenue(
-                (decimal)Product.metadata.localizedPrice, Product.metadata.isoCurrencyCode);
+            Revenue Revenue = new Revenue(
+                (long)Product.metadata.localizedPrice, Product.metadata.isoCurrencyCode);
 
-            YandexAppMetricaReceipt Receipt = new YandexAppMetricaReceipt();
+            Revenue.Receipt Receipt = new Revenue.Receipt();
             Receipt.Signature = signature;
             Receipt.Data = data;
 
-            Revenue.Receipt = Receipt;
+            Revenue.ReceiptValue = Receipt;
             Revenue.Quantity = 1;
             Revenue.ProductID = Product.definition.storeSpecificId;
 
 #if UNITY_EDITOR
             return;
 #else
-            _yandexMetrica.ReportRevenue(Revenue);
+            AppMetrica.ReportRevenue(Revenue);
 #endif
+
         }
         #endregion
 
@@ -226,15 +246,13 @@ namespace MadPixelAnalytics {
 #if UNITY_EDITOR
             debugLog = bLogEventsInEditor;
 #else
-            if (_yandexMetrica != null) {
-                _yandexMetrica.ReportEvent(eventName, parameters);
-
-                if (bSendEventsBuffer) {
-                    _yandexMetrica.SendEventsBuffer();
-                }
-            }
-            else Debug.LogError("YandexMetrica instance is null");
+            AppMetrica.ReportEvent(eventName, parameters.toJson());
 #endif
+
+            if (bSendEventsBuffer) {
+                Io.AppMetrica.AppMetrica.SendEventsBuffer();
+            }
+
             if (debugLog) {
                 string eventParams = "";
                 foreach (string key in parameters.Keys) {
@@ -251,10 +269,11 @@ namespace MadPixelAnalytics {
             string adType = "interstitial";
             if (Info.AdType == AdsManager.EAdType.REWARDED) {
                 adType = "rewarded";
-            } else if (Info.AdType == AdsManager.EAdType.BANNER) {
+            }
+            else if (Info.AdType == AdsManager.EAdType.BANNER) {
                 adType = "banner";
             }
-            eventAttributes.Add("ad_type",  adType);
+            eventAttributes.Add("ad_type", adType);
             eventAttributes.Add("placement", Info.Placement);
             eventAttributes.Add("connection", Info.HasInternet ? 1 : 0);
             eventAttributes.Add("result", Info.Availability);

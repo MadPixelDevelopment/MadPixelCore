@@ -14,10 +14,6 @@ using System.Runtime.InteropServices;
 
 public abstract class MaxSdkBase
 {
-    // Shared Properties
-    protected static readonly MaxUserSegment SharedUserSegment = new MaxUserSegment();
-    protected static readonly MaxTargetingData SharedTargetingData = new MaxTargetingData();
-
     /// <summary>
     /// This enum represents the user's geography used to determine the type of consent flow shown to the user.
     /// </summary>
@@ -533,6 +529,11 @@ public abstract class MaxSdkBase
     }
 
     /// <summary>
+    /// Determines whether ad events raised by the AppLovin's Unity plugin should be invoked on the Unity main thread.
+    /// </summary>
+    public static bool? InvokeEventsOnUnityMainThread { get; set; }
+
+    /// <summary>
     /// The CMP service, which provides direct APIs for interfacing with the Google-certified CMP installed, if any.
     /// </summary>
     public static MaxCmpService CmpService
@@ -562,9 +563,6 @@ public abstract class MaxSdkBase
     {
         var metaData = new Dictionary<string, string>(2);
         metaData.Add("UnityVersion", Application.unityVersion);
-
-        var graphicsMemorySize = SystemInfo.graphicsMemorySize;
-        metaData.Add("GraphicsMemorySizeMegabytes", graphicsMemorySize.ToString());
 
         return Json.Serialize(metaData);
     }

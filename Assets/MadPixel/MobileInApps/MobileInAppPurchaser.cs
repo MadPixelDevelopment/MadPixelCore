@@ -438,7 +438,6 @@ namespace MadPixel.InApps {
                     OnPurchaseResult?.Invoke(Prod);
 
                     MadPixelAnalytics.AnalyticsManager.PaymentSucceed(Prod);
-                    MAXHelper.AdsManager.AddPurchaseKeyword();
                 }
             } else {
                 OnPurchaseResult?.Invoke(null);

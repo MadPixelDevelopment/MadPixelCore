@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8766461110375483087}
   - component: {fileID: 8766461110375483084}
-  - component: {fileID: 2717248814317852927}
   - component: {fileID: 7019281010441104460}
   - component: {fileID: 3194373316483798984}
   m_Layer: 0
@@ -27,12 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8766461110375483086}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8766461110375483084
 MonoBehaviour:
@@ -46,27 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc43b36505567840aedac74979b2df4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bInitOnAwake: 1
+  bUseAutoInit: 1
   bSubscribeOnStart: 1
---- !u!114 &2717248814317852927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8766461110375483086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc7b82b1248c84e468b83ba7fb3f14a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ApiKey: default_api_key
-  ExceptionsReporting: 1
-  SessionTimeoutSec: 300
-  LocationTracking: 1
-  Logs: 1
-  HandleFirstActivationAsUpdate: 0
-  StatisticsSending: 1
 --- !u!114 &7019281010441104460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,7 +60,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ffceae1c3dc36b4082e2d36754acdc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bSendAdRevenue: 0
+  bSendLatencyEvents: 0
   bLogEventsOnDevice: 0
+  bLogEventsInEditor: 1
 --- !u!114 &3194373316483798984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,3 +79,4 @@ MonoBehaviour:
   AppsFlyerDevKey: default_dev_key
   AppID_IOs: 123456789
   bIsDebug: 0
+  monetizaionPubKey: 

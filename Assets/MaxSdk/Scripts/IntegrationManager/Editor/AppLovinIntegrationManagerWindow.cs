@@ -18,15 +18,13 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 {
     public class AppLovinIntegrationManagerWindow : EditorWindow
     {
-        private const string keyNewLocalizationsMarked = "com.applovin.new_localizations_marked_v0"; // Update the key version each time new localizations are added.
-
         private const string windowTitle = "AppLovin Integration Manager";
 
         private const string appLovinSdkKeyLink = "https://dash.applovin.com/o/account#keys";
 
         private const string userTrackingUsageDescriptionDocsLink = "https://developer.apple.com/documentation/bundleresources/information_property_list/nsusertrackingusagedescription";
-        private const string documentationTermsAndPrivacyPolicyFlow = "https://dash.applovin.com/documentation/mediation/ios/getting-started/terms-and-privacy-policy-flow";
-        private const string documentationAdaptersLink = "https://dash.applovin.com/documentation/mediation/unity/mediation-adapters";
+        private const string documentationTermsAndPrivacyPolicyFlow = "https://developers.applovin.com/en/unity/overview/terms-and-privacy-policy-flow";
+        private const string documentationAdaptersLink = "https://developers.applovin.com/en/unity/preparing-mediated-networks";
         private const string documentationNote = "Please ensure that integration instructions (e.g. permissions, ATS settings, etc) specific to each network are implemented as well. Click the link below for more info:";
         private const string uninstallIconExportPath = "MaxSdk/Resources/Images/uninstall_icon.png";
         private const string alertIconExportPath = "MaxSdk/Resources/Images/alert_icon.png";
@@ -37,6 +35,15 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         private const string customGradleVersionTooltip = "To set the version to 6.9.3, set the field to: https://services.gradle.org/distributions/gradle-6.9.3-bin.zip";
         private const string customGradleToolsVersionTooltip = "To set the version to 4.2.0, set the field to: 4.2.0";
+
+        private const string keyShowMicroSdkPartners = "com.applovin.show_micro_sdk_partners";
+        private const string keyShowMediatedNetworks = "com.applovin.show_mediated_networks";
+        private const string keyShowSdkSettings = "com.applovin.show_sdk_settings";
+        private const string keyShowPrivacySettings = "com.applovin.show_privacy_settings";
+        private const string keyShowOtherSettings = "com.applovin.show_other_settings";
+
+        private const string expandButtonText = "+";
+        private const string collapseButtonText = "-";
 
         private readonly string[] termsFlowPlatforms = new string[3] {"Both", "Android", "iOS"};
         private readonly string[] debugUserGeographies = new string[2] {"Not Set", "GDPR"};
@@ -57,6 +64,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
         private static GUILayoutOption privacySettingFieldWidthOption = GUILayout.Width(400);
         private static readonly GUILayoutOption fieldWidth = GUILayout.Width(actionFieldWidth);
         private static readonly GUILayoutOption upgradeAllButtonFieldWidth = GUILayout.Width(upgradeAllButtonWidth);
+        private static readonly GUILayoutOption collapseButtonWidthOption = GUILayout.Width(20f);
 
         private static readonly Color darkModeTextColor = new Color(0.29f, 0.6f, 0.8f);
 
@@ -218,28 +226,27 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
                 if (pluginData != null && pluginData.PartnerMicroSdks != null)
                 {
-                    EditorGUILayout.LabelField("AppLovin Micro SDK Partners", titleLabelStyle);
-                    DrawPartnerMicroSdks();
+                    DrawCollapsableSection(keyShowMicroSdkPartners, "AppLovin Micro SDK Partners", DrawPartnerMicroSdks);
                 }
 
-                // Draw mediated networks
-                using (new EditorGUILayout.HorizontalScope(GUILayout.ExpandHeight(false)))
+                // Draw mediated networks);
+                EditorGUILayout.BeginHorizontal();
+                var showDetails = DrawExpandCollapseButton(keyShowMediatedNetworks);
+                EditorGUILayout.LabelField("Mediated Networks", titleLabelStyle);
+                GUILayout.FlexibleSpace();
+                DrawUpgradeAllButton();
+                EditorGUILayout.EndHorizontal();
+                if (showDetails)
                 {
-                    EditorGUILayout.LabelField("Mediated Networks", titleLabelStyle);
-                    DrawUpgradeAllButton();
+                    DrawMediatedNetworks();
                 }
-
-                DrawMediatedNetworks();
 
                 // Draw AppLovin Quality Service settings
-                EditorGUILayout.LabelField("SDK Settings", titleLabelStyle);
-                DrawQualityServiceSettings();
+                DrawCollapsableSection(keyShowSdkSettings, "SDK Settings", DrawQualityServiceSettings);
 
-                EditorGUILayout.LabelField("Privacy Settings", titleLabelStyle);
-                DrawPrivacySettings();
+                DrawCollapsableSection(keyShowPrivacySettings, "Privacy Settings", DrawPrivacySettings);
 
-                EditorGUILayout.LabelField("Other Settings", titleLabelStyle);
-                DrawOtherSettings();
+                DrawCollapsableSection(keyShowOtherSettings, "Other Settings", DrawOtherSettings);
 
                 // Draw Unity environment details
                 EditorGUILayout.LabelField("Unity Environment Details", titleLabelStyle);
@@ -899,7 +906,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 GUILayout.Space(5);
                 AppLovinSettings.Instance.AddApsSkAdNetworkIds = DrawOtherSettingsToggle(AppLovinSettings.Instance.AddApsSkAdNetworkIds, "  Add Amazon Publisher Services SKAdNetworkID's");
                 GUILayout.Space(5);
-                var autoUpdateEnabled = DrawOtherSettingsToggle(EditorPrefs.GetBool(AppLovinAutoUpdater.KeyAutoUpdateEnabled, true), "  Enable Auto Update");
+                var autoUpdateEnabled = DrawOtherSettingsToggle(EditorPrefs.GetBool(AppLovinAutoUpdater.KeyAutoUpdateEnabled, true), "  Enable Auto Update", "Checks for AppLovin MAX plugin updates and notifies you when an update is available.");
                 EditorPrefs.SetBool(AppLovinAutoUpdater.KeyAutoUpdateEnabled, autoUpdateEnabled);
                 GUILayout.Space(5);
                 var verboseLoggingEnabled = DrawOtherSettingsToggle(EditorPrefs.GetBool(MaxSdkLogger.KeyVerboseLoggingEnabled, false), "  Enable Verbose Logging");
@@ -914,12 +921,13 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             GUILayout.EndHorizontal();
         }
 
-        private bool DrawOtherSettingsToggle(bool value, string text)
+        private bool DrawOtherSettingsToggle(bool value, string text, string tooltip = "")
         {
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Space(4);
-                var toggleValue = GUILayout.Toggle(value, text);
+                var content = MaxSdkUtils.IsValidString(tooltip) ? new GUIContent(text, tooltip) : new GUIContent(text);
+                var toggleValue = GUILayout.Toggle(value, content);
                 GUILayout.Space(4);
 
                 return toggleValue;
@@ -957,6 +965,32 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             }
         }
 
+        private void DrawCollapsableSection(string keyShowDetails, string label, Action drawContent)
+        {
+            EditorGUILayout.BeginHorizontal();
+            var showDetails = DrawExpandCollapseButton(keyShowDetails);
+
+            EditorGUILayout.LabelField(label, titleLabelStyle);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+            if (showDetails)
+            {
+                drawContent();
+            }
+        }
+
+        private bool DrawExpandCollapseButton(string keyShowDetails)
+        {
+            var showDetails = EditorPrefs.GetBool(keyShowDetails, true);
+            var buttonText = showDetails ? collapseButtonText : expandButtonText;
+            if (GUILayout.Button(buttonText, collapseButtonWidthOption))
+            {
+                EditorPrefs.SetBool(keyShowDetails, !showDetails);
+            }
+
+            return showDetails;
+        }
+
         /// <summary>
         /// Calculates the fields width based on the width of the window.
         /// </summary>
@@ -970,7 +1004,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             var versionLabelWidth = Math.Max(versionFieldMinWidth, availableWidth * versionFieldWidthPercentage);
             versionWidthOption = GUILayout.Width(versionLabelWidth);
 
-            const int textFieldOtherUiElementsWidth = 45; // NOTE: Magic number alert. This is the sum of all the spacing the fields and other UI elements.
+            const int textFieldOtherUiElementsWidth = 55; // NOTE: Magic number alert. This is the sum of all the spacing the fields and other UI elements.
             var availableUserDescriptionTextFieldWidth = currentWidth - privacySettingLabelWidth - textFieldOtherUiElementsWidth;
             privacySettingFieldWidthOption = GUILayout.Width(availableUserDescriptionTextFieldWidth);
         }
