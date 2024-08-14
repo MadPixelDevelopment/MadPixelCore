@@ -1,4 +1,8 @@
-﻿# Version 130 - August 2, 2024
+﻿# Version 131 - August 14, 2024
+* Applovin updated
+* Old Terms panels removed
+
+# Version 130 - August 2, 2024
 * Applovin updated
 * AppsFlyer AdRevenue updated to 6.14.3
 * AppMetrica via package manager

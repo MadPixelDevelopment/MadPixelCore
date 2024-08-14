@@ -217,6 +217,9 @@ public class MPCChecker {
                     FileUtil.DeleteFileOrDirectory(meta);
                 }
             }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     } 
     #endregion

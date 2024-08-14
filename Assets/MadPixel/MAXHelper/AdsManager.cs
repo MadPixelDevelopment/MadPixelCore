@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 
 namespace MAXHelper {
     
-    [RequireComponent(typeof(TermsAndATT))]
     [RequireComponent(typeof(AppLovinComp))]
     public class AdsManager : MonoBehaviour {
         private const string version = "1.2.9";
@@ -25,7 +24,6 @@ namespace MAXHelper {
         private bool bHasInternet = true;
 
         private MAXCustomSettings madPixelSettings;
-        private TermsAndATT Terms;
         private AppLovinComp AppLovin;
         private AdInfo CurrentAdInfo;
         private float LastInterShown;
@@ -108,11 +106,7 @@ namespace MAXHelper {
         #region Init
 
         public void InitApplovin() {
-            if (!bUseTermsAndATT) {
-                InitApplovinInternal();
-            }else {
-                TermsAndATTRoutine();
-            }
+            InitApplovinInternal();
         }
         #endregion
 
@@ -456,12 +450,6 @@ namespace MAXHelper {
         #endregion
 
         #region Helpers
-        private void TermsAndATTRoutine() {
-            Terms = GetComponent<TermsAndATT>();
-            Terms.EventOnTermsAccepted += TermsOnEventOnTermsAccepted;
-            Terms.BeginPlay();
-        }
-        
         private void InitApplovinInternal() {
             LastInterShown = -CooldownBetweenInterstitials;
             
