@@ -1,4 +1,11 @@
-﻿# Version 131 - August 14, 2024
+﻿# Version 132 - September 25, 2024
+* Applovin updated to 13.0.0
+* Mediations updated
+* AppsFlyer updated to 6.15.2
+* AppMetrica updated to 6.3.0
+* External dependency manager updated to 1.2.183
+
+# Version 131 - August 14, 2024
 * Applovin updated
 * Old Terms panels removed
 

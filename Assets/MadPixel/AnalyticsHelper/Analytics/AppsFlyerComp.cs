@@ -23,7 +23,7 @@ namespace MadPixelAnalytics {
             AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, null, this);
 #else
             MAXCustomSettings customSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
-            if (customSettings == null || !string.IsNullOrEmpty(customSettings.appsFlyerID_ios)) {
+            if (customSettings != null && !string.IsNullOrEmpty(customSettings.appsFlyerID_ios)) {
                 AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, customSettings.appsFlyerID_ios, this);
             }
             else {

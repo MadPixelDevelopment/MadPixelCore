@@ -20,7 +20,6 @@ namespace MadPixelAnalytics {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Activate() {
             MAXCustomSettings MAXCustomSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
-            Debug.Log(MAXCustomSettings.appmetricaKey);
 
             Io.AppMetrica.AppMetrica.Activate(new AppMetricaConfig(MAXCustomSettings.appmetricaKey) {
                 // copy settings from prefab
