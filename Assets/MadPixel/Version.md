@@ -1,9 +1,10 @@
 ﻿# Version 132 - September 25, 2024
 * Applovin updated to 13.0.0
 * Mediations updated
-* AppsFlyer updated to 6.15.2
-* AppMetrica updated to 6.3.0
-* External dependency manager updated to 1.2.183
+* AppsFlyer updated to 6.15.2 (installed via UPM now)
+* AppsFlyer AdRevenue generic connector removed
+* AppMetrica updated to 6.3.0 (installed via UPM)
+* External dependency manager updated to 1.2.182 (installed via UPM)
 
 # Version 131 - August 14, 2024
 * Applovin updated

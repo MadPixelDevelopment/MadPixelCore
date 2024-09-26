@@ -324,9 +324,9 @@ namespace MAXHelper {
             }
             GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Ads Manager v." + AdsManager.Version, versionsLabelStyle, sdkKeyLabelFieldWidthOption);
-            GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal();
+            //EditorGUILayout.LabelField("Ads Manager v." + AdsManager.Version, versionsLabelStyle, sdkKeyLabelFieldWidthOption);
+            //GUILayout.EndHorizontal();
 
 
 

@@ -34,10 +34,6 @@ namespace MadPixelAnalytics {
 
             AppsFlyer.startSDK();
 
-            AppsFlyerAdRevenue.start();
-            AppsFlyerAdRevenue.setIsDebug(bIsDebug);
-            
-
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += SetAdRevenue;
             MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += SetAdRevenue;
             MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += SetAdRevenue;
@@ -145,14 +141,14 @@ namespace MadPixelAnalytics {
         #region AdRevenue
 
         public static void SetAdRevenue(string adUnit, MaxSdkBase.AdInfo adInfo) {
-            Dictionary<string, string> dic = new Dictionary<string, string>();
-            dic.Add("custom_AdUnitIdentifier", adInfo.AdUnitIdentifier);
+            Dictionary<string, string> additionalParams = new Dictionary<string, string>();
+            additionalParams.Add("custom_AdUnitIdentifier", adInfo.AdUnitIdentifier);
+            additionalParams.Add(AdRevenueScheme.AD_TYPE, adInfo.AdFormat);
 
-            AppsFlyerAdRevenue.logAdRevenue(adInfo.NetworkName,
-                AppsFlyerAdRevenueMediationNetworkType.AppsFlyerAdRevenueMediationNetworkTypeApplovinMax,
-                adInfo.Revenue,
-                "USD",
-                dic);
+            var logRevenue = new AFAdRevenueData(adInfo.NetworkName, MediationNetwork.ApplovinMax, "USD", adInfo.Revenue);
+            AppsFlyer.logAdRevenue(logRevenue, additionalParams);
+            
+            Debug.Log($"[Mad Pixel] AF log revenue: {adInfo.Revenue} {additionalParams}");
         }
         #endregion
 
