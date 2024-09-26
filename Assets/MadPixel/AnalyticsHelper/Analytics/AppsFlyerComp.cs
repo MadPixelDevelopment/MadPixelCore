@@ -147,8 +147,6 @@ namespace MadPixelAnalytics {
 
             var logRevenue = new AFAdRevenueData(adInfo.NetworkName, MediationNetwork.ApplovinMax, "USD", adInfo.Revenue);
             AppsFlyer.logAdRevenue(logRevenue, additionalParams);
-            
-            Debug.Log($"[Mad Pixel] AF log revenue: {adInfo.Revenue} {additionalParams}");
         }
         #endregion
 
