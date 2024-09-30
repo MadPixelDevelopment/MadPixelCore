@@ -69,16 +69,14 @@ public class MPCAllPostprocessor : AssetPostprocessor {
                     hasDuplicatedAppmetrica = true;
                 }
             }
-            else if (package.name.Equals("appsflyer-unity-plugin")) {
-                amount++;
-                if (CheckExistence(APPSFLYER_FOLDER)) {
-                    hasDuplicatedAppsFlyer = true;
-                }
-            }
 
-            if (amount >= 3) {
+            if (amount >= 2) {
                 break;
             }
+        }
+
+        if (CheckExistence(APPSFLYER_FOLDER)) {
+            hasDuplicatedAppsFlyer = true;
         }
 
         if (hasDuplicatedAppmetrica || hasDuplicatedEDM || hasDuplicatedAppsFlyer) {
@@ -143,7 +141,7 @@ public class MPCAllPostprocessor : AssetPostprocessor {
         MAXHelperDefineSymbols.DefineSymbols(false);
 
         if (changesMade) {
-            //AssetDatabase.Refresh();
+            AssetDatabase.Refresh();
             Debug.LogWarning("ATTENTION: Amazon removed from this project");
         }
     }
