@@ -72,15 +72,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         private static readonly XNamespace AndroidNamespace = "http://schemas.android.com/apk/res/android";
 
-        private static string PluginMediationDirectory
-        {
-            get
-            {
-                var pluginParentDir = AppLovinIntegrationManager.MediationSpecificPluginParentDirectory;
-                return Path.Combine(pluginParentDir, "MaxSdk/Mediation/");
-            }
-        }
-
         public void OnPostGenerateGradleAndroidProject(string path)
         {
 #if UNITY_2019_3_OR_NEWER
@@ -223,7 +214,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         private static void AddGoogleApplicationIdIfNeeded(XElement elementApplication, IEnumerable<XElement> metaDataElements)
         {
-            if (!AppLovinIntegrationManager.IsAdapterInstalled("Google") && !AppLovinIntegrationManager.IsAdapterInstalled("GoogleAdManager")) return;
+            if (!AppLovinPackageManager.IsAdapterInstalled("Google") && !AppLovinPackageManager.IsAdapterInstalled("GoogleAdManager")) return;
 
             var googleApplicationIdMetaData = GetMetaDataElement(metaDataElements, KeyMetaDataGoogleApplicationId);
             var appId = AppLovinSettings.Instance.AdMobAndroidAppId;
@@ -248,7 +239,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         private static void AddGoogleOptimizationFlagsIfNeeded(XElement elementApplication, IEnumerable<XElement> metaDataElements)
         {
-            if (!AppLovinIntegrationManager.IsAdapterInstalled("Google") && !AppLovinIntegrationManager.IsAdapterInstalled("GoogleAdManager")) return;
+            if (!AppLovinPackageManager.IsAdapterInstalled("Google") && !AppLovinPackageManager.IsAdapterInstalled("GoogleAdManager")) return;
 
             var googleOptimizeInitializationMetaData = GetMetaDataElement(metaDataElements, KeyMetaDataGoogleOptimizeInitialization);
             // If meta data doesn't exist, add it
@@ -267,7 +258,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
 
         private static void DisableAutoInitIfNeeded(XElement elementApplication, IEnumerable<XElement> metaDataElements)
         {
-            if (AppLovinIntegrationManager.IsAdapterInstalled("MobileFuse"))
+            if (AppLovinPackageManager.IsAdapterInstalled("MobileFuse"))
             {
                 var mobileFuseMetaData = GetMetaDataElement(metaDataElements, KeyMetaDataMobileFuseAutoInit);
                 // If MobileFuse meta data doesn't exist, add it
@@ -277,7 +268,7 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
                 }
             }
 
-            if (AppLovinIntegrationManager.IsAdapterInstalled("MyTarget"))
+            if (AppLovinPackageManager.IsAdapterInstalled("MyTarget"))
             {
                 var myTargetMetaData = GetMetaDataElement(metaDataElements, KeyMetaDataMyTargetAutoInit);
                 // If MyTarget meta data doesn't exist, add it
@@ -358,15 +349,8 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             appLovinSdkSettings[KeySdkKey] = AppLovinSettings.Instance.SdkKey;
             appLovinSdkSettings[KeyRenderOutsideSafeArea] = PlayerSettings.Android.renderOutsideSafeArea;
 
-            // Add the Consent/Terms flow settings if needed.
-            if (AppLovinInternalSettings.Instance.ConsentFlowEnabled)
-            {
-                EnableConsentFlowIfNeeded(rawResourceDirectory, appLovinSdkSettings);
-            }
-            else
-            {
-                EnableTermsFlowIfNeeded(rawResourceDirectory, appLovinSdkSettings);
-            }
+            // Add the Terms and Privacy Policy flow settings if needed.
+            EnableConsentFlowIfNeeded(rawResourceDirectory, appLovinSdkSettings);
 
             WriteAppLovinSettings(rawResourceDirectory, appLovinSdkSettings);
         }
@@ -407,41 +391,6 @@ namespace AppLovinMax.Scripts.IntegrationManager.Editor
             }
 
             applovinSdkSettings[KeyConsentFlowSettings] = consentFlowSettings;
-        }
-
-        private static void EnableTermsFlowIfNeeded(string rawResourceDirectory, Dictionary<string, object> applovinSdkSettings)
-        {
-            if (AppLovinInternalSettings.Instance.ConsentFlowEnabled) return;
-
-            // Check if terms flow is enabled for this format. No need to create the applovin_consent_flow_settings.json if consent flow is disabled.
-            var consentFlowEnabled = AppLovinSettings.Instance.ConsentFlowEnabled;
-            var consentFlowPlatform = AppLovinSettings.Instance.ConsentFlowPlatform;
-            if (!consentFlowEnabled || (consentFlowPlatform != Platform.All && consentFlowPlatform != Platform.Android))
-            {
-                RemoveAppLovinSettingsRawResourceFileIfNeeded(rawResourceDirectory);
-                return;
-            }
-
-            var privacyPolicyUrl = AppLovinSettings.Instance.ConsentFlowPrivacyPolicyUrl;
-            if (string.IsNullOrEmpty(privacyPolicyUrl))
-            {
-                AppLovinIntegrationManager.ShowBuildFailureDialog("You cannot use the AppLovin SDK's consent flow without defining a Privacy Policy URL in the AppLovin Integration Manager.");
-
-                // No need to update the applovin_consent_flow_settings.json here. Default consent flow state will be determined on the SDK side.
-                return;
-            }
-
-            var consentFlowSettings = new Dictionary<string, object>();
-            consentFlowSettings[KeyTermsFlowEnabled] = consentFlowEnabled;
-            consentFlowSettings[KeyTermsFlowPrivacyPolicy] = privacyPolicyUrl;
-
-            var termsOfServiceUrl = AppLovinSettings.Instance.ConsentFlowTermsOfServiceUrl;
-            if (MaxSdkUtils.IsValidString(termsOfServiceUrl))
-            {
-                consentFlowSettings[KeyTermsFlowTermsOfService] = termsOfServiceUrl;
-            }
-
-            applovinSdkSettings[KeyTermsFlowSettings] = consentFlowSettings;
         }
 
         private static void WriteAppLovinSettingsRawResourceFile(string applovinSdkSettingsJson, string rawResourceDirectory)
