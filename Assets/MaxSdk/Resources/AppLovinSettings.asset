@@ -15,7 +15,6 @@ MonoBehaviour:
   qualityServiceEnabled: 0
   sdkKey: 
   setAttributionReportEndpoint: 1
-  addApsSkAdNetworkIds: 0
   customGradleVersionUrl: 
   customGradleToolsVersion: 
   adMobAndroidAppId: 
