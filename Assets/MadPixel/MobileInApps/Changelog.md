@@ -1,4 +1,7 @@
-﻿# Version 1.0.5 - March 15, 2024
+﻿# Version 1.0.6 - February 06, 2025
+* HasReceipt method added
+
+# Version 1.0.5 - March 15, 2024
 * Added non-consumables list to Mobile InApps 
 
 # Version 1.0.4 - January 29, 2024

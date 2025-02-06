@@ -1,4 +1,9 @@
-﻿# Version 132 - September 25, 2024
+﻿# Version 133 - February 06, 2025
+* Applovin updated to 13.1.0
+* Mediations updated
+* HasReceipt method added
+
+# Version 132 - September 25, 2024
 * Applovin updated to 13.0.0
 * Mediations updated
 * AppsFlyer updated to 6.15.2 (installed via UPM now)

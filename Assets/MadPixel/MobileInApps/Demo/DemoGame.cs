@@ -38,5 +38,9 @@ namespace MadPixel.Examples {
             MobileInAppPurchaser.Instance.OnPurchaseResult += OnPurchaseResult;
             MobileInAppPurchaser.BuyProduct(AdsFreeProduct);
         }
+
+        public bool IsThisProductBought(string a_sku) {
+            return MobileInAppPurchaser.HasReceipt(a_sku);
+        }
     } 
 }

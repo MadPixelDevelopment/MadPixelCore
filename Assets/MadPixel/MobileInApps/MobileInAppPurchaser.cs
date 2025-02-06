@@ -11,7 +11,7 @@ namespace MadPixel.InApps {
     [RequireComponent(typeof(GamingServices))]
     public class MobileInAppPurchaser : MonoBehaviour, IDetailedStoreListener {
         #region Fields
-        public const string VERSION = "1.0.5";
+        public const string VERSION = "1.0.6";
 
         private IStoreController StoreController;
         private IExtensionProvider StoreExstensionProvider;
@@ -318,6 +318,23 @@ namespace MadPixel.InApps {
             //    Logger.Log(string.Format("[MobileInAppPurchaser] RestorePurchases FAIL. Not supported " + 
             //        "on this platform. Current = {0}", Application.platform));
             //}
+        }
+
+
+        /// <summary>
+        /// Call this method to check receipt on Non-consumable like adsfree
+        /// </summary>
+        public static bool HasReceipt(string a_sku) {
+            if (Exist) {
+                if (Instance.IsInitialized()) {
+                    Product p = Instance.GetProduct(a_sku);
+                    if (p != null) {
+                        return p.hasReceipt;
+                    }
+                }
+            }
+
+            return false;
         }
         #endregion
 
