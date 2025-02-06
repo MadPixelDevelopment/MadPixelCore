@@ -1,14 +1,25 @@
 <dependencies>
   <packages>
     <package>androidx.annotation:annotation:1.7.1</package>
+    <package>androidx.recyclerview:recyclerview:1.2.1</package>
     <package>com.android.installreferrer:installreferrer:2.1</package>
+    <package>com.android.support:customtabs:28.+</package>
+    <package>com.android.support:recyclerview-v7:28.+</package>
+    <package>com.applovin.mediation:bytedance-adapter:6.4.0.6.1</package>
     <package>com.applovin.mediation:facebook-adapter:[6.18.0.2]</package>
+    <package>com.applovin.mediation:fyber-adapter:8.3.5.1</package>
     <package>com.applovin.mediation:google-adapter:[23.6.0.3]</package>
+    <package>com.applovin.mediation:inmobi-adapter:10.8.0.1</package>
     <package>com.applovin.mediation:ironsource-adapter:8.6.1.0.0</package>
+    <package>com.applovin.mediation:mintegral-adapter:16.9.31.2</package>
+    <package>com.applovin.mediation:mytarget-adapter:5.27.1.1</package>
+    <package>com.applovin.mediation:smaato-adapter:22.7.2.0</package>
     <package>com.applovin.mediation:unityads-adapter:4.13.1.1</package>
+    <package>com.applovin.mediation:vungle-adapter:7.4.3.1</package>
     <package>com.applovin:applovin-sdk:13.1.0</package>
     <package>com.appsflyer:af-android-sdk:6.15.0</package>
     <package>com.appsflyer:unity-wrapper:6.15.2</package>
+    <package>com.squareup.picasso:picasso:2.71828</package>
     <package>io.appmetrica.analytics:analytics:7.2.0</package>
   </packages>
   <files />
