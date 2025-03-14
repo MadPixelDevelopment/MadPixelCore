@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using com.unity3d.mediation;
+using Unity.Services.LevelPlay;
 using MadPixelAnalytics;
 using MAXHelper;
 using UnityEngine;
@@ -138,18 +138,18 @@ namespace MadPixel {
         #endregion
 
         #region Rewarded callbacks
-        private void Rewarded_OnAdRewarded(LevelPlayAdInfo adInfo, LevelPlayReward a_reward) {
+        private void Rewarded_OnAdRewarded(LevelPlayAdInfo a_adInfo, LevelPlayReward a_reward) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got Rewarded_OnAdRewarded " + adInfo);
+                Debug.Log("[MadPixel] I got Rewarded_OnAdRewarded " + a_adInfo);
             }
 
             onFinishAdsEvent?.Invoke(true);
             //LoadRewarded();
         }
 
-        private void Rewarded_OnAdLoaded(LevelPlayAdInfo adInfo) {
+        private void Rewarded_OnAdLoaded(LevelPlayAdInfo a_adInfo) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got Rewarded_OnAdLoaded " + adInfo);
+                Debug.Log("[MadPixel] I got Rewarded_OnAdLoaded " + a_adInfo);
             }
 
             onAdLoadedEvent?.Invoke(EAdType.REWARDED);
@@ -165,7 +165,7 @@ namespace MadPixel {
 
         private void Rewarded_OnAdDisplayFailed(LevelPlayAdDisplayInfoError a_error) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got Rewarded_OnAdDisplayFailed " + a_error.DisplayLevelPlayAdInfo);
+                Debug.Log("[MadPixel] I got Rewarded_OnAdDisplayFailed " + a_error.LevelPlayError.ErrorMessage);
             }
             onErrorEvent?.Invoke(a_error, EAdType.REWARDED);
             onFinishAdsEvent?.Invoke(false);
@@ -173,18 +173,18 @@ namespace MadPixel {
             LoadRewarded();
         }
 
-        private void Rewarded_OnAdClosed(LevelPlayAdInfo adInfo) {
+        private void Rewarded_OnAdClosed(LevelPlayAdInfo a_adInfo) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got Rewarded_OnAdClosed " + adInfo);
+                Debug.Log("[MadPixel] I got Rewarded_OnAdClosed " + a_adInfo);
             }
             onFinishAdsEvent?.Invoke(false);
             LoadRewarded();
         }
 
-        private void Rewarded_OnAdDisplayed(LevelPlayAdInfo adInfo) {
-            Debug.Log(adInfo.Revenue);
+        private void Rewarded_OnAdDisplayed(LevelPlayAdInfo a_adInfo) {
+            Debug.Log(a_adInfo.Revenue);
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got Rewarded_OnAdDisplayed With AdInfo " + adInfo);
+                Debug.Log("[MadPixel] I got Rewarded_OnAdDisplayed With AdInfo " + a_adInfo);
             }
         }
         #endregion
@@ -197,22 +197,22 @@ namespace MadPixel {
 
             onAdLoadedEvent?.Invoke(EAdType.INTER);
         }
-        private void Interstitial_OnAdClosedEvent(LevelPlayAdInfo adInfo) {
+        private void Interstitial_OnAdClosedEvent(LevelPlayAdInfo a_adInfo) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got InterstitialOnAdClosedEvent " + adInfo);
+                Debug.Log("[MadPixel] I got InterstitialOnAdClosedEvent " + a_adInfo);
             }
 
             onInterDismissedEvent?.Invoke();
             LoadInter();
         }
 
-        private void Interstitial_OnAdDisplayed(LevelPlayAdInfo adInfo) {
+        private void Interstitial_OnAdDisplayed(LevelPlayAdInfo a_adInfo) {
             onInterDismissedEvent?.Invoke();
         }
 
-        private void Interstitial_OnAdLoadFailed(LevelPlayAdError LevelPlayAdError) {
+        private void Interstitial_OnAdLoadFailed(LevelPlayAdError a_error) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got InterstitialOnAdLoadFailed With Error " + LevelPlayAdError);
+                Debug.Log("[MadPixel] I got InterstitialOnAdLoadFailed With Error " + a_error);
             }
 
             Invoke(nameof(LoadInter), 5f);
@@ -240,24 +240,24 @@ namespace MadPixel {
             }
         }
 
-        void BannerOnAdLoadedEvent(LevelPlayAdInfo adInfo) {
+        void BannerOnAdLoadedEvent(LevelPlayAdInfo a_adInfo) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got BannerOnAdLoadedEvent With AdInfo " + adInfo);
+                Debug.Log("[MadPixel] I got BannerOnAdLoadedEvent With AdInfo " + a_adInfo);
             }
 
             m_isBannerLoadedOnce = true;
-            onBannerAdLoadedEvent?.Invoke(adInfo);
+            onBannerAdLoadedEvent?.Invoke(a_adInfo);
         }
 
-        private void BannerOnAdScreenPresentedEvent(LevelPlayAdInfo adInfo) {
+        private void BannerOnAdScreenPresentedEvent(LevelPlayAdInfo a_adInfo) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got BannerOnAdScreenPresentedEvent With AdInfo " + adInfo);
+                Debug.Log("[MadPixel] I got BannerOnAdScreenPresentedEvent With AdInfo " + a_adInfo);
             }
         }
 
-        private void BannerOnAdLoadFailedEvent(LevelPlayAdError adInfo) {
+        private void BannerOnAdLoadFailedEvent(LevelPlayAdError a_adInfo) {
             if (bIsDebug) {
-                Debug.Log("[MadPixel] I got BannerOnAdLoadFailedEvent With AdInfo " + adInfo);
+                Debug.Log("[MadPixel] I got BannerOnAdLoadFailedEvent With AdInfo " + a_adInfo);
             }
 
             if (!m_isBannerLoadedOnce) {
@@ -342,17 +342,20 @@ namespace MadPixel {
         }
 
         private void LoadBannerFirstTime() {
-            LevelPlayAdSize adSize = LevelPlayAdSize.CreateAdaptiveAdSize();
-            bool displayBannerOnLoad = PlayerPrefs.GetInt("displayBannerOnLoad", 1) == 1;
+            com.unity3d.mediation.LevelPlayAdSize adSize = com.unity3d.mediation.LevelPlayAdSize.CreateAdaptiveAdSize();
 
 #if UNITY_ANDROID
             bannerAd = new LevelPlayBannerAd(customSettings.BannerID, adSize,
-                customSettings.useTopBannerPosition ? LevelPlayBannerPosition.TopCenter : LevelPlayBannerPosition.BottomCenter,
-                null, displayBannerOnLoad, customSettings.useTopBannerPosition);
+                customSettings.useTopBannerPosition ?
+                    com.unity3d.mediation.LevelPlayBannerPosition.TopCenter :
+                    com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter,
+                null, true, customSettings.useTopBannerPosition);
 #else
             bannerAd = new LevelPlayBannerAd(customSettings.BannerID_IOS, adSize, 
-                customSettings.useTopBannerPosition ? LevelPlayBannerPosition.TopCenter : LevelPlayBannerPosition.BottomCenter,
-                null, displayBannerOnLoad, customSettings.useTopBannerPosition);
+                customSettings.useTopBannerPosition ? 
+                    com.unity3d.mediation.LevelPlayBannerPosition.TopCenter : 
+                    com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter,
+                null, true, customSettings.useTopBannerPosition);
 #endif
             bannerAd.OnAdLoaded += BannerOnAdLoadedEvent;
             bannerAd.OnAdLoadFailed += BannerOnAdLoadFailedEvent;
@@ -364,7 +367,7 @@ namespace MadPixel {
             if (bIsDebug) {
                 Debug.Log("[MadPixel] I got ImpressionDataReadyEvent allData: " + impressionData.allData);
             }
-        } 
+        }
         #endregion
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using com.unity3d.mediation;
+using Unity.Services.LevelPlay;
 using GoogleMobileAds.Ump.Api;
 using MadPixel;
 using UnityEngine;
@@ -176,7 +176,7 @@ namespace MAXHelper {
         }
 
 
-        private void LevelPlay_onBannerAdLoaded(LevelPlayAdInfo a_ironSourceAdInfo) {
+        private void LevelPlay_onBannerAdLoaded(LevelPlayAdInfo a_levelPlayAdInfo) {
             AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, bHasInternet); 
             OnAdAvailable?.Invoke(BannerInfo);
             if (bCanShowBanner) {
@@ -437,7 +437,7 @@ namespace MAXHelper {
             LPComp.onFinishAdsEvent += AppLovin_OnFinishAds;
             LPComp.onAdLoadedEvent += AppLovin_OnAdLoaded;
             LPComp.onInterDismissedEvent += AppLovin_OnInterDismissed;
-            LPComp.onErrorEvent += LevelPlay_OnError;
+            //LPComp.onErrorEvent += LevelPlay_OnError;
 
             LPComp.onBannerAdLoadedEvent += LevelPlay_onBannerAdLoaded;
 
