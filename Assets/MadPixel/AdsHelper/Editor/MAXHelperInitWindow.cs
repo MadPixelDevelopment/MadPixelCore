@@ -268,13 +268,11 @@ namespace MAXHelper {
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Ads Manager v." + AdsManager.Version, versionsLabelStyle, sdkKeyLabelFieldWidthOption);
+            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetVersion("Assets/MadPixel/Version_levelPlay.md"), versionsLabelStyle, adUnitToggleOption);
             GUILayout.EndHorizontal();
 
-
-
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("MPC v." + GetVersion(), versionsLabelStyle, sdkKeyLabelFieldWidthOption);
+            EditorGUILayout.LabelField("Forked from MPC v." + GetVersion(), versionsLabelStyle, adUnitTextWidthOption);
             GUILayout.EndHorizontal();
         }
 
@@ -306,8 +304,8 @@ namespace MAXHelper {
             }
         }
 
-        public static string GetVersion() {
-            var versionText = File.ReadAllText("Assets/MadPixel/Version.md");
+        public static string GetVersion(string a_path = "Assets/MadPixel/Version.md") {
+            var versionText = File.ReadAllText(a_path);
             if (string.IsNullOrEmpty(versionText)) {
                 return "--";
             }
