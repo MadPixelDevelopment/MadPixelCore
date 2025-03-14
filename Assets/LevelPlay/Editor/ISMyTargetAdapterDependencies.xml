@@ -1,0 +1,33 @@
+<dependencies>
+  <unityversion>4.1.28.0</unityversion>
+  <androidPackages>
+    <androidPackage spec="com.unity3d.ads-mediation:mytarget-adapter:4.1.20">
+    </androidPackage>
+  </androidPackages>
+  <androidPackages>
+    <androidPackage spec="com.my.target:mytarget-sdk:5.22.1">
+      <repositories>
+        <repository>https://maven.google.com/</repository>
+      </repositories>
+    </androidPackage>
+  </androidPackages>
+  <!-- 
+    added exoplayer dependency due to conflict with Applovin.
+    Applovin uses exoplayer 2.15.1 and android build is not able to resolve it by its own
+    so we have to force this dependency.
+    -->
+  <androidPackages>
+    <androidPackage spec="com.google.android.exoplayer:exoplayer:2.19.1">
+      <repositories>
+        <repository>https://maven.google.com/</repository>
+      </repositories>
+    </androidPackage>
+  </androidPackages>
+  <iosPods>
+    <iosPod name="IronSourceMyTargetAdapter" version="4.1.26.0">
+      <sources>
+        <source>https://github.com/CocoaPods/Specs</source>
+      </sources>
+    </iosPod>
+  </iosPods>
+</dependencies>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using com.unity3d.mediation;
 using Io.AppMetrica;
 using Io.AppMetrica.Profile;
 using MadPixel;
@@ -6,6 +7,7 @@ using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.MiniJSON;
+using static MAXHelper.AdsManager;
 
 namespace MadPixelAnalytics {
     public class AppMetricaComp : MonoBehaviour {
@@ -41,101 +43,26 @@ namespace MadPixelAnalytics {
 
         public void Init() {
             if (bSendAdRevenue) {
-                MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
+                IronSourceEvents.onImpressionDataReadyEvent += OnAdRevenuePaidEvent;
             }
 
             if (bSendLatencyEvents) {
-                MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += OnInterLoadedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadedEvent += OnRewardedLoadedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerLoadedEvent;
-
-                MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += OnInterLoadFailedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent += OnRewardedLoadFailedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerLoadFailedEvent;
+                Debug.Log("Sending Latency is deprecated");
             }
         }
-
-
-        #region Banner Load/Fail
-        private void OnBannerLoadFailedEvent(string adUnitID, MaxSdkBase.ErrorInfo errorInfo) {
-            SendCustomEvent("on_ad_load_fail", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(errorInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", errorInfo.WaterfallInfo.TestName},
-                {"ad_type", "banner"},
-            });
-        }
-        private void OnBannerLoadedEvent(string adUnitID, MaxSdkBase.AdInfo adInfo) {
-            SendCustomEvent("on_ad_loaded", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(adInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", adInfo.WaterfallInfo.TestName},
-                {"ad_type", "banner"},
-            });
-        }
-        #endregion
-
-
-
-        #region Rewarded Load/Fail
-        private void OnRewardedLoadedEvent(string adUnitID, MaxSdkBase.AdInfo adInfo) {
-            SendCustomEvent("on_ad_loaded", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(adInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", adInfo.WaterfallInfo.TestName},
-                {"ad_type", "rewarded"},
-            });
-        }
-        private void OnRewardedLoadFailedEvent(string adUnitID, MaxSdkBase.ErrorInfo errorInfo) {
-            SendCustomEvent("on_ad_load_fail", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(errorInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", errorInfo.WaterfallInfo.TestName},
-                {"ad_type", "rewarded"},
-            });
-        }
-        #endregion
-
-
-
-        #region Inter Load/Fail
-        private void OnInterLoadedEvent(string adUnitID, MaxSdkBase.AdInfo adInfo) {
-            SendCustomEvent("on_ad_loaded", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(adInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", adInfo.WaterfallInfo.TestName},
-                {"ad_type", "interstitial"},
-            });
-        }
-        private void OnInterLoadFailedEvent(string adUnitID, MaxSdkBase.ErrorInfo errorInfo) {
-            SendCustomEvent("on_ad_load_fail", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(errorInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", errorInfo.WaterfallInfo.TestName},
-                {"ad_type", "interstitial"},
-            });
-        }
-        #endregion
-
-
 
         private void OnDestroy() {
             if (bSendAdRevenue) {
-                MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent -= OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent -= OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent -= OnAdRevenuePaidEvent;
-            }
-            if (bSendLatencyEvents) {
-                MaxSdkCallbacks.Interstitial.OnAdLoadedEvent -= OnInterLoadedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadedEvent -= OnRewardedLoadedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadedEvent -= OnBannerLoadedEvent;
-
-                MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent -= OnInterLoadFailedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent -= OnRewardedLoadFailedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadFailedEvent -= OnBannerLoadFailedEvent;
+                IronSourceEvents.onImpressionDataReadyEvent -= OnAdRevenuePaidEvent;
             }
         }
 
 
         #region Ads Related
-        public void OnAdRevenuePaidEvent(string a_adUnit, MaxSdk.AdInfo a_adInfo) {
-            AdRevenue adRevenue = new AdRevenue(a_adInfo.Revenue, "USD");
+        public void OnAdRevenuePaidEvent(IronSourceImpressionData a_impressionData) {
+            if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
+
+            AdRevenue adRevenue = new AdRevenue(a_impressionData.revenue.Value, "USD");
             Io.AppMetrica.AppMetrica.ReportAdRevenue(adRevenue);
         }
 
@@ -152,35 +79,31 @@ namespace MadPixelAnalytics {
         }
 
 
-        public void VideoAdError(MaxSdkBase.AdInfo adInfo, MaxSdkBase.ErrorInfo EInfo, string placement) {
+        public void VideoAdError(LevelPlayAdDisplayInfoError a_error, EAdType AdType, string placement) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
 
             string NetworkName = "unknown";
-            if (adInfo != null && !string.IsNullOrEmpty(adInfo.NetworkName)) {
-                NetworkName = adInfo.NetworkName;
+            if (a_error != null && a_error.DisplayLevelPlayAdInfo != null && !string.IsNullOrEmpty(a_error.DisplayLevelPlayAdInfo.AdNetwork)) {
+                NetworkName = a_error.DisplayLevelPlayAdInfo.AdNetwork;
             }
 
-            string AdLoadFailureInfo = "NULL";
             string Message = "NULL";
             string Code = "NULL";
-            if (EInfo != null) {
-                if (!string.IsNullOrEmpty(EInfo.Message)) {
-                    Message = EInfo.Message;
+            if (a_error != null) {
+                Message = a_error.LevelPlayError.ErrorMessage;
+                if (string.IsNullOrEmpty(Message)) {
+                    Message = "NULL";
                 }
-                if (!string.IsNullOrEmpty(EInfo.AdLoadFailureInfo)) {
-                    AdLoadFailureInfo = EInfo.AdLoadFailureInfo;
-                }
-
-                Code = EInfo.Code.ToString();
+                Code = a_error.LevelPlayError.ErrorCode.ToString();
             }
 
             eventAttributes.Add("network", NetworkName);
             eventAttributes.Add("error_message", Message);
             eventAttributes.Add("error_code", Code);
-            eventAttributes.Add("ad_load_failure_info", AdLoadFailureInfo);
             eventAttributes.Add("placement", placement);
             SendCustomEvent("ad_display_error", eventAttributes);
         }
+
 
         #endregion
 

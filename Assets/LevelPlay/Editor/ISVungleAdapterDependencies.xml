@@ -1,0 +1,21 @@
+<dependencies>
+  <unityversion>4.3.52.0</unityversion>
+  <androidPackages>
+    <androidPackage spec="com.vungle:vungle-ads:7.4.3">
+      <repositories>
+        <repository>https://jitpack.io/</repository>
+      </repositories>
+    </androidPackage>
+  </androidPackages>
+  <androidPackages>
+    <androidPackage spec="com.unity3d.ads-mediation:vungle-adapter:4.3.29">
+    </androidPackage>
+  </androidPackages>
+  <iosPods>
+    <iosPod name="IronSourceVungleAdapter" version="4.3.42.0">
+      <sources>
+        <source>https://github.com/CocoaPods/Specs</source>
+      </sources>
+    </iosPod>
+  </iosPods>
+</dependencies>

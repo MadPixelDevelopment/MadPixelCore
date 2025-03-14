@@ -2,22 +2,27 @@ using AppsFlyerSDK;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Purchasing;
+using AppsFlyerConnector;
 using MadPixel;
 using MAXHelper;
 using System.Globalization;
 
 namespace MadPixelAnalytics {
     public class AppsFlyerComp : MonoBehaviour {
+        #region Field
         [SerializeField] private bool bIsDebug;
+        [SerializeField] private bool bUsePurchaseConnector;
         [SerializeField] private string monetizaionPubKey;
+
+        public bool UseInappConnector => bUsePurchaseConnector; 
+        #endregion
+
+
 
         #region Init
 
         public void Init() {
-            if (bIsDebug) {
-                AppsFlyer.setIsDebug(true);
-            }
+            AppsFlyer.setIsDebug(bIsDebug);
 
 #if UNITY_ANDROID
             AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, null, this);
@@ -32,19 +37,25 @@ namespace MadPixelAnalytics {
 #endif
             AppsFlyer.enableTCFDataCollection(true);
 
+            // Purchase connector implementation 
+            if (bUsePurchaseConnector) {
+                AppsFlyerPurchaseConnector.init(this, AppsFlyerConnector.Store.GOOGLE);
+                AppsFlyerPurchaseConnector.setIsSandbox(false);
+                AppsFlyerPurchaseConnector.setAutoLogPurchaseRevenue(
+                    AppsFlyerAutoLogPurchaseRevenueOptions.AppsFlyerAutoLogPurchaseRevenueOptionsAutoRenewableSubscriptions,
+                    AppsFlyerAutoLogPurchaseRevenueOptions.AppsFlyerAutoLogPurchaseRevenueOptionsInAppPurchases);
+                AppsFlyerPurchaseConnector.build();
+
+                AppsFlyerPurchaseConnector.startObservingTransactions();
+            }
+
             AppsFlyer.startSDK();
 
-            MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += SetAdRevenue;
-            MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += SetAdRevenue;
-            MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += SetAdRevenue;
-            MaxSdkCallbacks.MRec.OnAdRevenuePaidEvent += SetAdRevenue;
+            IronSourceEvents.onImpressionDataReadyEvent += LogAdPurchase;
         }
 
         private void OnDestroy() {
-            MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent -= SetAdRevenue;
-            MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent -= SetAdRevenue;
-            MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent -= SetAdRevenue;
-            MaxSdkCallbacks.MRec.OnAdRevenuePaidEvent -= SetAdRevenue;
+            IronSourceEvents.onImpressionDataReadyEvent -= LogAdPurchase;
         }
 
         #endregion
@@ -140,12 +151,15 @@ namespace MadPixelAnalytics {
 
         #region AdRevenue
 
-        public static void SetAdRevenue(string adUnit, MaxSdkBase.AdInfo adInfo) {
-            Dictionary<string, string> additionalParams = new Dictionary<string, string>();
-            additionalParams.Add("custom_AdUnitIdentifier", adInfo.AdUnitIdentifier);
-            additionalParams.Add(AdRevenueScheme.AD_TYPE, adInfo.AdFormat);
+        public static void LogAdPurchase(IronSourceImpressionData a_impressionData) {
+            if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
 
-            var logRevenue = new AFAdRevenueData(adInfo.NetworkName, MediationNetwork.ApplovinMax, "USD", adInfo.Revenue);
+            Dictionary<string, string> additionalParams = new Dictionary<string, string>();
+            additionalParams.Add("custom_AdUnitIdentifier", a_impressionData.mediationAdUnitId);
+            additionalParams.Add(AdRevenueScheme.AD_TYPE, a_impressionData.adFormat);
+
+            AFAdRevenueData logRevenue = new AFAdRevenueData(a_impressionData.adNetwork, MediationNetwork.IronSource, 
+                "USD", a_impressionData.revenue.Value);
             AppsFlyer.logAdRevenue(logRevenue, additionalParams);
         }
         #endregion

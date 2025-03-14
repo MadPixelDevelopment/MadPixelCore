@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "appsflyer-unity-plugin": "https://github.com/AppsFlyerSDK/appsflyer-unity-plugin.git#upm",
-    "com.google.external-dependency-manager": "1.2.183",
+    "com.google.external-dependency-manager": "1.2.185",
     "com.unity.ads.ios-support": "1.0.0",
     "com.unity.ai.navigation": "2.0.6",
     "com.unity.collab-proxy": "2.7.1",

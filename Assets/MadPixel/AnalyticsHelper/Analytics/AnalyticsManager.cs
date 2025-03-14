@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using com.unity3d.mediation;
 using MadPixel;
 using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using static MAXHelper.AdsManager;
 
 namespace MadPixelAnalytics {
 
@@ -92,7 +94,7 @@ namespace MadPixelAnalytics {
         #region Helpers
 
         public void SubscribeToAdsManager() {
-            AdsManager Ads = FindObjectOfType<AdsManager>();
+            AdsManager Ads = FindFirstObjectByType<AdsManager>();
             if (Ads != null) {
                 Ads.OnAdAvailable += OnAdAvailable;
                 Ads.OnAdShown += OnAdWatched;
@@ -151,11 +153,12 @@ namespace MadPixelAnalytics {
             }
         }
 
-        private static void OnAdError(MaxSdkBase.AdInfo MAXAdInfo, MaxSdkBase.ErrorInfo ErrorInfo, AdInfo AdInfo) {
+        private static void OnAdError(LevelPlayAdDisplayInfoError a_error, EAdType a_adType, string a_placement) {
             if (Exist) {
                 if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.VideoAdError(MAXAdInfo, ErrorInfo, AdInfo.Placement);
-                } else {
+                    Instance.AppMetricaComp.VideoAdError(a_error, a_adType, a_placement);
+                }
+                else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }
             }
@@ -217,7 +220,9 @@ namespace MadPixelAnalytics {
                             PlayerPrefs.SetInt("FirstPurchaseWas", 1);
                         }
 
-                        Instance.AppsFlyerComp.VerificateAndSendPurchase(Receipt);
+                        if (!Instance.AppsFlyerComp.UseInappConnector) {
+                            Instance.AppsFlyerComp.VerificateAndSendPurchase(Receipt);
+                        }
                     }
                     else {
                         Debug.LogError("[Mad Pixel] AppsFlyer was not initialized!");

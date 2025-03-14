@@ -1,0 +1,21 @@
+<dependencies>
+  <unityversion>4.3.54.0</unityversion>
+  <androidPackages>
+    <androidPackage spec="com.fyber:marketplace-sdk:8.3.5">
+      <repositories>
+        <repository>https://repo.maven.apache.org/maven2/</repository>
+      </repositories>
+    </androidPackage>
+  </androidPackages>
+  <androidPackages>
+    <androidPackage spec="com.unity3d.ads-mediation:fyber-adapter:4.3.36">
+    </androidPackage>
+  </androidPackages>
+  <iosPods>
+    <iosPod name="IronSourceFyberAdapter" version="4.3.41.0">
+      <sources>
+        <source>https://github.com/CocoaPods/Specs</source>
+      </sources>
+    </iosPod>
+  </iosPods>
+</dependencies>

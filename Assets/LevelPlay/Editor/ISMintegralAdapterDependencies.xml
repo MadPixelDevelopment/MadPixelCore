@@ -1,0 +1,28 @@
+<dependencies>
+  <unityversion>4.3.37.0</unityversion>
+  <androidPackages>
+    <androidPackage spec="com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.31">
+      <repositories>
+        <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea/</repository>
+      </repositories>
+    </androidPackage>
+  </androidPackages>
+  <androidPackages>
+    <androidPackage spec="androidx.recyclerview:recyclerview:1.2.1">
+      <repositories>
+        <repository>https://maven.google.com/</repository>
+      </repositories>
+    </androidPackage>
+  </androidPackages>
+  <androidPackages>
+    <androidPackage spec="com.unity3d.ads-mediation:mintegral-adapter:4.3.35">
+    </androidPackage>
+  </androidPackages>
+  <iosPods>
+    <iosPod name="IronSourceMintegralAdapter" version="4.3.31.0">
+      <sources>
+        <source>https://github.com/CocoaPods/Specs</source>
+      </sources>
+    </iosPod>
+  </iosPods>
+</dependencies>
