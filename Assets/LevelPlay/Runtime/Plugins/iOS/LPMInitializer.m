@@ -13,7 +13,7 @@ extern "C" {
 #endif
     static bool isUnityPauseGame = false;
     void UnitySendMessage(const char* obj, const char* method, const char* msg);
-    
+
     void LPMInitialize(const char *appKey, const char *userId, const char **adFormats) {
         NSMutableArray *formatsArray = [NSMutableArray array];
         const char **current = adFormats;
@@ -30,20 +30,20 @@ extern "C" {
                                                 userId:[LPMUtilities getStringFromCString:userId]
                                              adFormats:formatsArray];
     }
-    
+
     void setPluginData(const char *pluginType, const char *pluginVersion, const char *pluginFrameworkVersion) {
         NSString *type = [LPMUtilities getStringFromCString:pluginType];
         NSString *version = [LPMUtilities getStringFromCString:pluginVersion];
         NSString *frameworkVersion = [LPMUtilities getStringFromCString:pluginFrameworkVersion];
-        
+
         // Use the sharedInstance to set plugin data
         [[LPMInitializer sharedInstance] setPluginData:type pluginVersion:version pluginFrameworkVersion:frameworkVersion];
     }
-    
+
     void LPMSetPauseGame(BOOL pause) {
         isUnityPauseGame = pause;
     }
-    
+
 #ifdef __cplusplus
 }
 #endif
@@ -60,12 +60,12 @@ extern "C" {
 }
 
 - (void)LPMInitialize:(NSString *)appKey userId:(NSString *)userId adFormats:(NSArray *)adFormats {
-    
+
     LPMInitRequestBuilder *requestBuilder = [[LPMInitRequestBuilder alloc] initWithAppKey:appKey];
     [requestBuilder withUserId:userId];
     [requestBuilder withLegacyAdFormats:adFormats];
     LPMInitRequest *request = [requestBuilder build];
-    
+
     [LevelPlay initWithRequest:request completion:^(LPMConfiguration * _Nullable config, NSError * _Nullable error) {
         if (error) {
             [self initializationDidFailWithError:error];
@@ -79,11 +79,11 @@ extern "C" {
     if (pluginType) {
         [ISConfigurations getConfigurations].plugin = pluginType;
     }
-    
+
     if (pluginVersion) {
         [ISConfigurations getConfigurations].pluginVersion = pluginVersion;
     }
-    
+
     if (pluginFrameworkVersion) {
         [ISConfigurations getConfigurations].pluginFrameworkVersion = pluginFrameworkVersion;
     }

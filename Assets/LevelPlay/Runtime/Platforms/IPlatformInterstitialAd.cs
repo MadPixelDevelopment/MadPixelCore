@@ -4,19 +4,21 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Unity.Services.LevelPlay.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
-
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     internal interface IPlatformInterstitialAd : IDisposable
     {
-        event Action<LevelPlayAdInfo> OnAdLoaded;
-        event Action<LevelPlayAdError> OnAdLoadFailed;
-        event Action<LevelPlayAdInfo> OnAdDisplayed;
-        event Action<LevelPlayAdInfo> OnAdClosed;
-        event Action<LevelPlayAdInfo> OnAdClicked;
-        event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        event Action<LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning disable 0618
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning restore 0618
 
+        string AdId { get; }
         string AdUnitId { get; }
 
         void LoadAd();

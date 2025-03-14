@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using Unity.Services.LevelPlay;
 using UnityEditor;
 
 namespace Unity.Services.LevelPlay.Editor

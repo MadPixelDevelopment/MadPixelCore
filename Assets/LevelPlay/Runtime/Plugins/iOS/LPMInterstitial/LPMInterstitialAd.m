@@ -12,25 +12,25 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
     void *LPMInterstitialAdCreate(const char *adUnitId) {
-        
+
         LPMInterstitialAd *interstitialAd = [[LPMInterstitialAd alloc] initWithAdUnitId:[LPMUtilities getStringFromCString:adUnitId]];
-        
+
         return (__bridge_retained void *)interstitialAd;
     }
-    
+
     void LPMInterstitialAdSetDelegate(void *interstitialAdRef, void *delegateRef) {
         LPMInterstitialAd *interstitialAd = (__bridge LPMInterstitialAd *)interstitialAdRef;
         LPMInterstitialAdCallbacksWrapper *delegate = (__bridge LPMInterstitialAdCallbacksWrapper *)delegateRef;
         [interstitialAd setDelegate:delegate];
     }
-    
+
     void LPMInterstitialAdLoadAd(void *interstitialAdRef) {
         LPMInterstitialAd *interstitialAd = (__bridge LPMInterstitialAd *)interstitialAdRef;
         [interstitialAd loadAd];
     }
-    
+
     void LPMInterstitialAdShowAd(void *interstitialAdRef, const char *placementName) {
         LPMInterstitialAd *interstitialAd = (__bridge LPMInterstitialAd *)interstitialAdRef;
         NSString *placementNameString = placementName ? [LPMUtilities getStringFromCString:placementName] : nil;
@@ -41,10 +41,16 @@ extern "C" {
         LPMInterstitialAd *interstitialAd = (__bridge LPMInterstitialAd *)interstitialAdRef;
         return [interstitialAd isAdReady];
     }
-    
+
     bool LPMInterstitialAdIsPlacementCapped(const char *placementName) {
         return [LPMInterstitialAd isPlacementCapped:[LPMUtilities getStringFromCString:placementName]];
     }
+  
+    const char *LPMInterstitialAdAdId(void *interstitialAdRef) {
+        LPMInterstitialAd *interstitialAd = (__bridge LPMInterstitialAd *)interstitialAdRef;
+        return strdup([[interstitialAd adId] UTF8String]);
+    }
+  
 #ifdef __cplusplus
 }
 #endif

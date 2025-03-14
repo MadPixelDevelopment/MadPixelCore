@@ -1,8 +1,7 @@
 using System;
-using Unity.Services.LevelPlay;
 using UnityEngine;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class AndroidRewardedAd : IPlatformRewardedAd, IUnityRewardedAdListener
     {
@@ -11,18 +10,20 @@ namespace com.unity3d.mediation
         const string k_AndroidShowAdFunction = "showAd";
         const string k_IsAdReadyFunction = "isAdReady";
         const string k_IsPlacementCappedStaticFunction = "isPlacementCapped";
+        const string k_FuncGetAdId       = "getAdId";
 
         const string k_ErrorDisposed = "Instance is disposed. Please create a new instance in order to call any method.";
 
-
-        public event Action<LevelPlayAdInfo> OnAdLoaded;
-        public event Action<LevelPlayAdError> OnAdLoadFailed;
-        public event Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event Action<LevelPlayAdInfo, LevelPlayReward> OnAdRewarded;
-        public event Action<LevelPlayAdInfo> OnAdClicked;
-        public event Action<LevelPlayAdInfo> OnAdClosed;
-        public event Action<LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning disable 0618
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo, com.unity3d.mediation.LevelPlayReward> OnAdRewarded;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning restore 0618
 
         AndroidJavaObject m_RewardedAdJavaObject;
         IUnityRewardedAdListener m_RewardedAdListener;
@@ -31,6 +32,8 @@ namespace com.unity3d.mediation
         volatile bool m_IsReady;
 
         public string AdUnitId { get; }
+
+        public string AdId { get {return m_RewardedAdJavaObject.Call<string>(k_FuncGetAdId);} }
 
         internal AndroidRewardedAd(string adUnitId)
         {
@@ -126,45 +129,48 @@ namespace com.unity3d.mediation
             return isPlacementCapped;
         }
 
+#pragma warning disable 0618
         public void onAdLoaded(string adInfo)
         {
-            OnAdLoaded?.Invoke(new LevelPlayAdInfo(adInfo));
+            OnAdLoaded?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdLoadFailed(string error)
         {
-            OnAdLoadFailed?.Invoke(new LevelPlayAdError(error));
+            OnAdLoadFailed?.Invoke(new com.unity3d.mediation.LevelPlayAdError(error));
         }
 
         public void onAdDisplayed(string adInfo)
         {
-            OnAdDisplayed?.Invoke(new LevelPlayAdInfo(adInfo));
+            OnAdDisplayed?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdDisplayFailed(string error, string adInfo)
         {
-            OnAdDisplayFailed?.Invoke(new LevelPlayAdDisplayInfoError(new LevelPlayAdInfo(adInfo), new LevelPlayAdError(error)));
+            OnAdDisplayFailed?.Invoke(new com.unity3d.mediation.LevelPlayAdDisplayInfoError(new LevelPlayAdInfo(adInfo), new LevelPlayAdError(error)));
         }
 
         public void onAdRewarded(string adInfo, string rewardName, int rewardAmount)
         {
-            OnAdRewarded?.Invoke(new LevelPlayAdInfo(adInfo), new LevelPlayReward(rewardName, rewardAmount));
+            OnAdRewarded?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo), new com.unity3d.mediation.LevelPlayReward(rewardName, rewardAmount));
         }
 
         public void onAdClicked(string adInfo)
         {
-            OnAdClicked?.Invoke(new LevelPlayAdInfo(adInfo));
+            OnAdClicked?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdClosed(string adInfo)
         {
-            OnAdClosed?.Invoke(new LevelPlayAdInfo(adInfo));
+            OnAdClosed?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdInfoChanged(string adInfo)
         {
-            OnAdInfoChanged?.Invoke(new LevelPlayAdInfo(adInfo));
+            OnAdInfoChanged?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
+
+#pragma warning restore 0618
 
         void Dispose(bool disposing)
         {

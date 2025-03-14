@@ -1,19 +1,19 @@
 #if UNITY_ANDROID
 using System;
-using System.Collections.Generic;
+using Unity.Services.LevelPlay;
 using UnityEngine;
 
 namespace com.unity3d.mediation
 {
     [Obsolete("This class will be deprecated in version 9.0.0. Please use LevelPlaySdk instead.")]
-    public class AndroidLevelPlaySdk : IUnityLevelPlayInitListener
+    public class AndroidLevelPlaySdk : Unity.Services.LevelPlay.IUnityLevelPlayInitListener
     {
         private static AndroidJavaObject _levelPlayBridge;
         static readonly string LevelPlayBridge = "com.ironsource.unity.androidbridge.LevelPlayBridge";
 
         public static event Action<LevelPlayConfiguration> OnInitSuccess;
         public static event Action<LevelPlayInitError> OnInitFailed;
-        private static IUnityLevelPlayInitListener _listener;
+        private static Unity.Services.LevelPlay.IUnityLevelPlayInitListener _listener;
 
 
         public void onInitSuccess(string configuration)

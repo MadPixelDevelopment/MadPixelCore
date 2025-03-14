@@ -19,6 +19,8 @@ void LPMBannerAdViewHide(void *bannerAdViewRef);
 void LPMBannerAdViewPauseAutoRefresh(void *bannerAdViewRef);
 void LPMBannerAdViewResumeAutoRefresh(void *bannerAdViewRef);
 
+const char *LPMBannerAdViewAdId(void *bannerAdViewRef);
+
 #ifdef __cplusplus
 }
 #endif

@@ -29,7 +29,6 @@ namespace MAXHelper {
         public bool useBanner = true;
         public bool useTopBannerPosition = false;
 
-        public const string APPLOVIN_SDK_KEY = "R5ZeDg0t8rV5BQ4h_72SUwzDKUOipd1Ju_H3yph9eKZV6NZBDqI_rLKZmyFWiyFWdOn4ITSHwMdob2TtWHuzio";
         public const string APPSFLYER_SDK_KEY = "bAfXoQibEMwiDKEGT6UHTG";
 
 

@@ -130,6 +130,7 @@ public class IronSourceImpressionData
 
     public override string ToString()
     {
+#pragma warning disable 0618
         return "IronSourceImpressionData{" +
             "auctionId='" + auctionId + '\'' +
             ", creativeId='" + CreativeId + '\'' +
@@ -150,5 +151,6 @@ public class IronSourceImpressionData
             ", encryptedCPM='" + encryptedCPM + '\'' +
             ", conversionValue=" + conversionValue +
             '}';
+#pragma warning restore 0618
     }
 }

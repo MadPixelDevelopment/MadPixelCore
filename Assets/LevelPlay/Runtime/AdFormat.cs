@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 /// <summary>
 /// Represents the available formats for displaying advertisements.

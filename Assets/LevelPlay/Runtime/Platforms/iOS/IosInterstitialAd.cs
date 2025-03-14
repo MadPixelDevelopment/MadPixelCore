@@ -1,19 +1,23 @@
 #if UNITY_IOS && !UNITY_EDITOR
 using System;
 using System.Runtime.InteropServices;
+using com.unity3d.mediation;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class IosInterstitialAd : IosNativeObject, IPlatformInterstitialAd
     {
-        public event Action<LevelPlayAdInfo> OnAdLoaded;
-        public event Action<LevelPlayAdError> OnAdLoadFailed;
-        public event Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event Action<LevelPlayAdInfo> OnAdClicked;
-        public event Action<LevelPlayAdInfo> OnAdClosed;
-        public event Action<LevelPlayAdInfo> OnAdInfoChanged;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+
         public string AdUnitId { get; }
+
+        public string AdId { get {return GetAdId();} }
 
         IosInterstitialAdListener m_InterstitialListener;
 
@@ -57,38 +61,44 @@ namespace com.unity3d.mediation
 
         internal void InvokeLoadedEvent(string adInfo)
         {
-            ThreadUtil.Post(state => OnAdLoaded?.Invoke(new LevelPlayAdInfo(adInfo)));
+            ThreadUtil.Post(state => OnAdLoaded?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo)));
         }
 
         internal void InvokeFailedLoadEvent(string error)
         {
-            ThreadUtil.Post(state => OnAdLoadFailed?.Invoke(new LevelPlayAdError(error)));
+            ThreadUtil.Post(state => OnAdLoadFailed?.Invoke(new com.unity3d.mediation.LevelPlayAdError(error)));
         }
 
         internal void InvokeClickedEvent(string adInfo)
         {
-            ThreadUtil.Post(state => OnAdClicked?.Invoke(new LevelPlayAdInfo(adInfo)));
+            ThreadUtil.Post(state => OnAdClicked?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo)));
         }
 
         internal void InvokeDisplayedEvent(string adInfo)
         {
-            ThreadUtil.Post(state => OnAdDisplayed?.Invoke(new LevelPlayAdInfo(adInfo)));
+            ThreadUtil.Post(state => OnAdDisplayed?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo)));
         }
 
         internal void InvokeFailedDisplayEvent(string adInfo, string error)
         {
-            var errorInfo = new LevelPlayAdDisplayInfoError(new LevelPlayAdInfo(adInfo), new LevelPlayAdError(error));
+            var errorInfo = new com.unity3d.mediation.LevelPlayAdDisplayInfoError(new LevelPlayAdInfo(adInfo), new LevelPlayAdError(error));
             ThreadUtil.Post(state => OnAdDisplayFailed?.Invoke(errorInfo));
         }
 
         internal void InvokeClosedEvent(string adInfo)
         {
-            ThreadUtil.Post(state => OnAdClosed?.Invoke(new LevelPlayAdInfo(adInfo)));
+            ThreadUtil.Post(state => OnAdClosed?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo)));
         }
 
         internal void InvokeOnAdInfoChangedEvent(string adInfo)
         {
-            ThreadUtil.Post(state => OnAdInfoChanged?.Invoke(new LevelPlayAdInfo(adInfo)));
+            ThreadUtil.Post(state => OnAdInfoChanged?.Invoke(new com.unity3d.mediation.LevelPlayAdInfo(adInfo)));
+        }
+
+        private string GetAdId()
+        {
+            if (CheckDisposedAndLogError("Cannot get Interstitial ad Id")) return "";
+            return InterstitialAdId(NativePtr);
         }
 
         ~IosInterstitialAd()
@@ -113,6 +123,9 @@ namespace com.unity3d.mediation
 
         [DllImport("__Internal", EntryPoint = "LPMInterstitialAdIsPlacementCapped")]
         static extern bool InterstitialAdIsPlacementCapped(string placementName);
+
+        [DllImport("__Internal", EntryPoint = "LPMInterstitialAdAdId")]
+        static extern string InterstitialAdId(IntPtr interstitialAd);
     }
 }
 #endif

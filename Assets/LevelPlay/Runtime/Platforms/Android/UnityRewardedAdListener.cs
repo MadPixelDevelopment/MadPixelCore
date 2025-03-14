@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class UnityRewardedAdListener : AndroidJavaProxy, IUnityRewardedAdListener
     {

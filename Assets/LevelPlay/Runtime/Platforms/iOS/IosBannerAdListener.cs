@@ -2,9 +2,9 @@
 using System;
 using System.Runtime.InteropServices;
 using AOT;
-using UnityEngine;
+using com.unity3d.mediation;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class IosBannerAdListener : IosNativeObject
     {
@@ -64,7 +64,7 @@ namespace com.unity3d.mediation
         static void LoadSuccess(IntPtr ptr , string adInfoJson)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            var adInfo = new LevelPlayAdInfo(adInfoJson);
+            var adInfo = new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson);
             bannerAd?.InvokeLoadedEvent(adInfo); //iOSBanner.cs
         }
 
@@ -72,49 +72,49 @@ namespace com.unity3d.mediation
         static void LoadFailed(IntPtr ptr, string errorPtr)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeFailedLoadEvent(new LevelPlayAdError(errorPtr));
+            bannerAd?.InvokeFailedLoadEvent(new com.unity3d.mediation.LevelPlayAdError(errorPtr));
         }
 
         [MonoPInvokeCallback(typeof(DidClickWithAdInfo))]
         static void Clicked(IntPtr ptr, string adInfoJson)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeClickedEvent(new LevelPlayAdInfo(adInfoJson));
+            bannerAd?.InvokeClickedEvent(new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson));
         }
 
         [MonoPInvokeCallback(typeof(DidDisplayWithAdInfo))]
         static void Displayed(IntPtr ptr, string adInfoJson)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeDisplayedEvent(new LevelPlayAdInfo(adInfoJson));
+            bannerAd?.InvokeDisplayedEvent(new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson));
         }
 
         [MonoPInvokeCallback(typeof(DidFailToDisplayWithAdInfo))]
         static void DisplayFailed(IntPtr ptr, string adInfoJson, string errorPtr)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeFailedDisplayEvent(new LevelPlayAdInfo(adInfoJson), new LevelPlayAdError(errorPtr));
+            bannerAd?.InvokeFailedDisplayEvent(new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson), new LevelPlayAdError(errorPtr));
         }
 
         [MonoPInvokeCallback(typeof(DidExpandAdWithAdInfo))]
         static void Expanded(IntPtr ptr, string adInfoJson)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeExpandedEvent(new LevelPlayAdInfo(adInfoJson));
+            bannerAd?.InvokeExpandedEvent(new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson));
         }
 
         [MonoPInvokeCallback(typeof(DidCollapseAdWithAdInfo))]
         static void Collapsed(IntPtr ptr, string adInfoJson)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeCollapsedEvent(new LevelPlayAdInfo(adInfoJson));
+            bannerAd?.InvokeCollapsedEvent(new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson));
         }
 
         [MonoPInvokeCallback(typeof(DidLeaveAppWithAdInfo))]
         static void LeftApplication(IntPtr ptr, string adInfoJson)
         {
             var bannerAd = Get<iOSBannerAd>(ptr);
-            bannerAd?.InvokeLeftApplicationEvent(new LevelPlayAdInfo(adInfoJson));
+            bannerAd?.InvokeLeftApplicationEvent(new com.unity3d.mediation.LevelPlayAdInfo(adInfoJson));
         }
     }
 }

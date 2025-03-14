@@ -5,7 +5,17 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Defines the interface for banner ads in the LevelPlay mediation system.
     /// </summary>
-    public interface ILevelPlayBannerAd: IDisposable
+    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use ILevelPlayBannerAd under the new namespace Unity.Services.LevelPlay.")]
+    public interface ILevelPlayBannerAd : Unity.Services.LevelPlay.ILevelPlayBannerAd {}
+}
+
+namespace Unity.Services.LevelPlay
+{
+#pragma warning disable 0618
+    /// <summary>
+    /// Defines the interface for banner ads in the LevelPlay mediation system.
+    /// </summary>
+    public interface ILevelPlayBannerAd : IDisposable
     {
         /// <summary>
         /// Loads the banner ad.
@@ -28,23 +38,33 @@ namespace com.unity3d.mediation
         void HideAd();
 
         /// <summary>
+        /// Gets the ad ID associated with this ad.
+        /// </summary>
+        /// <returns>The ID of the ad.</returns>
+        public string GetAdId();
+
+        /// <summary>
         /// Gets the ad unit ID associated with this ad.
         /// </summary>
+        /// <returns>The ID of the ad unit.</returns>
         string GetAdUnitId();
 
         /// <summary>
         /// Retrieves the size of the ad.
         /// </summary>
-        LevelPlayAdSize GetAdSize();
+        /// <returns>The size of the ad.</returns>
+        com.unity3d.mediation.LevelPlayAdSize GetAdSize();
 
         /// <summary>
         /// Retrieves the position of the banner ad.
         /// </summary>
-        LevelPlayBannerPosition GetPosition();
+        /// <returns>The position of the ad.</returns>
+        com.unity3d.mediation.LevelPlayBannerPosition GetPosition();
 
         /// <summary>
         /// Retrieves the placement name associated with this ad.
         /// </summary>
+        /// <returns>The placement name of the ad.</returns>
         string GetPlacementName();
 
         /// <summary>
@@ -57,13 +77,14 @@ namespace com.unity3d.mediation
         /// </summary>
         void ResumeAutoRefresh();
 
-        event Action<LevelPlayAdInfo> OnAdLoaded;
-        event Action<LevelPlayAdError> OnAdLoadFailed;
-        event Action<LevelPlayAdInfo> OnAdClicked;
-        event Action<LevelPlayAdInfo> OnAdDisplayed;
-        event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        event Action<LevelPlayAdInfo> OnAdExpanded;
-        event Action<LevelPlayAdInfo> OnAdCollapsed;
-        event Action<LevelPlayAdInfo> OnAdLeftApplication;
+
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
     }
 }

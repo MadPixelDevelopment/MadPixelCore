@@ -21,16 +21,16 @@ extern "C" {
 #endif
     void UnityPause(int pause);
     extern void UnitySendMessage( const char *className, const char *methodName, const char *param );
-    
+
 #ifdef __cplusplus
 }
 #endif
 
 
 @interface iOSBridge : NSObject<ISSegmentDelegate,
-								ISImpressionDataDelegate,
-								ISConsentViewDelegate,
-								ISInitializationDelegate>
+                                ISImpressionDataDelegate,
+                                ISConsentViewDelegate,
+                                ISInitializationDelegate>
 
 @end
 

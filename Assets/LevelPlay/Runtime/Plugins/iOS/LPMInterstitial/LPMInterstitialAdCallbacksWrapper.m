@@ -15,7 +15,7 @@ void *LPMInterstitialAdDelegateCreate(void* interstitialAdPtr, DidLoadAdWithAdIn
     LPMInterstitialAdCallbacksWrapper *delegateWrapper =
     [[LPMInterstitialAdCallbacksWrapper alloc]
      initWithLoadSuccessCallback:loadSuccessCallback loadFailedCallback:loadFailedCallback displayedCallback:displayedCallback failedDisplayCallback:failedToDisplayCallback clickedCallback:clickedCallback closedCallback:closedCallback changeAdCallback:changedCallback interstitialAd:interstitialAdPtr];
-    
+
     return (__bridge_retained void *)delegateWrapper;
 }
 
@@ -25,7 +25,7 @@ void LPMInterstitialAdDelegateDestroy(void *delegateRef) {
     delegateWrapper.loadFail = nil;
     delegateWrapper.displayed = nil;
     delegateWrapper.failedToDisplay = nil;
-    
+
     delegateWrapper.clicked = nil;
     delegateWrapper.closed = nil;
     delegateWrapper.changed = nil;
@@ -39,11 +39,11 @@ void LPMInterstitialAdDelegateDestroy(void *delegateRef) {
         self.loadFail = loadFailedCallback;
         self.displayed = displayedCallback;
         self.failedToDisplay = failedDisplayCallback;
-        
+
         self.clicked = clickedCallback;
         self.closed = closedCallback;
         self.changed = changedCallback;
-        
+
         self.interstitialAd = interstitialAd;
     }
     return self;
@@ -81,7 +81,7 @@ void LPMInterstitialAdDelegateDestroy(void *delegateRef) {
 - (void)didFailToDisplayAdWithAdInfo:(LPMAdInfo *)adInfo error:(NSError *)error {
     NSString *jsonString = [LPMUtilities serializeAdInfoToJSON:adInfo];
     const char *adInfoString = [jsonString UTF8String];
-    
+
     NSString *jsonStringError = [LPMUtilities serializeErrorToJSON:error];
     const char *errorString = [jsonStringError UTF8String];
     if (self.failedToDisplay) {

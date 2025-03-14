@@ -41,7 +41,7 @@ namespace com.unity3d.mediation
             var adFormatsArray = new string[adFormats.Length];
             for (var i = 0; i < adFormats.Length; i++)
             {
-                LevelPlayAdFormat adFormat = adFormats[i];
+                var adFormat = adFormats[i];
                 var adFormatString = adFormat switch
                 {
                     LevelPlayAdFormat.BANNER => "banner",

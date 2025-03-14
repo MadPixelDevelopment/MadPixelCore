@@ -1,14 +1,61 @@
+using System;
+
 namespace com.unity3d.mediation
+{
+    /// <summary>
+    /// Represents dimensions and descriptions for different types of advertisement sizes.
+    /// </summary>
+    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayAdSize under the new namespace Unity.Services.LevelPlay.")]
+    public class LevelPlayAdSize
+    {
+        readonly Unity.Services.LevelPlay.LevelPlayAdSize m_AdSize;
+
+        LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize adSize)
+        {
+            m_AdSize = adSize;
+        }
+
+        // Forwarding properties
+        public string Description => m_AdSize.Description;
+        public int Width => m_AdSize.Width;
+        public int Height => m_AdSize.Height;
+        public int CustomWidth => m_AdSize.CustomWidth;
+
+        public override string ToString()
+        {
+            return m_AdSize.ToString();
+        }
+
+        // Forward static properties
+        public static LevelPlayAdSize BANNER => new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.BANNER);
+        public static LevelPlayAdSize LARGE => new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.LARGE);
+        public static LevelPlayAdSize MEDIUM_RECTANGLE => new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.MEDIUM_RECTANGLE);
+        public static LevelPlayAdSize LEADERBOARD => new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.LEADERBOARD);
+
+        // Forward static methods
+        public static LevelPlayAdSize CreateCustomBannerSize(int width, int height)
+        {
+            return new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.CreateCustomBannerSize(width, height));
+        }
+
+        public static LevelPlayAdSize CreateAdaptiveAdSize(int customWidth = -1)
+        {
+            return new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
+        }
+    }
+}
+
+namespace Unity.Services.LevelPlay
 {
     /// <summary>
     /// Represents dimensions and descriptions for different types of advertisement sizes.
     /// </summary>
     public class LevelPlayAdSize
     {
-        private int width;
-        private int height;
-        private string description;
-        private int customWidth = -1;
+        int width;
+        int height;
+        string description;
+        int customWidth = -1;
 
         /// <summary>
         /// Standard banner size

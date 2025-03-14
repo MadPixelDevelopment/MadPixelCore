@@ -59,7 +59,9 @@ public class IronSourceSegment
     public IronSourceSegment()
     {
         customs = new Dictionary<string, string>();
+#pragma warning disable 0618
         age = -1;
+#pragma warning restore 0618
         level = -1;
         isPaying = -1;
         userCreationDate = -1;
@@ -82,6 +84,7 @@ public class IronSourceSegment
     /// <returns>Dictionary representing the segment</returns>
     public Dictionary<string, string> getSegmentAsDict()
     {
+#pragma warning disable 0618
         Dictionary<string, string> temp = new Dictionary<string, string>();
         if (age != -1)
             temp.Add("age", age + "");
@@ -101,5 +104,6 @@ public class IronSourceSegment
         Dictionary<string, string> result = temp.Concat(customs).GroupBy(d => d.Key).ToDictionary(d => d.Key, d => d.First().Value);
 
         return result;
+#pragma warning restore 0618
     }
 }

@@ -1,30 +1,42 @@
 #if UNITY_IOS && !UNITY_EDITOR
 using System;
 using System.Runtime.InteropServices;
+using com.unity3d.mediation;
 
 namespace com.unity3d.mediation
 {
     [Obsolete("This class will be deprecated in version 9.0.0. Please use ILevelPlayBannerAd instead.")]
+    public class iOSBannerAd : Unity.Services.LevelPlay.iOSBannerAd
+    {
+        public iOSBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition bannerPosition, string placementName, bool displayOnLoad) : base(adUnitId, size, bannerPosition, placementName, displayOnLoad) {}
+    }
+}
+
+namespace Unity.Services.LevelPlay
+{
+    [Obsolete("This class will be deprecated in version 9.0.0. Please use ILevelPlayBannerAd instead.")]
     public class iOSBannerAd : IosNativeObject, IPlatformBannerAd
     {
-        public event EventHandler<LevelPlayAdInfo> OnAdLoaded;
-        public event EventHandler<LevelPlayAdError> OnAdLoadFailed;
-        public event EventHandler<LevelPlayAdInfo> OnAdClicked;
-        public event EventHandler<LevelPlayAdInfo> OnAdDisplayed;
-        public event EventHandler<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event EventHandler<LevelPlayAdInfo> OnAdExpanded;
-        public event EventHandler<LevelPlayAdInfo> OnAdCollapsed;
-        public event EventHandler<LevelPlayAdInfo> OnAdLeftApplication;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
 
         public string AdUnitId { get; }
-        public LevelPlayAdSize AdSize { get; }
+        public com.unity3d.mediation.LevelPlayAdSize AdSize { get; }
         public string PlacementName { get; }
-        public LevelPlayBannerPosition Position { get; }
+        public com.unity3d.mediation.LevelPlayBannerPosition Position { get; }
         private bool DisplayOnLoad { get; }
+
+        public string AdId { get {return GetAdId();} }
 
         IosBannerAdListener _mBannerAdListener;
 
-        public iOSBannerAd(string adUnitId, LevelPlayAdSize size, LevelPlayBannerPosition bannerPosition, string placementName, bool displayOnLoad) : base(true)
+        public iOSBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition bannerPosition, string placementName, bool displayOnLoad) : base(true)
         {
             AdUnitId = adUnitId;
             AdSize = size;
@@ -94,45 +106,51 @@ namespace com.unity3d.mediation
         }
 
         //Invoke events defined in iOSBannerAdListener.cs
-        internal void InvokeLoadedEvent(LevelPlayAdInfo adInfo)
+        internal void InvokeLoadedEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo)
         {
             ThreadUtil.Post(state => OnAdLoaded?.Invoke(this, adInfo));
         }
 
-        internal void InvokeFailedLoadEvent(LevelPlayAdError error)
+        internal void InvokeFailedLoadEvent(com.unity3d.mediation.LevelPlayAdError error)
         {
             ThreadUtil.Post(state => OnAdLoadFailed?.Invoke(this, error));
         }
 
-        internal void InvokeClickedEvent(LevelPlayAdInfo adInfo)
+        internal void InvokeClickedEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo)
         {
             ThreadUtil.Post(state => OnAdClicked?.Invoke(this, adInfo));
         }
 
-        internal void InvokeDisplayedEvent(LevelPlayAdInfo adInfo)
+        internal void InvokeDisplayedEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo)
         {
             ThreadUtil.Post(state => OnAdDisplayed?.Invoke(this, adInfo));
         }
 
-        internal void InvokeFailedDisplayEvent(LevelPlayAdInfo adInfo, LevelPlayAdError error)
+        internal void InvokeFailedDisplayEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo, LevelPlayAdError error)
         {
-            LevelPlayAdDisplayInfoError errorInfo = new LevelPlayAdDisplayInfoError(adInfo, error);
+            com.unity3d.mediation.LevelPlayAdDisplayInfoError errorInfo = new com.unity3d.mediation.LevelPlayAdDisplayInfoError(adInfo, error);
             ThreadUtil.Post(state => OnAdDisplayFailed?.Invoke(this, errorInfo));
         }
 
-        internal void InvokeExpandedEvent(LevelPlayAdInfo adInfo)
+        internal void InvokeExpandedEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo)
         {
             ThreadUtil.Post(state => OnAdExpanded?.Invoke(this, adInfo));
         }
 
-        internal void InvokeCollapsedEvent(LevelPlayAdInfo adInfo)
+        internal void InvokeCollapsedEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo)
         {
             ThreadUtil.Post(state => OnAdCollapsed?.Invoke(this, adInfo));
         }
 
-        internal void InvokeLeftApplicationEvent(LevelPlayAdInfo adInfo)
+        internal void InvokeLeftApplicationEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo)
         {
             ThreadUtil.Post(state => OnAdLeftApplication?.Invoke(this, adInfo));
+        }
+
+        private string GetAdId()
+        {
+            if (CheckDisposedAndLogError("Cannot get Banner ad Id")) return "";
+            return BannerAdId(NativePtr);
         }
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewCreate")]
@@ -162,6 +180,9 @@ namespace com.unity3d.mediation
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewResumeAutoRefresh")]
         static extern void BannerAdResumeAutoRefresh(IntPtr bannerAdView);
+
+        [DllImport("__Internal", EntryPoint = "LPMBannerAdViewAdId")]
+        static extern string BannerAdId(IntPtr bannerAdView);
     }
 }
 #endif

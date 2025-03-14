@@ -1,5 +1,6 @@
 #if UNITY_2019_1_OR_NEWER && UNITY_EDITOR && LEVELPLAY_DEPENDENCIES_INSTALLED
 using Unity.Services.Core.Editor;
+using Unity.Services.LevelPlay;
 
 namespace Unity.Services.LevelPlay.Editor
 {

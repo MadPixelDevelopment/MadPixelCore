@@ -10,6 +10,7 @@ using UnityEngine.Networking;
 using UnityEngine;
 using UnityEditor;
 using Unity.Services.LevelPlay.Editor;
+using Unity.Services.LevelPlay;
 
 namespace Unity.Services.LevelPlay.Editor
 {

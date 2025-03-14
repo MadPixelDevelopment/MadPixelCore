@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class AndroidBannerAd : IPlatformBannerAd, IUnityBannerAdListener
     {
@@ -16,6 +16,7 @@ namespace com.unity3d.mediation
         const string k_FuncHideAd      = "hideAd";
         const string k_FuncPauseAutoRefresh = "pauseAutoRefresh";
         const string k_FuncResumeAutoRefresh = "resumeAutoRefresh";
+        const string k_FuncGetAdId     = "getAdId";
 
         const string k_ErrorCallingAdUnitId    = "Cannot call AdUnitId";
         const string k_ErrorCallingLoad        = "Cannot call Load()";
@@ -23,61 +24,67 @@ namespace com.unity3d.mediation
         const string k_ErrorCreatingBanner     = "Error while creating Banner Ad. Banner Ad will not load. Please check your build settings, and make sure LevelPlay SDK is integrated properly.";
         const string k_ErrorDisposed           = "LevelPlay SDK: {0}: Instance of type {1} is disposed. Please create a new instance in order to call any method.";
 
-        public event EventHandler<LevelPlayAdInfo> OnAdLoaded;
-        public event EventHandler<LevelPlayAdError> OnAdLoadFailed;
-        public event EventHandler<LevelPlayAdInfo> OnAdClicked;
-        public event EventHandler<LevelPlayAdInfo> OnAdDisplayed;
-        public event EventHandler<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event EventHandler<LevelPlayAdInfo> OnAdExpanded;
-        public event EventHandler<LevelPlayAdInfo> OnAdCollapsed;
-        public event EventHandler<LevelPlayAdInfo> OnAdLeftApplication;
+#pragma warning disable 0618
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
 
         //IUnityBannerAdListener events
+#pragma warning disable 0618
         public void onAdLoaded(string adInfo)
         {
             Debug.Log("onAdLoaded:" + adInfo);
-            LevelPlayAdInfo info = new LevelPlayAdInfo(adInfo);
+            com.unity3d.mediation.LevelPlayAdInfo info = new com.unity3d.mediation.LevelPlayAdInfo(adInfo);
             OnAdLoaded?.Invoke(this, info);
         }
 
         public void onAdLoadFailed(string error)
         {
-            OnAdLoadFailed?.Invoke(this, new LevelPlayAdError(error));
+            OnAdLoadFailed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdError(error));
         }
 
         public void onAdClicked(string adInfo)
         {
-            OnAdClicked?.Invoke(this, new LevelPlayAdInfo(adInfo));
+            OnAdClicked?.Invoke(this, new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdDisplayed(string adInfo)
         {
-            OnAdDisplayed?.Invoke(this, new LevelPlayAdInfo(adInfo));
+            OnAdDisplayed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdDisplayFailed(string adInfo, string error)
         {
-            OnAdDisplayFailed?.Invoke(this, new LevelPlayAdDisplayInfoError(new LevelPlayAdInfo(adInfo), new LevelPlayAdError(error)));
+            OnAdDisplayFailed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdDisplayInfoError(new LevelPlayAdInfo(adInfo), new LevelPlayAdError(error)));
         }
 
         public void onAdExpanded(string adInfo)
         {
-            OnAdExpanded?.Invoke(this, new LevelPlayAdInfo(adInfo));
+            OnAdExpanded?.Invoke(this, new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdCollapsed(string adInfo)
         {
-            OnAdCollapsed?.Invoke(this, new LevelPlayAdInfo(adInfo));
+            OnAdCollapsed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
         public void onAdLeftApplication(string adInfo)
         {
-            OnAdLeftApplication?.Invoke(this, new LevelPlayAdInfo(adInfo));
+            OnAdLeftApplication?.Invoke(this, new com.unity3d.mediation.LevelPlayAdInfo(adInfo));
         }
 
+        public string AdId { get {return _mBannerAd.Call<string>(k_FuncGetAdId);} }
         public string AdUnitId { get; }
-        public LevelPlayAdSize AdSize { get; }
-        public LevelPlayBannerPosition Position { get; }
+
+        public com.unity3d.mediation.LevelPlayAdSize AdSize { get; }
+        public com.unity3d.mediation.LevelPlayBannerPosition Position { get; }
+#pragma warning restore 0618
+
         public string PlacementName { get; }
 
         AndroidJavaObject _mBannerAd;
@@ -86,7 +93,7 @@ namespace com.unity3d.mediation
         volatile bool _mDisposed;
 
         [Obsolete("This constructor will be removed in version 9.0.0. Please use ILevelPlayBannerAd instead.")]
-        public AndroidBannerAd(string adUnitId, LevelPlayAdSize adSize, LevelPlayBannerPosition position, string placementName, bool displayOnLoad, bool respectSafeArea)
+        public AndroidBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize adSize, com.unity3d.mediation.LevelPlayBannerPosition position, string placementName, bool displayOnLoad, bool respectSafeArea)
         {
             AdUnitId = adUnitId;
             AdSize = adSize;
@@ -126,7 +133,9 @@ namespace com.unity3d.mediation
                     catch (Exception e)
                     {
                         Debug.LogException(e);
-                        OnAdLoadFailed?.Invoke(this, new LevelPlayAdError(AdUnitId, -1, k_ErrorFailedToLoad + e.Message));
+#pragma warning disable 0618
+                        OnAdLoadFailed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdError(AdUnitId, -1, k_ErrorFailedToLoad + e.Message));
+#pragma warning restore 0618
                     }
                 });
             }
@@ -145,7 +154,9 @@ namespace com.unity3d.mediation
                     catch (Exception e)
                     {
                         Debug.LogException(e);
-                        OnAdLoadFailed?.Invoke(this, new LevelPlayAdError(AdUnitId, -1, k_ErrorFailedToLoad + e.Message));
+#pragma warning disable 0618
+                        OnAdLoadFailed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdError(AdUnitId, -1, k_ErrorFailedToLoad + e.Message));
+#pragma warning restore 0618
                     }
                 });
             }
@@ -164,7 +175,9 @@ namespace com.unity3d.mediation
                     catch (Exception e)
                     {
                         Debug.LogException(e);
-                        OnAdLoadFailed?.Invoke(this, new LevelPlayAdError(AdUnitId, -1, k_ErrorFailedToLoad + e.Message));
+#pragma warning disable 0618
+                        OnAdLoadFailed?.Invoke(this, new com.unity3d.mediation.LevelPlayAdError(AdUnitId, -1, k_ErrorFailedToLoad + e.Message));
+#pragma warning restore 0618
                     }
                 });
             }

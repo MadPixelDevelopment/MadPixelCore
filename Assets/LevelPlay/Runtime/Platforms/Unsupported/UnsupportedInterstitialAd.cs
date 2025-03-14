@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class UnsupportedInterstitialAd : IPlatformInterstitialAd
     {
@@ -9,13 +8,17 @@ namespace com.unity3d.mediation
         {
         }
 
-        public event Action<LevelPlayAdInfo> OnAdLoaded;
-        public event Action<LevelPlayAdError> OnAdLoadFailed;
-        public event Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event Action<LevelPlayAdInfo> OnAdClosed;
-        public event Action<LevelPlayAdInfo> OnAdClicked;
-        public event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event Action<LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning disable 67, 0618
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning restore 67, 0618
+
+        public string AdId { get; }
         public string AdUnitId { get; }
 
         public UnsupportedInterstitialAd(string adUnitId)

@@ -1,11 +1,11 @@
 <dependencies>
-  <unityversion>4.3.32.0</unityversion>
+  <unityversion>4.3.33.0</unityversion>
   <androidPackages>
-    <androidPackage spec="com.unity3d.ads-mediation:inmobi-adapter:4.3.28">
+    <androidPackage spec="com.unity3d.ads-mediation:inmobi-adapter:4.3.29">
     </androidPackage>
   </androidPackages>
   <androidPackages>
-    <androidPackage spec="com.inmobi.monetization:inmobi-ads-kotlin:10.8.0">
+    <androidPackage spec="com.inmobi.monetization:inmobi-ads-kotlin:10.8.2">
       <repositories>
         <repository>https://repo.maven.apache.org/maven2/</repository>
       </repositories>

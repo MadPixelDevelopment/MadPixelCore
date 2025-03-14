@@ -15,7 +15,7 @@ void *LPMRewardedAdDelegateCreate(void* rewardedAdPtr, DidLoadAdWithAdInfo loadS
     if (!rewardedAdPtr) return NULL;  // Ensure rewardedAdPtr is non-null
 
     LPMRewardedAdCallbacksWrapper *delegateWrapper = [[LPMRewardedAdCallbacksWrapper alloc] initWithLoadSuccessCallback:loadSuccessCallback loadFailedCallback:loadFailedCallback displayedCallback:displayedCallback failedToDisplayCallback:failedToDisplayCallback rewardedCallback:rewardedCallback clickedCallback:clickedCallback closedCallback:closedCallback changeAdCallback:changedCallback rewardedAd:rewardedAdPtr];
-    
+
     return (__bridge_retained void *)delegateWrapper;
 }
 
@@ -43,7 +43,7 @@ void LPMRewardedAdDelegateDestroy(void *delegateRef) {
         self.clicked = clickedCallback;
         self.closed = closedCallback;
         self.changed = changedCallback;
-        
+
         self.rewardedAd = rewardedAd;
     }
     return self;
@@ -81,7 +81,7 @@ void LPMRewardedAdDelegateDestroy(void *delegateRef) {
 - (void)didFailToDisplayAdWithAdInfo:(LPMAdInfo *)adInfo error:(NSError *)error {
     NSString *jsonString = [LPMUtilities serializeAdInfoToJSON:adInfo];
     const char *adInfoString = [jsonString UTF8String];
-    
+
     NSString *jsonStringError = [LPMUtilities serializeErrorToJSON:error];
     const char *errorString = [jsonStringError UTF8String];
     if (self.failedToDisplay) {
@@ -92,7 +92,7 @@ void LPMRewardedAdDelegateDestroy(void *delegateRef) {
 - (void)didRewardAdWithAdInfo:(LPMAdInfo *)adInfo reward:(LPMReward *)reward {
     NSString *jsonString = [LPMUtilities serializeAdInfoToJSON:adInfo];
     const char *adInfoString = [jsonString UTF8String];
-    
+
     const char *rewardName = [reward.name UTF8String];
     int rewardAmount = (int)reward.amount;
     if (self.rewarded) {

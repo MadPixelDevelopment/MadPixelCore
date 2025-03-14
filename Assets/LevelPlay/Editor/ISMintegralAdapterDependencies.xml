@@ -1,7 +1,7 @@
 <dependencies>
-  <unityversion>4.3.37.0</unityversion>
+  <unityversion>4.3.41.0</unityversion>
   <androidPackages>
-    <androidPackage spec="com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.31">
+    <androidPackage spec="com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.51">
       <repositories>
         <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea/</repository>
       </repositories>
@@ -15,11 +15,11 @@
     </androidPackage>
   </androidPackages>
   <androidPackages>
-    <androidPackage spec="com.unity3d.ads-mediation:mintegral-adapter:4.3.35">
+    <androidPackage spec="com.unity3d.ads-mediation:mintegral-adapter:4.3.37">
     </androidPackage>
   </androidPackages>
   <iosPods>
-    <iosPod name="IronSourceMintegralAdapter" version="4.3.31.0">
+    <iosPod name="IronSourceMintegralAdapter" version="4.3.33.0">
       <sources>
         <source>https://github.com/CocoaPods/Specs</source>
       </sources>

@@ -8,6 +8,7 @@
 
 + (NSString *)serializeAdInfoToJSON:(LPMAdInfo *)adInfo {
     NSDictionary *adInfoDict = @{
+        @"adId": adInfo.adId,
         @"adUnitId": adInfo.adUnitId ?: @"",
         @"adUnitName": adInfo.adUnitName ?: @"",
         @"adSize": [self serializeAdSizeToJSON:adInfo.adSize],
@@ -31,10 +32,14 @@
 
 + (NSString *)serializeErrorToJSON:(NSError *)adError{
     NSLog(@"levelplay failed to load-3");
-    NSDictionary *errorDict = @{
-        @"errorCode": [@(adError.code) stringValue] ?: @"",
-        @"errorMessage": adError.description ?: @""
-    };
+    NSMutableDictionary *errorDict = @{
+      @"errorCode": [@(adError.code) stringValue] ?: @"",
+      @"errorMessage": adError.description ?: @""
+    }.mutableCopy;
+    NSString *adId = adError.userInfo[@"adId"];
+    if (adId) {
+      errorDict[@"adId"] = adId;
+    }
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:errorDict options:0 error:&error];
     return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : @"";
@@ -44,7 +49,8 @@
     NSDictionary *errorDict = @{
         @"errorCode": [@(adError.code) stringValue] ?: @"",
         @"errorMessage": adError.description ?: @"",
-        @"adUnitId": adUnitId ?: @""
+        @"adUnitId": adUnitId ?: @"",
+        @"adId": adError.userInfo[@"adId"] ?: @""
     };
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:errorDict options:0 error:&error];

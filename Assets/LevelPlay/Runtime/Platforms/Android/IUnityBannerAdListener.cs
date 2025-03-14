@@ -1,7 +1,5 @@
 #if UNITY_ANDROID
-using UnityEngine;
-
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     interface IUnityBannerAdListener
     {

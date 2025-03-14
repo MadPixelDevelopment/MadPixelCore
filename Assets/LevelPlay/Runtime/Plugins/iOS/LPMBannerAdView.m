@@ -19,7 +19,7 @@ CGFloat getDeviceScreenWidth(void) {
 LPMAdSize *GetAdSizeFromDescription(const char *description, int width,
                                     int height, int customWidth) {
     NSString *desc = [LPMUtilities getStringFromCString:description];
-    
+
     if (strcmp(description, "CUSTOM") == 0) {
         return [LPMAdSize customSizeWithWidth:width height:height];
     } else if ([desc isEqualToString:@"BANNER"]) {
@@ -44,60 +44,60 @@ LPMAdSize *GetAdSizeFromDescription(const char *description, int width,
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
     void *LPMBannerAdViewCreate(const char *adUnitId, const char *placementName,
                                 const char *description, int width, int height, int customWidth) {
         LPMBannerAdView *bannerAdView =
         [[LPMBannerAdView alloc] initWithAdUnitId:[LPMUtilities getStringFromCString:adUnitId]];
-        
+
         [bannerAdView setPlacementName:[LPMUtilities getStringFromCString:placementName]];
-        
+
         LPMAdSize *adSize = GetAdSizeFromDescription(description, width, height, customWidth);
         [bannerAdView setAdSize:adSize];
-        
+
         bannerAdView.frame = CGRectMake(0, 0, (CGFloat)adSize.width, (CGFloat)adSize.height);
-        
+
         return (__bridge_retained void *)bannerAdView;
     }
-    
+
     void LPMBannerAdViewSetDelegate(void *bannerAdViewRef, void *delegateRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         LPMBannerAdViewCallbacksWrapper *delegate = (__bridge LPMBannerAdViewCallbacksWrapper *)delegateRef;
         [bannerAdView setDelegate:delegate];
     }
-    
+
     void LPMBannerAdViewLoadAd(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         [bannerAdView loadAdWithViewController:[UIApplication sharedApplication]
          .keyWindow.rootViewController];
     }
-    
+
     void LPMBannerAdViewDestroy(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView =
         (__bridge_transfer LPMBannerAdView *)bannerAdViewRef;
         [bannerAdView destroy];
     }
-    
+
     void LPMBannerAdViewPauseAutoRefresh(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         [bannerAdView pauseAutoRefresh];
     }
-    
+
     void LPMBannerAdViewResumeAutoRefresh(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         [bannerAdView resumeAutoRefresh];
     }
-    
+
     void LPMBannerAdViewSetPosition(void *bannerAdViewRef, int position) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         dispatch_async(dispatch_get_main_queue(), ^{
             UIView *rootView =
             [UIApplication sharedApplication].keyWindow.rootViewController.view;
-            
+
             bannerAdView.translatesAutoresizingMaskIntoConstraints = NO;
             [bannerAdView removeFromSuperview];
             [rootView addSubview:bannerAdView];
-           
+
             NSMutableArray<NSLayoutConstraint *> *constraints = [[NSMutableArray alloc] init];
             // Center horizontally
             [constraints addObject:
@@ -131,7 +131,7 @@ extern "C" {
                                              multiplier:1.0
                                                constant:bannerAdView.frame.size.height]
             ];
-            
+
             [constraints addObject:
                  [NSLayoutConstraint constraintWithItem:bannerAdView
                                               attribute:NSLayoutAttributeWidth
@@ -144,21 +144,26 @@ extern "C" {
             [NSLayoutConstraint activateConstraints:constraints];
         });
     }
-    
+
     void LPMBannerAdViewShow(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         dispatch_async(dispatch_get_main_queue(), ^{
             bannerAdView.hidden = false;
         });
     }
-    
+
     void LPMBannerAdViewHide(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         dispatch_async(dispatch_get_main_queue(), ^{
             bannerAdView.hidden = true;
         });
     }
-    
+
+    const char *LPMBannerAdViewAdId(void *bannerAdViewRef) {
+        LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
+        return strdup([[bannerAdView adId] UTF8String]);
+    }
+
 #ifdef __cplusplus
 }
 #endif

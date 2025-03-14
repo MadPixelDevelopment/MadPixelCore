@@ -3,18 +3,60 @@ using Unity.Services.LevelPlay;
 
 namespace com.unity3d.mediation
 {
-    public class LevelPlayInterstitialAd : ILevelPlayInterstitialAd
+    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayInterstitialAd under the new namespace Unity.Services.LevelPlay.")]
+    public class LevelPlayInterstitialAd : Unity.Services.LevelPlay.LevelPlayInterstitialAd
     {
-        public event Action<LevelPlayAdInfo> OnAdLoaded;
-        public event Action<LevelPlayAdError> OnAdLoadFailed;
-        public event Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event Action<LevelPlayAdInfo> OnAdClosed;
-        public event Action<LevelPlayAdInfo> OnAdClicked;
-        public event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event Action<LevelPlayAdInfo> OnAdInfoChanged;
+        public LevelPlayInterstitialAd(string adUnitId) : base(adUnitId) {}
+        internal LevelPlayInterstitialAd(IPlatformInterstitialAd platformInterstitialAd) : base(platformInterstitialAd) {}
+    }
+}
+
+namespace Unity.Services.LevelPlay
+{
+#pragma warning disable 0618
+    public class LevelPlayInterstitialAd : com.unity3d.mediation.ILevelPlayInterstitialAd
+    {
+        /// <summary>
+        /// Invoked when the interstitial ad is loaded.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+
+        /// <summary>
+        /// Invoked when the interstitial ad fails to load.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+
+        /// <summary>
+        /// Invoked when the interstitial ad is displayed.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+
+        /// <summary>
+        /// Invoked when the interstitial ad is closed.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+
+        /// <summary>
+        /// Invoked when the user clicks on the interstitial ad.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+
+        /// <summary>
+        /// Invoked when the interstitial ad fails to display.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+
+        /// <summary>
+        /// Invoked when the interstitial ad info is changed.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning restore 0618
 
         readonly IPlatformInterstitialAd m_InterstitialAd;
 
+        /// <summary>
+        /// Gets the ad unit id of the ad.
+        /// </summary>
         public string AdUnitId => m_InterstitialAd.AdUnitId;
 
         /// <summary>
@@ -45,21 +87,35 @@ namespace com.unity3d.mediation
             m_InterstitialAd = platformInterstitialAd;
         }
 
+        /// <summary>
+        /// Loads the Interstitial Ad.
+        /// </summary>
         public void LoadAd()
         {
             m_InterstitialAd.LoadAd();
         }
 
+        /// <summary>
+        /// Destroys the Interstitial Ad.
+        /// </summary>
         public void DestroyAd()
         {
             Dispose();
         }
 
+        /// <summary>
+        /// Shows the Interstitial Ad.
+        /// </summary>
+        /// <param name="placementName"><i><b>(Optional)</b></i>Placement Name for the Interstitial Ad.</param>
         public void ShowAd(string placementName = null)
         {
             m_InterstitialAd.ShowAd(placementName);
         }
 
+        /// <summary>
+        /// Checks if the interstitial ad is ready
+        /// </summary>
+        /// <returns>Returns true if the interstitial ad is ready, returns false if not.</returns>
         public bool IsAdReady()
         {
             return m_InterstitialAd.IsAdReady();
@@ -85,6 +141,15 @@ namespace com.unity3d.mediation
         public void Dispose()
         {
             m_InterstitialAd.Dispose();
+        }
+
+        /// <summary>
+        /// Gets the ad ID associated with this ad.
+        /// </summary>
+        /// <returns>The ID of the ad.</returns>
+        public string GetAdId()
+        {
+            return m_InterstitialAd.AdId;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.IO;
+using Unity.Services.LevelPlay;
 using UnityEditor;
 
 namespace Unity.Services.LevelPlay.Editor.Analytics

@@ -1,7 +1,7 @@
 using System.Threading;
 using UnityEngine;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     static class ThreadUtil
     {

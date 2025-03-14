@@ -192,7 +192,7 @@ public class IronSourceEvents : MonoBehaviour
         if (_onSegmentReceivedEvent != null)
             _onSegmentReceivedEvent(segmentName);
     }
-    
+
 #endif
 
     // ******************************* ConsentView Callbacks *******************************

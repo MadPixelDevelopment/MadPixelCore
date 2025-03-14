@@ -19,6 +19,8 @@ bool LPMRewardedAdIsAdReady(void *rewardedAdRef);
 
 bool LPMRewardedAdIsPlacementCapped(const char *placementName);
 
+const char *LPMRewardedAdAdId(void *rewardedAdRef);
+
 #ifdef __cplusplus
 }
 #endif

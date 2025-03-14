@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using com.unity3d.mediation;
 
 namespace com.unity3d.mediation
 {
@@ -7,16 +8,27 @@ namespace com.unity3d.mediation
     /// Manages initialization and basic operations of the LevelPlay SDK.
     /// This class provides methods to initialize the SDK and handles global events for initialization success and failure.
     /// </summary>
+    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlay under the new namespace Unity.Services.LevelPlay.")]
+    public class LevelPlay : Unity.Services.LevelPlay.LevelPlay {}
+}
+
+namespace Unity.Services.LevelPlay
+{
+    /// <summary>
+    /// Manages initialization and basic operations of the LevelPlay SDK.
+    /// This class provides methods to initialize the SDK and handles global events for initialization success and failure.
+    /// </summary>
     public class LevelPlay
     {
-        static event Action<LevelPlayConfiguration> OnInitSuccessReceived;
-        static event Action<LevelPlayInitError> OnInitFailedReceived;
+#pragma warning disable 0618
+        static event Action<com.unity3d.mediation.LevelPlayConfiguration> OnInitSuccessReceived;
+        static event Action<com.unity3d.mediation.LevelPlayInitError> OnInitFailedReceived;
 
         /// <summary>
         /// Adds or removes event handlers for the SDK initialization success event.
         /// Ensures that the same handler cannot be added multiple times.
         /// </summary>
-        public static event Action<LevelPlayConfiguration> OnInitSuccess
+        public static event Action<com.unity3d.mediation.LevelPlayConfiguration> OnInitSuccess
         {
             add
             {
@@ -39,7 +51,7 @@ namespace com.unity3d.mediation
         /// Adds or removes event handlers for the SDK initialization failure event.
         /// Ensures that the same handler cannot be added multiple times.
         /// </summary>
-        public static event Action<LevelPlayInitError> OnInitFailed
+        public static event Action<com.unity3d.mediation.LevelPlayInitError> OnInitFailed
         {
             add
             {
@@ -57,6 +69,7 @@ namespace com.unity3d.mediation
                 }
             }
         }
+#pragma warning restore 0618
 
         /// <summary>
         /// Static constructor to hook up platform-specific initialization callbacks.
@@ -84,13 +97,14 @@ namespace com.unity3d.mediation
 #endif
         }
 
+#pragma warning disable 0618
         /// <summary>
         /// Initializes the LevelPlay SDK with the specified app key and optional user ID and ad format list.
         /// </summary>
         /// <param name="appKey">The application key for the SDK.</param>
         /// <param name="userId">Optional user identifier for use within the SDK.</param>
         /// <param name="adFormats">Optional array of ad formats to initialize.</param>
-        public static void Init(string appKey, string userId = null, LevelPlayAdFormat[] adFormats = null)
+        public static void Init(string appKey, string userId = null, com.unity3d.mediation.LevelPlayAdFormat[] adFormats = null)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             AndroidLevelPlaySdk.Initialize(appKey, userId, adFormats);
@@ -98,6 +112,8 @@ namespace com.unity3d.mediation
             IosLevelPlaySdk.Initialize(appKey, userId, adFormats);
 #endif
         }
+
+#pragma warning restore 0618
 
         /// <summary>
         /// When setting your PauseGame status to true, all your Unity 3D game activities will be paused (Except the ad callbacks).

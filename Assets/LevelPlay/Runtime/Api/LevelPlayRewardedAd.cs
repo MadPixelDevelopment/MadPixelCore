@@ -6,19 +6,68 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Implements ILevelPlayRewardedAd to provide functionality for managing rewarded ads.
     /// </summary>
-    public sealed class LevelPlayRewardedAd : ILevelPlayRewardedAd
+    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayRewardedAd under the new namespace Unity.Services.LevelPlay.")]
+    public sealed class LevelPlayRewardedAd : Unity.Services.LevelPlay.LevelPlayRewardedAd
     {
-        public event Action<LevelPlayAdInfo> OnAdLoaded;
-        public event Action<LevelPlayAdError> OnAdLoadFailed;
-        public event Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event Action<LevelPlayAdInfo, LevelPlayReward> OnAdRewarded;
-        public event Action<LevelPlayAdInfo> OnAdClicked;
-        public event Action<LevelPlayAdInfo> OnAdClosed;
-        public event Action<LevelPlayAdInfo> OnAdInfoChanged;
+        public LevelPlayRewardedAd(string adUnitId) : base(adUnitId) {}
+        internal LevelPlayRewardedAd(IPlatformRewardedAd platformRewardedAd) : base(platformRewardedAd) {}
+    }
+}
+
+namespace Unity.Services.LevelPlay
+{
+#pragma warning disable 0618
+    /// <summary>
+    /// Implements ILevelPlayRewardedAd to provide functionality for managing rewarded ads.
+    /// </summary>
+    public class LevelPlayRewardedAd : com.unity3d.mediation.ILevelPlayRewardedAd
+    {
+        /// <summary>
+        /// Invoked when the Rewarded ad is loaded.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+
+        /// <summary>
+        /// Invoked when the Rewarded ad fails to load.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+
+        /// <summary>
+        /// Invoked when the Rewarded ad is displayed.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+
+        /// <summary>
+        /// Invoked when the Rewarded ad fails to display.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+
+        /// <summary>
+        /// Invoked when the Rewarded ad receives a reward.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo, com.unity3d.mediation.LevelPlayReward> OnAdRewarded;
+
+        /// <summary>
+        /// Invoked when the user clicks on the Rewarded ad.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+
+        /// <summary>
+        /// Invoked when the Rewarded ad is closed.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+
+        /// <summary>
+        /// Invoked when the Rewarded ad info is changed.
+        /// </summary>
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+#pragma warning disable 0618
 
         readonly IPlatformRewardedAd m_RewardedAd;
 
+        /// <summary>
+        /// Gets the ad unit id of the ad.
+        /// </summary>
         public string AdUnitId => m_RewardedAd.AdUnitId;
 
         /// <summary>
@@ -50,21 +99,35 @@ namespace com.unity3d.mediation
             m_RewardedAd = platformRewardedAd;
         }
 
+        /// <summary>
+        /// Loads the Rewarded Ad.
+        /// </summary>
         public void LoadAd()
         {
             m_RewardedAd.LoadAd();
         }
 
+        /// <summary>
+        /// Shows the Rewarded Ad.
+        /// </summary>
+        /// <param name="placementName"><i><b>(Optional)</b></i>Placement Name for the Rewarded Ad.</param>
         public void ShowAd(string placementName = null)
         {
             m_RewardedAd.ShowAd(placementName);
         }
 
+        /// <summary>
+        /// Destroys the Rewarded Ad.
+        /// </summary>
         public void DestroyAd()
         {
             Dispose();
         }
 
+        /// <summary>
+        /// Checks if the Rewarded ad is ready
+        /// </summary>
+        /// <returns>Returns true if the Rewarded ad is ready, returns false if not.</returns>
         public bool IsAdReady()
         {
             return m_RewardedAd.IsAdReady();
@@ -90,6 +153,15 @@ namespace com.unity3d.mediation
         public void Dispose()
         {
             m_RewardedAd.Dispose();
+        }
+
+        /// <summary>
+        /// Gets the ad ID associated with this ad.
+        /// </summary>
+        //// <returns>The ID of the ad.</returns>
+        public string GetAdId()
+        {
+            return m_RewardedAd.AdId;
         }
     }
 }

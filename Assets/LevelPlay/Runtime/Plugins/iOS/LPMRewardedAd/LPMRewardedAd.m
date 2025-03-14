@@ -12,25 +12,25 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
     void *LPMRewardedAdCreate(const char *adUnitId) {
-        
+
         LPMRewardedAd *rewardedAd = [[LPMRewardedAd alloc] initWithAdUnitId:[LPMUtilities getStringFromCString:adUnitId]];
-        
+
         return (__bridge_retained void *)rewardedAd;
     }
-    
+
     void LPMRewardedAdSetDelegate(void *rewardedAdRef, void *delegateRef) {
         LPMRewardedAd *rewardedAd = (__bridge LPMRewardedAd *)rewardedAdRef;
         LPMRewardedAdCallbacksWrapper *delegate = (__bridge LPMRewardedAdCallbacksWrapper *)delegateRef;
         [rewardedAd setDelegate:delegate];
     }
-    
+
     void LPMRewardedAdLoadAd(void *rewardedAdRef) {
         LPMRewardedAd *rewardedAd = (__bridge LPMRewardedAd *)rewardedAdRef;
         [rewardedAd loadAd];
     }
-    
+
     void LPMRewardedAdShowAd(void *rewardedAdRef, const char *placementName) {
         LPMRewardedAd *rewardedAd = (__bridge LPMRewardedAd *)rewardedAdRef;
         NSString *placementNameString = placementName ? [LPMUtilities getStringFromCString:placementName] : nil;
@@ -41,10 +41,16 @@ extern "C" {
         LPMRewardedAd *rewardedAd = (__bridge LPMRewardedAd *)rewardedAdRef;
         return [rewardedAd isAdReady];
     }
-    
+
     bool LPMRewardedAdIsPlacementCapped(const char *placementName) {
         return [LPMRewardedAd isPlacementCapped:[LPMUtilities getStringFromCString:placementName]];
     }
+  
+    const char *LPMRewardedAdAdId(void *rewardedAdRef) {
+        LPMRewardedAd *rewardedAd = (__bridge LPMRewardedAd *)rewardedAdRef;
+        return strdup([[rewardedAd adId] UTF8String]);
+    }
+  
 #ifdef __cplusplus
 }
 #endif

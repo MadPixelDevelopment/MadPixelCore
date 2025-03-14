@@ -6,16 +6,31 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Implements ILevelPlayBannerAd to provide functionality for managing banner ads.
     /// </summary>
-    public sealed class LevelPlayBannerAd : ILevelPlayBannerAd
+    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerAd under the new namespace Unity.Services.LevelPlay.")]
+    public sealed class LevelPlayBannerAd : Unity.Services.LevelPlay.LevelPlayBannerAd
     {
-        public event Action<LevelPlayAdInfo> OnAdLoaded;
-        public event Action<LevelPlayAdError> OnAdLoadFailed;
-        public event Action<LevelPlayAdInfo> OnAdClicked;
-        public event Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event Action<LevelPlayAdInfo> OnAdExpanded;
-        public event Action<LevelPlayAdInfo> OnAdCollapsed;
-        public event Action<LevelPlayAdInfo> OnAdLeftApplication;
+        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = null, com.unity3d.mediation.LevelPlayBannerPosition position = com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter, string placementName = null, bool displayOnLoad = true, bool respectSafeArea = false) : base(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea) {}
+    }
+}
+
+
+namespace Unity.Services.LevelPlay
+{
+#pragma warning disable 0618
+    /// <summary>
+    /// Implements ILevelPlayBannerAd to provide functionality for managing banner ads.
+    /// </summary>
+    public class LevelPlayBannerAd : com.unity3d.mediation.ILevelPlayBannerAd
+    {
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
+#pragma warning disable 0618
 
         bool _autoRefresh;
         readonly IPlatformBannerAd _bannerAd;
@@ -32,11 +47,12 @@ namespace com.unity3d.mediation
         /// <param name="displayOnLoad">Determines whether the ad should be displayed immediately after loading.</param>
         /// <param name="respectSafeArea">Determines whether the ad should be displayed within the safe area of the screen, where no notch, status bar or camera is present..
         /// Defaults to true.</param>
-        public LevelPlayBannerAd(string adUnitId, LevelPlayAdSize size = null, LevelPlayBannerPosition position = LevelPlayBannerPosition.BottomCenter,
+        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = null, com.unity3d.mediation.LevelPlayBannerPosition position = com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter,
                                  string placementName = null, bool displayOnLoad = true, bool respectSafeArea = false)
         {
-            if (size == null) {
-                size = LevelPlayAdSize.BANNER;
+            if (size == null)
+            {
+                size = com.unity3d.mediation.LevelPlayAdSize.BANNER;
             }
 #if UNITY_ANDROID && !UNITY_EDITOR
             _bannerAd = new AndroidBannerAd(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea);
@@ -81,8 +97,18 @@ namespace com.unity3d.mediation
         }
 
         /// <summary>
+        /// Gets the ad ID associated with this ad.
+        /// </summary>
+        /// <returns>The ID of the ad.</returns>
+        public string GetAdId()
+        {
+            return _bannerAd.AdId;
+        }
+
+        /// <summary>
         /// Gets the ad unit ID associated with this ad.
         /// </summary>
+        /// <returns>The ID of the ad unit.</returns>
         public string GetAdUnitId()
         {
             return _bannerAd.AdUnitId;
@@ -91,7 +117,8 @@ namespace com.unity3d.mediation
         /// <summary>
         /// Retrieves the size of the ad.
         /// </summary>
-        public LevelPlayAdSize GetAdSize()
+        /// <returns>The size of the ad.</returns>
+        public com.unity3d.mediation.LevelPlayAdSize GetAdSize()
         {
             return _bannerAd.AdSize;
         }
@@ -99,7 +126,8 @@ namespace com.unity3d.mediation
         /// <summary>
         /// Retrieves the position of the banner ad.
         /// </summary>
-        public LevelPlayBannerPosition GetPosition()
+        /// <returns>The position of the ad.</returns>
+        public com.unity3d.mediation.LevelPlayBannerPosition GetPosition()
         {
             return _bannerAd.Position;
         }
@@ -107,6 +135,7 @@ namespace com.unity3d.mediation
         /// <summary>
         /// Retrieves the placement name associated with this ad.
         /// </summary>
+        /// <returns>The placement name of the ad.</returns>
         public string GetPlacementName()
         {
             return _bannerAd.PlacementName;

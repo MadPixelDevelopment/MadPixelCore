@@ -1,27 +1,35 @@
 using System;
-using System.Threading.Tasks;
-using UnityEngine;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     /// <summary>
     /// Interface of a Banner Ad.
     /// </summary>
     interface IPlatformBannerAd : IDisposable
     {
-        event EventHandler<LevelPlayAdInfo> OnAdLoaded;
-        event EventHandler<LevelPlayAdError> OnAdLoadFailed;
-        event EventHandler<LevelPlayAdInfo> OnAdClicked;
-        event EventHandler<LevelPlayAdInfo> OnAdDisplayed;
-        event EventHandler<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        event EventHandler<LevelPlayAdInfo> OnAdExpanded;
-        event EventHandler<LevelPlayAdInfo> OnAdCollapsed;
-        event EventHandler<LevelPlayAdInfo> OnAdLeftApplication;
+#pragma warning disable 0618
+        event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
+#pragma warning restore 0618
 
+        string AdId { get; }
         string AdUnitId { get; }
-        LevelPlayAdSize AdSize { get; }
+
+#pragma warning disable 0618
+        com.unity3d.mediation.LevelPlayAdSize AdSize { get; }
+#pragma warning restore 0618
+
         string PlacementName { get; }
-        LevelPlayBannerPosition Position { get; }
+
+#pragma warning disable 0618
+        com.unity3d.mediation.LevelPlayBannerPosition Position { get; }
+#pragma warning restore 0618
 
         void Load();
         void DestroyAd();

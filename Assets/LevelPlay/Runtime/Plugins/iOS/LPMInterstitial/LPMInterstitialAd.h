@@ -19,6 +19,7 @@ bool LPMInterstitialAdIsAdReady(void *interstitialAdRef);
 
 bool LPMInterstitialAdIsPlacementCapped(const char *placementName);
 
+const char *LPMInterstitialAdAdId(void *interstitialAdRef);
 #ifdef __cplusplus
 }
 #endif

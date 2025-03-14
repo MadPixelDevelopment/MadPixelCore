@@ -53,7 +53,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
                   ^{
         instance = [iOSBridge new];
     });
-    
+
     return instance;
 }
 
@@ -62,26 +62,26 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
         self.rewardedVideoLevelPlayDelegate = [[RewardedVideoLevelPlayCallbacksWrapper alloc]initWithDelegate:(id)self];
         self.interstitialLevelPlayDelegate = [[InterstitialLevelPlayCallbacksWrapper alloc]initWithDelegate:(id)self];
         self.bannerLevelPlayDelegate = [[BannerLevelPlayCallbacksWrapper alloc]initWithDelegate:(id)self];
-        
+
         [IronSource addImpressionDataDelegate:self];
         [IronSource setConsentViewWithDelegate:self];
         [IronSource setSegmentDelegate:self];
-        
+
         //set level play listeneres
         [IronSource setLevelPlayBannerDelegate:self.bannerLevelPlayDelegate];
         [IronSource setLevelPlayInterstitialDelegate:self.interstitialLevelPlayDelegate];
         [IronSource setLevelPlayRewardedVideoDelegate:self.rewardedVideoLevelPlayDelegate];
-        
-        
+
+
         _bannerView = nil;
         _bannerViewController = nil;
         _position = BANNER_POSITION_BOTTOM;
         _shouldHideBanner = NO;
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:)
                                                      name:UIDeviceOrientationDidChangeNotification object:nil];
     }
-    
+
     return self;
 }
 
@@ -95,7 +95,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 
 - (const char *)getAdvertiserId {
     NSString *advertiserId = [IronSource advertiserId];
-    
+
     return MakeStringCopy(advertiserId);
 }
 
@@ -141,17 +141,17 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
     if (!networkData) {
         return;
     }
-    
+
     NSData *data = [networkData dataUsingEncoding:NSUTF8StringEncoding];
     if (!data) {
         return;
     }
-    
+
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
     if (!dict) {
         return;
     }
-    
+
     [IronSource setNetworkDataWithNetworkKey:networkKey andNetworkData:dict];
 }
 
@@ -181,18 +181,18 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 
 - (const char *) getPlacementInfo:(NSString *)placementName {
     char *res = nil;
-    
+
     if (placementName){
         ISPlacementInfo *placementInfo = [IronSource rewardedVideoPlacementInfo:placementName];
         if(placementInfo){
             NSDictionary *dict = @{@"placement_name": [placementInfo placementName],
                                    @"reward_amount": [placementInfo rewardAmount],
                                    @"reward_name": [placementInfo rewardName]};
-            
+
             res = MakeStringCopy([self getJsonFromObj:dict]);
         }
     }
-    
+
     return res;
 }
 
@@ -275,7 +275,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 
 - (void)hasNoAvailableAd {
     UnitySendMessage(IRONSOURCE_REWARDED_VIDEO_EVENTS, "onAdUnavailable","");
-    
+
 }
 
 #pragma mark Interstitial API
@@ -356,26 +356,26 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
     @synchronized(self) {
         _position = position;
         ISBannerSize* size = [self getBannerSize:description width:width height:height];
-        
+
         // Handle the new Adaptive Banner
         if (isAdaptive) {
             size.adaptive = isAdaptive;
-            
+
             float widthx = containerWidth;
             float heightx = containerHeight;
-            
+
             if (widthx <= 0) {
                 widthx = [self getDeviceScreenWidth];
             }
             if (heightx <= 0) {
                 heightx = [self getMaximalAdaptiveHeightWithWidth:widthx];
             }
-            
+
             ISContainerParams *params = [[ISContainerParams alloc] initWithWidth:widthx height:heightx];
             [size setContainerParams:params];
-            
+
         }
-        
+
         _bannerViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
         [IronSource loadBannerWithViewController:_bannerViewController size:size placement:placement];
     }
@@ -464,7 +464,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
     else {
         y = rootView.frame.size.height - (_bannerView.frame.size.height / 2) - rootView.safeAreaInsets.bottom;
     }
-    
+
     return CGPointMake(rootView.frame.size.width / 2, y);
 }
 
@@ -492,12 +492,12 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 
 - (void)bannerLevelPlayDidClickWithAdInfo:(nonnull ISAdInfo *)adInfo {
     UnitySendMessage(IRONSOURCE_BANNER_EVENTS, "onAdClicked", [self getAdInfoData:adInfo].UTF8String);
-    
+
 }
 
 - (void)bannerLevelPlayDidDismissScreenWithAdInfo:(nonnull ISAdInfo *)adInfo {
     UnitySendMessage(IRONSOURCE_BANNER_EVENTS, "onAdScreenDismissed", [self getAdInfoData:adInfo].UTF8String);
-    
+
 }
 
 - (void)bannerLevelPlayDidFailToLoadWithError:(nonnull NSError *)error {
@@ -514,10 +514,10 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
             _bannerView = bannerView;
             [_bannerView setAccessibilityLabel:@"bannerContainer"];
             [_bannerView setHidden:_shouldHideBanner];
-            
+
             _bannerView.center = [self getBannerCenter:_position rootView:_bannerViewController.view];
             [_bannerViewController.view addSubview:_bannerView];
-            
+
             UnitySendMessage(IRONSOURCE_BANNER_EVENTS, "onAdLoaded", [self getAdInfoData:adInfo].UTF8String);
         }
     });
@@ -530,21 +530,21 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 #pragma mark Helper methods
 
 - (void) setSegment:(NSString*) segmentJSON {
-    
+
     ISSegment *segment = [[ISSegment alloc] init];
     NSError* error;
     if (!segmentJSON)
         return;
-    
+
     NSData *data = [segmentJSON dataUsingEncoding:NSUTF8StringEncoding];
     if (!data)
         return;
-    
+
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-    
+
     if (!dict)
         return;
-    
+
     NSMutableArray *allKeys = [[dict allKeys] mutableCopy];
     for (id key in allKeys)
     {
@@ -558,7 +558,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
                 segment.gender = IRONSOURCE_USER_MALE ;
             else if([object caseInsensitiveCompare:@"female"] == NSOrderedSame)
                 segment.gender = IRONSOURCE_USER_FEMALE;
-            
+
         }
         else if ([keyString isEqualToString:@"level"]){
             segment.level =  [object intValue];
@@ -569,20 +569,20 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
         else if ([keyString isEqualToString:@"userCreationDate"]){
             NSDate *date = [NSDate dateWithTimeIntervalSince1970: [object longLongValue]/1000];
             segment.userCreationDate = date;
-            
+
         }
         else if ([keyString isEqualToString:@"segmentName"]){
             segment.segmentName = object;
-            
+
         } else if ([keyString isEqualToString:@"iapt"]){
             segment.iapTotal = [object doubleValue];
         }
         else{
             [segment setCustomValue:object forKey:keyString];
         }
-        
+
     }
-    
+
     [IronSource setSegment:segment];
 }
 
@@ -593,10 +593,10 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 - (NSString *)parseErrorToEvent:(NSError *)error{
     if (error){
         NSString* codeStr =  [NSString stringWithFormat:@"%ld", (long)[error code]];
-        
+
         NSDictionary *dict = @{@"error_description": [error localizedDescription],
                                @"error_code": codeStr};
-        
+
         return [self getJsonFromObj:dict];
     }
     return nil;
@@ -630,7 +630,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
         backgroundCallback(serializedParameters);
     }
     UnitySendMessage(IRONSOURCE_EVENTS, "onImpressionSuccess", [self getJsonFromObj:[impressionData all_data]].UTF8String);
-    
+
 }
 
 #pragma mark ConsentView Delegate
@@ -649,7 +649,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
         params = @[consentViewType, [self parseErrorToEvent:error]];
     else
         params = @[consentViewType, @""];
-    
+
     UnitySendMessage(IRONSOURCE_EVENTS, "onConsentViewDidFailToLoadWithError", MakeStringCopy([self getJsonFromObj:params]));
 }
 
@@ -663,7 +663,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
         params = @[consentViewType, [self parseErrorToEvent:error]];
     else
         params = @[consentViewType, @""];
-    
+
     UnitySendMessage(IRONSOURCE_EVENTS, "onConsentViewDidFailToShowWithError", MakeStringCopy([self getJsonFromObj:params]));
 }
 
@@ -694,221 +694,221 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
     typedef struct {
         double floor;
         double ceiling;
     } LPPWaterfallConfigurationData;
-    
+
     enum LPPAdFormat
     {
         LPPAdFormatRewardedVideo,
         LPPAdFormatInterstitial,
         LPPAdFormatBanner
     };
-    
+
     void RegisterCallback(ISUnityBackgroundCallback func){
         backgroundCallback=func;
     }
     void RegisterPauseGameFunction(bool func){
         pauseGame=func;
     }
-    
+
     void CFSetPluginData(const char *pluginType, const char *pluginVersion, const char *pluginFrameworkVersion){
         [[iOSBridge start] setPluginDataWithType:GetStringParam(pluginType) pluginVersion:GetStringParam(pluginVersion) pluginFrameworkVersion:GetStringParam(pluginFrameworkVersion)];
     }
-    
+
     const char *CFGetAdvertiserId(){
         return [[iOSBridge start] getAdvertiserId];
     }
-    
+
     void CFValidateIntegration(){
         [[iOSBridge start] validateIntegration];
     }
-    
+
     void CFShouldTrackNetworkState(bool flag){
         [[iOSBridge start] shouldTrackNetworkState:flag];
     }
-    
+
     bool CFSetDynamicUserId(char *dynamicUserId){
         return [[iOSBridge start] setDynamicUserId:GetStringParam(dynamicUserId)];
     }
-    
+
     void CFSetAdaptersDebug(bool enabled){
         [[iOSBridge start] setAdaptersDebug:enabled];
     }
-    
+
     void CFSetUserId(char *userId){
         return [[iOSBridge start] setUserId:GetStringParam(userId)];
     }
-    
+
     void CFSetConsent (bool consent) {
         [[iOSBridge start] setConsent:consent];
     }
-    
+
     void CFSetMetaData (char *key, char *value) {
         [[iOSBridge start] setMetaDataWithKey:GetStringParam(key) value:GetStringParam(value)];
     }
-    
+
     void CFSetMetaDataWithValues (char *key,const char *values[]) {
         NSMutableArray *valuesArray = [NSMutableArray new];
         if(values != nil ) {
             int i = 0;
-            
+
             while (values[i] != nil) {
                 [valuesArray addObject: [NSString stringWithCString: values[i] encoding:NSASCIIStringEncoding]];
                 i++;
             }
-            
+
             [[iOSBridge start] setMetaDataWithKey:GetStringParam(key) values:valuesArray];
         }
     }
-    
+
     void CFSetManualLoadRewardedVideo(bool isOn) {
         [[iOSBridge start] setManualLoadRewardedVideo:isOn];
     }
-    
+
     void CFSetNetworkData (char *networkKey, char *networkData) {
         [[iOSBridge start] setNetworkData:GetStringParam(networkKey) data:GetStringParam(networkData)];
     }
-    
+
 #pragma mark Init SDK
-    
+
     void CFInit(const char *appKey){
         [[iOSBridge start] initWithAppKey:GetStringParam(appKey)];
     }
-    
+
     void CFInitWithAdUnits(const char *appKey, const char *adUnits[]){
         NSMutableArray *adUnitsArray = [NSMutableArray new];
-        
+
         if(adUnits != nil ) {
             int i = 0;
-            
+
             while (adUnits[i] != nil) {
                 [adUnitsArray addObject: [NSString stringWithCString: adUnits[i] encoding:NSASCIIStringEncoding]];
                 i++;
             }
-            
+
             [[iOSBridge start] initWithAppKey:GetStringParam(appKey) adUnits:adUnitsArray];
         }
     }
-    
+
 #pragma mark RewardedVideo API
-    
+
     void CFLoadRewardedVideo() {
         [[iOSBridge start] loadRewardedVideo];
     }
-    
+
     void CFShowRewardedVideo(){
         [[iOSBridge start] showRewardedVideo];
     }
-    
+
     void CFShowRewardedVideoWithPlacementName(char *placementName){
         [[iOSBridge start] showRewardedVideoWithPlacement:GetStringParam(placementName)];
     }
-    
+
     const char *CFGetPlacementInfo(char *placementName){
         return [[iOSBridge start] getPlacementInfo:GetStringParam(placementName)];
     }
-    
+
     bool CFIsRewardedVideoAvailable(){
         return [[iOSBridge start] isRewardedVideoAvailable];
     }
-    
+
     bool CFIsRewardedVideoPlacementCapped(char *placementName){
         return [[iOSBridge start] isRewardedVideoPlacementCapped:GetStringParam(placementName)];
     }
-    
+
     void CFSetRewardedVideoServerParameters(char *jsonString) {
         NSData *data = [GetStringParam(jsonString) dataUsingEncoding:NSUTF8StringEncoding];
         if (!data) {
             return;
         }
-        
+
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         if (dict) {
             [[iOSBridge start] setRewardedVideoServerParameters:dict];
         }
     }
-    
+
     void CFClearRewardedVideoServerParameters() {
         [[iOSBridge start] clearRewardedVideoServerParameters];
     }
-    
+
 #pragma mark Interstitial API
-    
+
     void CFLoadInterstitial(){
         [[iOSBridge start] loadInterstitial];
     }
-    
+
     void CFShowInterstitial(){
         [[iOSBridge start] showInterstitial];
     }
-    
+
     void CFShowInterstitialWithPlacementName(char *placementName){
         [[iOSBridge start] showInterstitialWithPlacement:GetStringParam(placementName)];
     }
-    
+
     bool CFIsInterstitialReady(){
         return [[iOSBridge start] isInterstitialReady];
     }
-    
+
     bool CFIsInterstitialPlacementCapped(char *placementName){
         return [[iOSBridge start] isInterstitialPlacementCapped:GetStringParam(placementName)];
     }
-    
+
 #pragma mark Banner API
-    
+
     void CFLoadBanner(char* description, int width, int height, int position, char* placementName, bool isAdaptive,float containerWidth,float containerHeight){
         [[iOSBridge start] loadBanner:GetStringParam(description) width:width height:height position:position placement:GetStringParam(placementName) adaptive:isAdaptive containerWidth:containerWidth containerHeight:containerHeight];
     }
-    
+
     void CFDestroyBanner (){
         [[iOSBridge start] destroyBanner];
     }
-    
+
     void CFDisplayBanner (){
         [[iOSBridge start] displayBanner];
     }
-    
+
     void CFHideBanner (){
         [[iOSBridge start] hideBanner];
     }
-    
+
     bool CFIsBannerPlacementCapped (char *placementName){
         return [[iOSBridge start] isBannerPlacementCapped:GetStringParam(placementName)];
     }
-    
+
     float CFIGetMaximalAdaptiveHeight(float width){
         return [[iOSBridge start] getMaximalAdaptiveHeightWithWidth:width];
     }
-    
+
     float CFIGetDeviceScreenWidth(){
         return [[iOSBridge start] getDeviceScreenWidth];
     }
-    
+
 #pragma mark Segment API
-    
+
     void CFSetSegment (char* jsonString) {
         [[iOSBridge start] setSegment:GetStringParam(jsonString)];
     }
-    
+
 #pragma mark Set Waterfall Configuration API
-    
+
     void LPPSetWaterfallConfiguration(LPPWaterfallConfigurationData configurationParams, enum LPPAdFormat adFormat) {
         ISWaterfallConfigurationBuilder *builder = [ISWaterfallConfiguration builder];
         const double defaultValue = 0.00;
-        
+
         if (configurationParams.floor != defaultValue) {
             NSNumber *floorValue = [NSNumber numberWithDouble:configurationParams.floor];
             [builder setFloor:floorValue];
         }
-        
+
         if (configurationParams.ceiling != defaultValue) {
             NSNumber *ceilingValue = [NSNumber numberWithDouble:configurationParams.ceiling];
             [builder setCeiling:ceilingValue];
         }
-        
+
         ISWaterfallConfiguration *waterfallConfig = [builder build];
         ISAdUnit *adUnit;
         switch (adFormat) {
@@ -924,26 +924,26 @@ extern "C" {
             default:
                 return;
         }
-        
+
         [IronSource setWaterfallConfiguration:waterfallConfig forAdUnit:adUnit];
     }
-    
+
 #pragma mark ConsentView API
-    
+
     void CFLoadConsentViewWithType (char* consentViewType){
         [[iOSBridge start] loadConsentViewWithType:GetStringParam(consentViewType)];
     }
-    
+
     void CFShowConsentViewWithType (char* consentViewType){
         [[iOSBridge start] showConsentViewWithType:GetStringParam(consentViewType)];
     }
-    
+
 #pragma mark ConversionValue API
-    
+
     const char *CFGetConversionValue(){
         return [[iOSBridge start] getConversionValue];
     }
-    
+
 #pragma mark ILRD API
     void  CFSetAdRevenueData(char* datasource,char* impressiondata){
         NSData *data=[GetStringParam(impressiondata)dataUsingEncoding:NSUTF8StringEncoding];
@@ -952,13 +952,13 @@ extern "C" {
         }
         return [[iOSBridge start] setAdRevenueData:GetStringParam(datasource)impressionData:data];
     }
-    
+
 #pragma mark TestSuite API
     void CFLaunchTestSuite(){
         [[iOSBridge start] launchTestSuite];
     }
-    
-    
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,14 +1,12 @@
-using System;
+using Unity.Services.LevelPlay;
 using UnityEngine;
-using System.Collections.Generic;
-using com.unity3d.mediation;
 
 // Example for IronSource Unity.
 public class LevelPlaySample : MonoBehaviour
 {
     private LevelPlayBannerAd bannerAd;
     private LevelPlayInterstitialAd interstitialAd;
-    
+
 #if UNITY_ANDROID
     string appKey = "85460dcd";
     string bannerAdUnitId = "thnfvcsog13bhn08";
@@ -34,8 +32,8 @@ public class LevelPlaySample : MonoBehaviour
 
         // SDK init
         Debug.Log("unity-script: LevelPlay SDK initialization");
-        LevelPlay.Init(appKey,adFormats:new []{LevelPlayAdFormat.REWARDED});
-        
+        LevelPlay.Init(appKey,adFormats:new []{com.unity3d.mediation.LevelPlayAdFormat.REWARDED});
+
         LevelPlay.OnInitSuccess += SdkInitializationCompletedEvent;
         LevelPlay.OnInitFailed += SdkInitializationFailedEvent;
     }
@@ -53,7 +51,7 @@ public class LevelPlaySample : MonoBehaviour
         IronSourceRewardedVideoEvents.onAdShowFailedEvent += RewardedVideoOnAdShowFailedEvent;
         IronSourceRewardedVideoEvents.onAdRewardedEvent += RewardedVideoOnAdRewardedEvent;
         IronSourceRewardedVideoEvents.onAdClickedEvent += RewardedVideoOnAdClickedEvent;
-        
+
         bannerAd = new LevelPlayBannerAd(bannerAdUnitId);
 
         // Register to Banner events
@@ -68,7 +66,7 @@ public class LevelPlaySample : MonoBehaviour
 
         // Create Interstitial object
         interstitialAd = new LevelPlayInterstitialAd(interstitialAdUnitId);
-        
+
         // Register to Interstitial events
         interstitialAd.OnAdLoaded += InterstitialOnAdLoadedEvent;
         interstitialAd.OnAdLoadFailed += InterstitialOnAdLoadFailedEvent;
@@ -148,7 +146,7 @@ public class LevelPlaySample : MonoBehaviour
         Debug.Log("unity-script: I got SdkInitializationCompletedEvent with config: "+ config);
         EnableAds();
     }
-    
+
     void SdkInitializationFailedEvent(LevelPlayInitError error)
     {
         Debug.Log("unity-script: I got SdkInitializationFailedEvent with error: "+ error);
@@ -204,17 +202,17 @@ public class LevelPlaySample : MonoBehaviour
     {
         Debug.Log("unity-script: I got InterstitialOnAdLoadFailedEvent With Error " + error);
     }
-	
+
     void InterstitialOnAdDisplayedEvent(LevelPlayAdInfo adInfo)
     {
         Debug.Log("unity-script: I got InterstitialOnAdDisplayedEvent With AdInfo " + adInfo);
     }
-	
+
     void InterstitialOnAdDisplayFailedEvent(LevelPlayAdDisplayInfoError infoError)
     {
         Debug.Log("unity-script: I got InterstitialOnAdDisplayFailedEvent With InfoError " + infoError);
     }
-	
+
     void InterstitialOnAdClickedEvent(LevelPlayAdInfo adInfo)
     {
         Debug.Log("unity-script: I got InterstitialOnAdClickedEvent With AdInfo " + adInfo);
@@ -224,7 +222,7 @@ public class LevelPlaySample : MonoBehaviour
     {
         Debug.Log("unity-script: I got InterstitialOnAdClosedEvent With AdInfo " + adInfo);
     }
-	
+
     void InterstitialOnAdInfoChangedEvent(LevelPlayAdInfo adInfo)
     {
         Debug.Log("unity-script: I got InterstitialOnAdInfoChangedEvent With AdInfo " + adInfo);
@@ -253,7 +251,7 @@ public class LevelPlaySample : MonoBehaviour
     {
         Debug.Log("unity-script: I got BannerOnAdDisplayedEvent With AdInfo " + adInfo);
     }
-	
+
     void BannerOnAdDisplayFailedEvent(LevelPlayAdDisplayInfoError adInfoError)
     {
         Debug.Log("unity-script: I got BannerOnAdDisplayFailedEvent With AdInfoError " + adInfoError);

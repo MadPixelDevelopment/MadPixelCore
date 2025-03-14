@@ -24,7 +24,7 @@
     NSNumber *ucsc = @0;
     if (useClientSideCallbacks)
         ucsc = @1;
-    
+
     [ISSupersonicAdsConfiguration configurations].useClientSideCallbacks = ucsc;
 }
 
@@ -36,9 +36,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 #define ParseNSStringParam( _x_ ) ( _x_ != NULL ) ? [NSString stringWithUTF8String:_x_] : [NSString stringWithUTF8String:""]
-    
+
     //IronSource
     void CFSetClientSideCallbacks(bool useClientSideCallbacks){
         [[IronSourceUnityConfig new] setClientSideCallbacks:useClientSideCallbacks];
@@ -52,8 +52,8 @@ extern "C" {
     void CFSetOfferwallCustomParams(const char *owParam){
         [[IronSourceUnityConfig new] setOfferwallCustomParams:ParseNSStringParam(owParam)];
     }
-    
-    
+
+
 #ifdef __cplusplus
 }
 #endif

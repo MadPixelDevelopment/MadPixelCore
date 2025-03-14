@@ -62,7 +62,9 @@ namespace Unity.Services.LevelPlay.Editor.IntegrationManager
 #endif
             try
             {
+#pragma warning disable 0618
                 dictionary = Json.Deserialize(json) as Dictionary<string, object>;
+#pragma warning restore 0618
 
                 return dictionary != null;
             }

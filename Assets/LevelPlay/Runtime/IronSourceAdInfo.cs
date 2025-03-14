@@ -12,7 +12,7 @@ public class IronSourceAdInfo
     /// Auction ID.
     /// </summary>
     public readonly string auctionId;
-    
+
     /// <summary>
     /// Creative ID.
     /// </summary>

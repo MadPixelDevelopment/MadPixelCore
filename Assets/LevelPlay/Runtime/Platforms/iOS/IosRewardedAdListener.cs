@@ -2,8 +2,9 @@
 using System;
 using System.Runtime.InteropServices;
 using AOT;
+using com.unity3d.mediation;
 
-namespace com.unity3d.mediation
+namespace Unity.Services.LevelPlay
 {
     class IosRewardedAdListener : IosNativeObject
     {

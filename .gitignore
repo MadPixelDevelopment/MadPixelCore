@@ -6,3 +6,4 @@ obj/
 Builds/
 Temp/
 *.csproj
+Assets/GeneratedLocalRepo/Firebase/

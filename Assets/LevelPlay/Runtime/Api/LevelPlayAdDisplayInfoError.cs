@@ -5,18 +5,31 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Represents detailed error information about an issue that occurred during the display of a LevelPlay advertisement.
     /// </summary>
+    [Obsolete("The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event to use LevelPlayAdInfo and LevelPlayAdError instead.")]
+    public class LevelPlayAdDisplayInfoError : Unity.Services.LevelPlay.LevelPlayAdDisplayInfoError
+    {
+        [Obsolete("The constructor of LevelPlayAdDisplayInfoError will be removed in version 9.0.0.")]
+        public LevelPlayAdDisplayInfoError(Unity.Services.LevelPlay.LevelPlayAdInfo levelPlayAdInfo, Unity.Services.LevelPlay.LevelPlayAdError error) : base(levelPlayAdInfo, error) {}
+    }
+}
+
+namespace Unity.Services.LevelPlay
+{
+    /// <summary>
+    /// Represents detailed error information about an issue that occurred during the display of a LevelPlay advertisement.
+    /// </summary>
+    [Obsolete("The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event to use LevelPlayAdInfo and LevelPlayAdError instead.")]
     public class LevelPlayAdDisplayInfoError
     {
         public LevelPlayAdInfo DisplayLevelPlayAdInfo { get; private set; }
         public LevelPlayAdError LevelPlayError { get; private set; }
 
-        [Obsolete("The constructor of LevelPlayAdDisplayInfoError will be removed in version 9.0.0.")]
         /// <summary>
         /// Initializes a new instance of the <see cref="LevelPlayAdDisplayInfoError"/> class with the specified advertisement information and error details.
         /// </summary>
         /// <param name="levelPlayAdInfo">The AdInfo associated with the error.</param>
         /// <param name="error">The error encountered during the advertisement display.</param>
-        public LevelPlayAdDisplayInfoError(LevelPlayAdInfo levelPlayAdInfo, LevelPlayAdError error)
+        internal LevelPlayAdDisplayInfoError(LevelPlayAdInfo levelPlayAdInfo, LevelPlayAdError error)
         {
             DisplayLevelPlayAdInfo = levelPlayAdInfo;
             LevelPlayError = error;

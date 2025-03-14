@@ -15,7 +15,7 @@ public static class dataSource
 
 public class IronSource : IronSourceIAgent
 {
-    [System.Obsolete(@"Please use the pluginVersion function", false)] public static string UNITY_PLUGIN_VERSION = @"8.6.0-r";
+    [System.Obsolete(@"Please use the pluginVersion function", false)] public static string UNITY_PLUGIN_VERSION = @"8.7.0-r";
     public static IronSource Agent { get; }
     public void clearRewardedVideoServerParams();
     [System.Obsolete(@"This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.DestroyAd() method instead.")] public void destroyBanner();
@@ -519,21 +519,134 @@ public class WaterfallConfiguration
 
 namespace com.unity3d.mediation
 {
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use ILevelPlayBannerAd under the new namespace Unity.Services.LevelPlay.")] public interface ILevelPlayBannerAd : System.IDisposable, Unity.Services.LevelPlay.ILevelPlayBannerAd
+    {
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use ILevelPlayInterstitialAd under the new namespace Unity.Services.LevelPlay.")] public interface ILevelPlayInterstitialAd : System.IDisposable, Unity.Services.LevelPlay.ILevelPlayInterstitialAd
+    {
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use ILevelPlayRewardedAd under the new namespace Unity.Services.LevelPlay.")] public interface ILevelPlayRewardedAd : System.IDisposable, Unity.Services.LevelPlay.ILevelPlayRewardedAd
+    {
+    }
+
+    [System.Obsolete(@"IosNativeObject will be deprecated.")] public abstract class IosNativeObject : System.IDisposable
+    {
+        public System.IntPtr NativePtr { get; protected set; }
+        protected IosNativeObject(bool usesCallbacks) {}
+        protected bool CheckDisposedAndLogError(string message);
+        public virtual void Dispose();
+        protected static T Get<T>(System.IntPtr ptr) where T : IosNativeObject;
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlay under the new namespace Unity.Services.LevelPlay.")] public class LevelPlay : Unity.Services.LevelPlay.LevelPlay
+    {
+        public LevelPlay() {}
+    }
+
+    [System.Obsolete(@"The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event to use LevelPlayAdInfo and LevelPlayAdError instead.")] public class LevelPlayAdDisplayInfoError : Unity.Services.LevelPlay.LevelPlayAdDisplayInfoError
+    {
+        [System.Obsolete(@"The constructor of LevelPlayAdDisplayInfoError will be removed in version 9.0.0.")] public LevelPlayAdDisplayInfoError(Unity.Services.LevelPlay.LevelPlayAdInfo levelPlayAdInfo, Unity.Services.LevelPlay.LevelPlayAdError error) {}
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayAdError under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayAdError : Unity.Services.LevelPlay.LevelPlayAdError
+    {
+        [System.Obsolete(@"The constructor LevelPlayAdError will be removed in version 9.0.0.")] public LevelPlayAdError(string adUnitId, int errorCode, string errorMessage) {}
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayAdFormat under the new namespace Unity.Services.LevelPlay.")] public enum LevelPlayAdFormat
+    {
+        BANNER = 0,
+        INTERSTITIAL = 1,
+        REWARDED = 2,
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayAdInfo under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayAdInfo : Unity.Services.LevelPlay.LevelPlayAdInfo
+    {
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayAdSize under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayAdSize
+    {
+        public static LevelPlayAdSize BANNER { get; }
+        public int CustomWidth { get; }
+        public string Description { get; }
+        public int Height { get; }
+        public static LevelPlayAdSize LARGE { get; }
+        public static LevelPlayAdSize LEADERBOARD { get; }
+        public static LevelPlayAdSize MEDIUM_RECTANGLE { get; }
+        public int Width { get; }
+        public static LevelPlayAdSize CreateAdaptiveAdSize(int customWidth = -1);
+        public static LevelPlayAdSize CreateCustomBannerSize(int width, int height);
+        public override string ToString();
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerAd under the new namespace Unity.Services.LevelPlay.")] public sealed class LevelPlayBannerAd : Unity.Services.LevelPlay.LevelPlayBannerAd
+    {
+        public LevelPlayBannerAd(string adUnitId, LevelPlayAdSize size = default(LevelPlayAdSize), LevelPlayBannerPosition position = LevelPlayBannerPosition.BottomCenter, string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerPosition under the new namespace Unity.Services.LevelPlay.")] public enum LevelPlayBannerPosition
+    {
+        BottomCenter = 2,
+        TopCenter = 1,
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayConfiguration under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayConfiguration : Unity.Services.LevelPlay.LevelPlayConfiguration
+    {
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayInitError under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayInitError : Unity.Services.LevelPlay.LevelPlayInitError
+    {
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayInterstitialAd under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayInterstitialAd : Unity.Services.LevelPlay.LevelPlayInterstitialAd
+    {
+        public LevelPlayInterstitialAd(string adUnitId) {}
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayReward under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayReward : Unity.Services.LevelPlay.LevelPlayReward
+    {
+    }
+
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayRewardedAd under the new namespace Unity.Services.LevelPlay.")] public sealed class LevelPlayRewardedAd : Unity.Services.LevelPlay.LevelPlayRewardedAd
+    {
+        public LevelPlayRewardedAd(string adUnitId) {}
+    }
+
+    [System.Obsolete(@"UnsupportedBannerAd will be deprecated.")] public class UnsupportedBannerAd : Unity.Services.LevelPlay.UnsupportedBannerAd
+    {
+        public UnsupportedBannerAd(string adUnitId, LevelPlayAdSize size, LevelPlayBannerPosition position, string placementId) {}
+    }
+}
+
+namespace IronSourceJSON
+{
+    [System.Obsolete(@"This class will be made private in a future version.", false)] public static class Json
+    {
+        public static object Deserialize(string json);
+        public static string Serialize(object obj);
+    }
+}
+
+namespace Unity.Services.LevelPlay
+{
     public interface ILevelPlayBannerAd : System.IDisposable
     {
-        public event System.Action<LevelPlayAdInfo> OnAdClicked;
-        public event System.Action<LevelPlayAdInfo> OnAdCollapsed;
-        public event System.Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.Action<LevelPlayAdInfo> OnAdExpanded;
-        public event System.Action<LevelPlayAdInfo> OnAdLeftApplication;
-        public event System.Action<LevelPlayAdInfo> OnAdLoaded;
-        public event System.Action<LevelPlayAdError> OnAdLoadFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
         public void DestroyAd();
-        public LevelPlayAdSize GetAdSize();
+        public string GetAdId();
+        public com.unity3d.mediation.LevelPlayAdSize GetAdSize();
         public string GetAdUnitId();
         public string GetPlacementName();
-        public LevelPlayBannerPosition GetPosition();
+        public com.unity3d.mediation.LevelPlayBannerPosition GetPosition();
         public void HideAd();
         public void LoadAd();
         public void PauseAutoRefresh();
@@ -543,15 +656,16 @@ namespace com.unity3d.mediation
 
     public interface ILevelPlayInterstitialAd : System.IDisposable
     {
-        public event System.Action<LevelPlayAdInfo> OnAdClicked;
-        public event System.Action<LevelPlayAdInfo> OnAdClosed;
-        public event System.Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.Action<LevelPlayAdInfo> OnAdInfoChanged;
-        public event System.Action<LevelPlayAdInfo> OnAdLoaded;
-        public event System.Action<LevelPlayAdError> OnAdLoadFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
         public string AdUnitId { get; }
         public void DestroyAd();
+        public string GetAdId();
         public bool IsAdReady();
         public void LoadAd();
         public void ShowAd(string placementName = default(string));
@@ -559,53 +673,44 @@ namespace com.unity3d.mediation
 
     public interface ILevelPlayRewardedAd : System.IDisposable
     {
-        public event System.Action<LevelPlayAdInfo> OnAdClicked;
-        public event System.Action<LevelPlayAdInfo> OnAdClosed;
-        public event System.Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.Action<LevelPlayAdInfo> OnAdInfoChanged;
-        public event System.Action<LevelPlayAdInfo> OnAdLoaded;
-        public event System.Action<LevelPlayAdError> OnAdLoadFailed;
-        public event System.Action<LevelPlayAdInfo, LevelPlayReward> OnAdRewarded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo, com.unity3d.mediation.LevelPlayReward> OnAdRewarded;
         public string AdUnitId { get; }
         public void DestroyAd();
+        public string GetAdId();
         public bool IsAdReady();
         public void LoadAd();
         public void ShowAd(string placementName = default(string));
     }
 
-    public abstract class IosNativeObject : System.IDisposable
-    {
-        public System.IntPtr NativePtr { get; protected set; }
-        protected IosNativeObject(bool usesCallbacks) {}
-        protected bool CheckDisposedAndLogError(string message);
-        public virtual void Dispose();
-        protected static T Get<T>(System.IntPtr ptr) where T : IosNativeObject;
-    }
-
     public class LevelPlay
     {
-        public static event System.Action<LevelPlayInitError> OnInitFailed;
-        public static event System.Action<LevelPlayConfiguration> OnInitSuccess;
+        public static event System.Action<com.unity3d.mediation.LevelPlayInitError> OnInitFailed;
+        public static event System.Action<com.unity3d.mediation.LevelPlayConfiguration> OnInitSuccess;
         public LevelPlay() {}
-        public static void Init(string appKey, string userId = default(string), LevelPlayAdFormat[] adFormats = default(LevelPlayAdFormat[]));
+        public static void Init(string appKey, string userId = default(string), com.unity3d.mediation.LevelPlayAdFormat[] adFormats = default(com.unity3d.mediation.LevelPlayAdFormat[]));
         public static void SetPauseGame(bool pause);
     }
 
-    public class LevelPlayAdDisplayInfoError
+    [System.Obsolete(@"The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event to use LevelPlayAdInfo and LevelPlayAdError instead.")] public class LevelPlayAdDisplayInfoError
     {
         public LevelPlayAdInfo DisplayLevelPlayAdInfo { get; }
         public LevelPlayAdError LevelPlayError { get; }
-        [System.Obsolete(@"The constructor of LevelPlayAdDisplayInfoError will be removed in version 9.0.0.")] public LevelPlayAdDisplayInfoError(LevelPlayAdInfo levelPlayAdInfo, LevelPlayAdError error) {}
         public override string ToString();
     }
 
     public class LevelPlayAdError
     {
+        public string AdId { get; }
         public string AdUnitId { get; }
         public int ErrorCode { get; }
         public string ErrorMessage { get; }
-        [System.Obsolete(@"The constructor LevelPlayAdError will be removed in version 9.0.0.")] public LevelPlayAdError(string adUnitId, int errorCode, string errorMessage) {}
         public override string ToString();
     }
 
@@ -622,6 +727,7 @@ namespace com.unity3d.mediation
         public readonly string Ab;
         [System.Obsolete(@"adFormat will be replaced by AdFormat in version 9.0.0.")] public readonly string adFormat;
         public readonly string AdFormat;
+        public readonly string AdId;
         [System.Obsolete(@"adNetwork will be replaced by AdNetwork in version 9.0.0.")] public readonly string adNetwork;
         public readonly string AdNetwork;
         [JetBrains.Annotations.CanBeNull] [System.Obsolete(@"adSize will be replaced by AdSize in version 9.0.0.")] public readonly LevelPlayAdSize adSize;
@@ -667,23 +773,24 @@ namespace com.unity3d.mediation
         public override string ToString();
     }
 
-    public sealed class LevelPlayBannerAd : ILevelPlayBannerAd, System.IDisposable
+    public class LevelPlayBannerAd : com.unity3d.mediation.ILevelPlayBannerAd, ILevelPlayBannerAd, System.IDisposable
     {
-        public event System.Action<LevelPlayAdInfo> OnAdClicked;
-        public event System.Action<LevelPlayAdInfo> OnAdCollapsed;
-        public event System.Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.Action<LevelPlayAdInfo> OnAdExpanded;
-        public event System.Action<LevelPlayAdInfo> OnAdLeftApplication;
-        public event System.Action<LevelPlayAdInfo> OnAdLoaded;
-        public event System.Action<LevelPlayAdError> OnAdLoadFailed;
-        public LevelPlayBannerAd(string adUnitId, LevelPlayAdSize size = default(LevelPlayAdSize), LevelPlayBannerPosition position = LevelPlayBannerPosition.BottomCenter, string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = default(com.unity3d.mediation.LevelPlayAdSize), com.unity3d.mediation.LevelPlayBannerPosition position = com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter, string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
         public void DestroyAd();
         public void Dispose();
-        public LevelPlayAdSize GetAdSize();
+        public string GetAdId();
+        public com.unity3d.mediation.LevelPlayAdSize GetAdSize();
         public string GetAdUnitId();
         public string GetPlacementName();
-        public LevelPlayBannerPosition GetPosition();
+        public com.unity3d.mediation.LevelPlayBannerPosition GetPosition();
         public void HideAd();
         public void LoadAd();
         public void PauseAutoRefresh();
@@ -706,22 +813,23 @@ namespace com.unity3d.mediation
     {
         public int ErrorCode { get; }
         public string ErrorMessage { get; }
-        public string ToString();
+        public override string ToString();
     }
 
-    public class LevelPlayInterstitialAd : ILevelPlayInterstitialAd, System.IDisposable
+    public class LevelPlayInterstitialAd : com.unity3d.mediation.ILevelPlayInterstitialAd, ILevelPlayInterstitialAd, System.IDisposable
     {
-        public event System.Action<LevelPlayAdInfo> OnAdClicked;
-        public event System.Action<LevelPlayAdInfo> OnAdClosed;
-        public event System.Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.Action<LevelPlayAdInfo> OnAdInfoChanged;
-        public event System.Action<LevelPlayAdInfo> OnAdLoaded;
-        public event System.Action<LevelPlayAdError> OnAdLoadFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
         public string AdUnitId { get; }
         public LevelPlayInterstitialAd(string adUnitId) {}
         public void DestroyAd();
         public void Dispose();
+        public string GetAdId();
         public bool IsAdReady();
         public static bool IsPlacementCapped(string placementName);
         public void LoadAd();
@@ -734,20 +842,21 @@ namespace com.unity3d.mediation
         public string Name { get; }
     }
 
-    public sealed class LevelPlayRewardedAd : ILevelPlayRewardedAd, System.IDisposable
+    public class LevelPlayRewardedAd : com.unity3d.mediation.ILevelPlayRewardedAd, ILevelPlayRewardedAd, System.IDisposable
     {
-        public event System.Action<LevelPlayAdInfo> OnAdClicked;
-        public event System.Action<LevelPlayAdInfo> OnAdClosed;
-        public event System.Action<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.Action<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.Action<LevelPlayAdInfo> OnAdInfoChanged;
-        public event System.Action<LevelPlayAdInfo> OnAdLoaded;
-        public event System.Action<LevelPlayAdError> OnAdLoadFailed;
-        public event System.Action<LevelPlayAdInfo, LevelPlayReward> OnAdRewarded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClosed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public event System.Action<com.unity3d.mediation.LevelPlayAdInfo, com.unity3d.mediation.LevelPlayReward> OnAdRewarded;
         public string AdUnitId { get; }
         public LevelPlayRewardedAd(string adUnitId) {}
         public void DestroyAd();
         public void Dispose();
+        public string GetAdId();
         public bool IsAdReady();
         public static bool IsPlacementCapped(string placementName);
         public void LoadAd();
@@ -756,20 +865,21 @@ namespace com.unity3d.mediation
 
     public class UnsupportedBannerAd : System.IDisposable
     {
-        public event System.EventHandler<LevelPlayAdInfo> OnAdClicked;
-        public event System.EventHandler<LevelPlayAdInfo> OnAdCollapsed;
-        public event System.EventHandler<LevelPlayAdInfo> OnAdDisplayed;
-        public event System.EventHandler<LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
-        public event System.EventHandler<LevelPlayAdInfo> OnAdExpanded;
-        public event System.EventHandler<LevelPlayAdInfo> OnAdLeftApplication;
-        public event System.EventHandler<LevelPlayAdInfo> OnAdLoaded;
-        public event System.EventHandler<LevelPlayAdError> OnAdLoadFailed;
-        public LevelPlayAdSize AdSize { get; }
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdCollapsed;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdDisplayed;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdDisplayInfoError> OnAdDisplayFailed;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdExpanded;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
+        public event System.EventHandler<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
+        public string AdId { get; }
+        public com.unity3d.mediation.LevelPlayAdSize AdSize { get; }
         public string AdUnitId { get; }
         public string PlacementName { get; }
-        public LevelPlayBannerPosition Position { get; }
+        public com.unity3d.mediation.LevelPlayBannerPosition Position { get; }
         public LevelPlayAdSize Size { get; }
-        public UnsupportedBannerAd(string adUnitId, LevelPlayAdSize size, LevelPlayBannerPosition position, string placementId) {}
+        public UnsupportedBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition position, string placementId) {}
         public void DestroyAd();
         public void Dispose();
         public void HideAd();
@@ -778,14 +888,5 @@ namespace com.unity3d.mediation
         public void ResumeAutoRefresh();
         public void SetAutoRefresh(bool flag);
         public void ShowAd();
-    }
-}
-
-namespace IronSourceJSON
-{
-    [System.Obsolete(@"This class will be made private in a future version.", false)] public static class Json
-    {
-        public static object Deserialize(string json);
-        public static string Serialize(object obj);
     }
 }

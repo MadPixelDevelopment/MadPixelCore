@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace com.unity3d.mediation
 {
+    [Obsolete("IosNativeObject will be deprecated.")]
     public abstract class IosNativeObject : IDisposable
     {
         static ConcurrentDictionary<IntPtr, IosNativeObject> s_Objects = new ConcurrentDictionary<IntPtr, IosNativeObject>();
