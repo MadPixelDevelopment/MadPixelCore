@@ -437,7 +437,7 @@ namespace MAXHelper {
             LPComp.onFinishAdsEvent += AppLovin_OnFinishAds;
             LPComp.onAdLoadedEvent += AppLovin_OnAdLoaded;
             LPComp.onInterDismissedEvent += AppLovin_OnInterDismissed;
-            //LPComp.onErrorEvent += LevelPlay_OnError;
+            LPComp.onErrorEvent += LevelPlay_OnError;
 
             LPComp.onBannerAdLoadedEvent += LevelPlay_onBannerAdLoaded;
 
