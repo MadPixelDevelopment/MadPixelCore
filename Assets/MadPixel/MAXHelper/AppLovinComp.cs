@@ -46,7 +46,6 @@ namespace MAXHelper {
         }
 
         private void InitSDK() {
-            MaxSdk.SetSdkKey(MAXCustomSettings.APPLOVIN_SDK_KEY);
             MaxSdk.InitializeSdk();
             MaxSdk.SetVerboseLogging(bShowDebug);
         }

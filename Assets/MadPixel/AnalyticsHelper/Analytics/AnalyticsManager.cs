@@ -92,7 +92,7 @@ namespace MadPixelAnalytics {
         #region Helpers
 
         public void SubscribeToAdsManager() {
-            AdsManager Ads = FindObjectOfType<AdsManager>();
+            AdsManager Ads = FindFirstObjectByType<AdsManager>();
             if (Ads != null) {
                 Ads.OnAdAvailable += OnAdAvailable;
                 Ads.OnAdShown += OnAdWatched;

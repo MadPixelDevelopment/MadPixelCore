@@ -17,7 +17,6 @@ namespace MAXHelper {
 
         [SerializeField] private bool bInitializeOnStart = true;
         [SerializeField] private int CooldownBetweenInterstitials = 30;
-        [SerializeField] private bool bUseTermsAndATT = false;
 
         private bool bCanShowBanner = true;
         private bool bIntersOn = true;

@@ -339,7 +339,7 @@ namespace MadPixel.InApps {
         #endregion
 
         #region Helpers
-        private void OnTransactionsRestored(bool result) {
+        private void OnTransactionsRestored(bool result, string a_message) {
             if (result) {
                 // This does not mean anything was restored,
                 // merely that the restoration process succeeded.
