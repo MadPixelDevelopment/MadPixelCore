@@ -303,11 +303,16 @@ namespace MAXHelper {
         /// <summary>
         /// Returns TRUE if LevelPlay has a loaded ad ready to show
         /// </summary>
-        public static bool HasLoadedAd(EAdType AdType) {
+        public static bool HasLoadedAd(EAdType a_adType) {
 #if UNITY_EDITOR
             return true;
 #endif
-            return Instance.LPComp.IsReady(AdType);
+            if (a_adType == EAdType.INTER) {
+                return (Instance.bIntersOn && Instance.LPComp.IsReady(a_adType) && Instance.IsCooldownElapsed());
+            }
+
+            //NOTE: rewarded can always be shown
+            return Instance.LPComp.IsReady(a_adType);
         }
 
 

@@ -378,6 +378,17 @@
       "dependencyXmlURL": "https://s3.amazonaws.com/ssa.public/Dependencies-xmls/Bigo/${VERSION}/ISBigoAdapterDependencies.xml",
       "dependencyXmlFileName": "ISBigoAdapterDependencies.xml",
       "versions": {
+        "4.3.9.0": {
+          "ironSourceSdkVersion": "[8.4.0, 9.0[",
+          "android": {
+            "adapterVersion": "4.3.7",
+            "adNetworkVersion": "5.2.0"
+          },
+          "ios": {
+            "adapterVersion": "4.3.5.0",
+            "adNetworkVersion": "4.7.0"
+          }
+        },
         "4.3.8.0": {
           "ironSourceSdkVersion": "[8.4.0, 9.0[",
           "android": {
@@ -524,6 +535,13 @@
       "dependencyXmlURL": "https://s3.amazonaws.com/ssa.public/Dependencies-xmls/CSJ/${VERSION}/ISCSJAdapterDependencies.xml",
       "dependencyXmlFileName": "ISCSJAdapterDependencies.xml",
       "versions": {
+        "4.3.11.0": {
+          "ironSourceSdkVersion": "[8.4.0, 9.0[",
+          "ios": {
+            "adapterVersion": "4.3.11.0",
+            "adNetworkVersion": "6.7.0.8"
+          }
+        },
         "4.3.10.0": {
           "ironSourceSdkVersion": "[8.4.0, 9.0[",
           "ios": {
@@ -573,6 +591,17 @@
       "dependencyXmlURL": "https://s3.amazonaws.com/ssa.public/Dependencies-xmls/Fyber/${VERSION}/ISFyberAdapterDependencies.xml",
       "dependencyXmlFileName": "ISFyberAdapterDependencies.xml",
       "versions": {
+        "4.3.56.0": {
+          "ironSourceSdkVersion": "[8.4.0, 9.0[",
+          "android": {
+            "adapterVersion": "4.3.37",
+            "adNetworkVersion": "8.3.6"
+          },
+          "ios": {
+            "adapterVersion": "4.3.42.0",
+            "adNetworkVersion": "8.3.6"
+          }
+        },
         "4.3.55.0": {
           "ironSourceSdkVersion": "[8.4.0, 9.0[",
           "android": {
@@ -858,6 +887,17 @@
       "dependencyXmlURL": "https://s3.amazonaws.com/ssa.public/Dependencies-xmls/InMobi/${VERSION}/ISInMobiAdapterDependencies.xml",
       "dependencyXmlFileName": "ISInMobiAdapterDependencies.xml",
       "versions": {
+        "4.3.34.0": {
+          "ironSourceSdkVersion": "[8.4.0, 9.0[",
+          "android": {
+            "adapterVersion": "4.3.29",
+            "adNetworkVersion": "10.8.2"
+          },
+          "ios": {
+            "adapterVersion": "4.3.27.0",
+            "adNetworkVersion": "10.8.2"
+          }
+        },
         "4.3.33.0": {
           "ironSourceSdkVersion": "[8.4.0, 9.0[",
           "android": {
@@ -1756,6 +1796,17 @@
       "dependencyXmlURL": "https://s3.amazonaws.com/ssa.public/Dependencies-xmls/Smaato/${VERSION}/ISSmaatoAdapterDependencies.xml",
       "dependencyXmlFileName": "ISSmaatoAdapterDependencies.xml",
       "versions": {
+        "4.3.19.0": {
+          "ironSourceSdkVersion": "[8.4.0, 9.0[",
+          "android": {
+            "adapterVersion": "4.3.14",
+            "adNetworkVersion": "22.7.2"
+          },
+          "ios": {
+            "adapterVersion": "4.3.17.0",
+            "adNetworkVersion": "22.9.3"
+          }
+        },
         "4.3.18.0": {
           "ironSourceSdkVersion": "[8.4.0, 9.0[",
           "android": {
