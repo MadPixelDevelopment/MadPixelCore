@@ -2,10 +2,10 @@
   <packages>
     <package>androidx.annotation:annotation:1.7.1</package>
     <package>com.android.installreferrer:installreferrer:2.1</package>
-    <package>com.applovin.mediation:facebook-adapter:[6.18.0.2]</package>
-    <package>com.applovin.mediation:google-adapter:[23.6.0.3]</package>
-    <package>com.applovin.mediation:ironsource-adapter:8.6.1.0.0</package>
-    <package>com.applovin.mediation:unityads-adapter:4.13.1.1</package>
+    <package>com.applovin.mediation:facebook-adapter:[6.19.0.2]</package>
+    <package>com.applovin.mediation:google-adapter:[24.1.0.0]</package>
+    <package>com.applovin.mediation:ironsource-adapter:8.7.0.0.0</package>
+    <package>com.applovin.mediation:unityads-adapter:4.14.0.0</package>
     <package>com.applovin:applovin-sdk:13.1.0</package>
     <package>com.appsflyer:af-android-sdk:6.15.0</package>
     <package>com.appsflyer:unity-wrapper:6.15.2</package>
