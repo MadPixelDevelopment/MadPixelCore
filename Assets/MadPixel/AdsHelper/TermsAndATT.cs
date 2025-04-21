@@ -1,31 +1,14 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
-#if UNITY_IOS
-using Unity.Advertisement.IosSupport;
-using System.Runtime.InteropServices;
-#endif
 using UnityEngine;
 using UnityEngine.Events;
 
-#if UNITY_IOS && !UNITY_EDITOR
-
-namespace AudienceNetwork
-{
-    public static class AdSettings
-    {
-        [DllImport("__Internal")] 
-        private static extern void FBAdSettingsBridgeSetAdvertiserTrackingEnabled(bool advertiserTrackingEnabled);
-
-        public static void SetAdvertiserTrackingEnabled(bool advertiserTrackingEnabled)
-        {
-            FBAdSettingsBridgeSetAdvertiserTrackingEnabled(advertiserTrackingEnabled);
-        }
-    }
-}
-
+#if UNITY_IOS
+using Unity.Advertisement.IosSupport;
 #endif
+
 
 namespace MAXHelper {
 
@@ -46,22 +29,26 @@ namespace MAXHelper {
         #region Public
         public void BeginPlay() {
             MobileAds.RaiseAdEventsOnUnityMainThread = true;
-            GatherUMPConsent();
 #if UNITY_IOS
-            ShowATTIOSDialog();
+            ATTIOSDialogHelper attHelperComponent = GetComponent<ATTIOSDialogHelper>();
+            if (attHelperComponent){
+                attHelperComponent.BeginPlay(OnAuthTrackingStatusChangeCallback);
+            } else {
+                Debug.LogError($"There is no ATT HELPER present! Please fix it!", this);
+            }
+#else
+            GatherUMPConsent();
 #endif
         }
         #endregion
 
         #region Helpers
 
-        private void ShowATTIOSDialog() {
 #if UNITY_IOS
-            if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() == ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED) {
-                ATTrackingStatusBinding.RequestAuthorizationTracking();
-            }
-#endif
+        private void OnAuthTrackingStatusChangeCallback(ATTrackingStatusBinding.AuthorizationTrackingStatus a_newStatus){
+            GatherUMPConsent();
         }
+#endif
 
         private void ShowTermsPanel() {
 

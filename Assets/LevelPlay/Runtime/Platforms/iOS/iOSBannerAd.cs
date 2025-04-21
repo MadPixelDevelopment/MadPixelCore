@@ -44,7 +44,9 @@ namespace Unity.Services.LevelPlay
             PlacementName = placementName;
             DisplayOnLoad = displayOnLoad;
 
-            NativePtr = BannerAdCreate(adUnitId, placementName, size.Description, size.Width, size.Height, size.CustomWidth);
+            IosLevelPlayAdSize iosAdSize = (IosLevelPlayAdSize) AdSize.GetPlatformLevelPlayAdSize();
+
+            NativePtr = BannerAdCreate(adUnitId, placementName, iosAdSize.NativePtr);
             if (_mBannerAdListener == null)
             {
                 _mBannerAdListener = new IosBannerAdListener(this);
@@ -92,7 +94,7 @@ namespace Unity.Services.LevelPlay
         public void SetPosition()
         {
             if (CheckDisposedAndLogError("Cannot set Banner Position")) return;
-            BannerAdSetPosition(NativePtr, (int)Position);
+            BannerAdSetPosition(NativePtr, Position.Description, Position.Position.x, Position.Position.y);
         }
 
         public void ShowAd()
@@ -154,7 +156,7 @@ namespace Unity.Services.LevelPlay
         }
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewCreate")]
-        static extern IntPtr BannerAdCreate(string adUnitId, string placementName, string description, int width, int height, int customWidth);
+        static extern IntPtr BannerAdCreate(string adUnitId, string placementName, IntPtr adSize);
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewSetDelegate")]
         static extern void BannerAdSetDelegate(IntPtr bannerAdView, IntPtr bannerAdListener);
@@ -166,7 +168,7 @@ namespace Unity.Services.LevelPlay
         static extern void BannerAdDestroy(IntPtr bannerAdView);
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewSetPosition")]
-        private static extern void BannerAdSetPosition(IntPtr bannerAdView, int position);
+        private static extern void BannerAdSetPosition(IntPtr bannerAdView, string position, float x, float y);
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewShow")]
         private static extern void BannerAdViewShow(IntPtr bannerAdView);

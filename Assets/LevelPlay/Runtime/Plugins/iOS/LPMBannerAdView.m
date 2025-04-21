@@ -3,56 +3,69 @@
 #import "LPMUtilities.h"
 #import <IronSource/LPMBannerAdView.h>
 #import <UIKit/UIKit.h>
-
-
-CGFloat getDeviceScreenWidth(void) {
-    UIScreen *mainScreen = [UIScreen mainScreen];
-    CGFloat screenWidthPoints = mainScreen.bounds.size.width;
-    if (@available(iOS 11.0, *)) {
-        UIWindow *mainWindow = [[UIWindow alloc] initWithFrame:mainScreen.bounds];
-        UILayoutGuide *safeAreaLayoutGuide = mainWindow.safeAreaLayoutGuide;
-        screenWidthPoints = safeAreaLayoutGuide.layoutFrame.size.width;
-    }
-    return screenWidthPoints;
-}
-
-LPMAdSize *GetAdSizeFromDescription(const char *description, int width,
-                                    int height, int customWidth) {
-    NSString *desc = [LPMUtilities getStringFromCString:description];
-
-    if (strcmp(description, "CUSTOM") == 0) {
-        return [LPMAdSize customSizeWithWidth:width height:height];
-    } else if ([desc isEqualToString:@"BANNER"]) {
-        return [LPMAdSize bannerSize];
-    } else if ([desc isEqualToString:@"LARGE"]) {
-        return [LPMAdSize largeSize];
-    } else if ([desc isEqualToString:@"MEDIUM_RECTANGLE"]) {
-        return [LPMAdSize mediumRectangleSize];
-    } else if ([desc isEqualToString:@"LEADERBOARD"]) {
-        return [LPMAdSize leaderBoardSize];
-    } else if ([desc isEqualToString:@"ADAPTIVE"]) {
-        if (customWidth > 0) {
-            return [LPMAdSize createAdaptiveAdSizeWithWidth: customWidth];
-        } else {
-            return [LPMAdSize createAdaptiveAdSize];
-        }
-    } else {
-        return [LPMAdSize bannerSize];
-    }
-}
+#import "LPMBannerPosition.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+    static UIWindow *getActiveWindow(void) {
+        for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]] && scene.activationState == UISceneActivationStateForegroundActive) {
+                return scene.windows.firstObject;
+            }
+        }
+        return nil;
+    }
+
+    void *LPMCreateAdaptiveAdSize() {
+        return (__bridge_retained void *)[LPMAdSize createAdaptiveAdSize];
+    }
+
+    void *LPMCreateAdaptiveAdSizeWithWidth(int width) {
+        return (__bridge_retained void *)[LPMAdSize createAdaptiveAdSizeWithWidth:width];
+    }
+
+    void *LPMCreateAdSizeWithType(int adSizeType, int width, int height) {
+        LPMAdSize *adSize = nil;
+        switch (adSizeType) {
+            case 1:
+                adSize = [LPMAdSize bannerSize];
+                break;
+            case 2:
+                adSize = [LPMAdSize largeSize];
+                break;
+            case 3:
+                adSize = [LPMAdSize mediumRectangleSize];
+                break;
+            case 4:
+                adSize = [LPMAdSize customSizeWithWidth:width height:height];
+                break;
+            case 5:
+                adSize = [LPMAdSize leaderBoardSize];
+                break;
+            default:
+                adSize = [LPMAdSize bannerSize];
+                break;
+        }
+        return (__bridge_retained void *)adSize;
+    }
+
+    NSInteger LPMGetAdSizeWidth(void *adSizeRef) {
+        LPMAdSize *adSize = (__bridge LPMAdSize *)adSizeRef;
+        return [adSize width];
+    }
+
+    NSInteger LPMGetAdSizeHeight(void *adSizeRef) {
+        LPMAdSize *adSize = (__bridge LPMAdSize *)adSizeRef;
+        return [adSize height];
+    }
 
     void *LPMBannerAdViewCreate(const char *adUnitId, const char *placementName,
-                                const char *description, int width, int height, int customWidth) {
+                                LPMAdSize *adSize) {
         LPMBannerAdView *bannerAdView =
         [[LPMBannerAdView alloc] initWithAdUnitId:[LPMUtilities getStringFromCString:adUnitId]];
 
         [bannerAdView setPlacementName:[LPMUtilities getStringFromCString:placementName]];
-
-        LPMAdSize *adSize = GetAdSizeFromDescription(description, width, height, customWidth);
         [bannerAdView setAdSize:adSize];
 
         bannerAdView.frame = CGRectMake(0, 0, (CGFloat)adSize.width, (CGFloat)adSize.height);
@@ -68,8 +81,10 @@ extern "C" {
 
     void LPMBannerAdViewLoadAd(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
-        [bannerAdView loadAdWithViewController:[UIApplication sharedApplication]
-         .keyWindow.rootViewController];
+        UIWindow *window = getActiveWindow();
+        if (window && window.rootViewController) {
+            [bannerAdView loadAdWithViewController:window.rootViewController];
+        }
     }
 
     void LPMBannerAdViewDestroy(void *bannerAdViewRef) {
@@ -88,39 +103,106 @@ extern "C" {
         [bannerAdView resumeAutoRefresh];
     }
 
-    void LPMBannerAdViewSetPosition(void *bannerAdViewRef, int position) {
+    void LPMBannerAdViewSetPosition(
+        void *bannerAdViewRef,
+        const char *positionDescription,
+        float xOffset,
+        float yOffset
+    ) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
+        NSString *position = [NSString stringWithUTF8String:positionDescription];
+
         dispatch_async(dispatch_get_main_queue(), ^{
-            UIView *rootView =
-            [UIApplication sharedApplication].keyWindow.rootViewController.view;
+            UIWindow *window = getActiveWindow();
+            if (!window) return;
+
+            UIView *rootView = window.rootViewController.view;
+            if (!rootView) return;
 
             bannerAdView.translatesAutoresizingMaskIntoConstraints = NO;
             [bannerAdView removeFromSuperview];
             [rootView addSubview:bannerAdView];
 
             NSMutableArray<NSLayoutConstraint *> *constraints = [[NSMutableArray alloc] init];
-            // Center horizontally
+            NSLayoutAttribute horizontalAttribute = NSLayoutAttributeCenterX;
+            NSLayoutAttribute verticalAttribute = NSLayoutAttributeBottom;
+
+            LPMBannerPosition bannerPosition = LPMBannerPositionFromString(position);
+            switch (bannerPosition) {
+                case LPMBannerPositionTopLeft:
+                case LPMBannerPositionCustom:
+                    horizontalAttribute = NSLayoutAttributeLeading;
+                    verticalAttribute = NSLayoutAttributeTop;
+                    break;
+                case LPMBannerPositionTopCenter:
+                    horizontalAttribute = NSLayoutAttributeCenterX;
+                    verticalAttribute = NSLayoutAttributeTop;
+                    break;
+                case LPMBannerPositionTopRight:
+                    horizontalAttribute = NSLayoutAttributeTrailing;
+                    verticalAttribute = NSLayoutAttributeTop;
+                    break;
+                case LPMBannerPositionCenterLeft:
+                    horizontalAttribute = NSLayoutAttributeLeading;
+                    verticalAttribute = NSLayoutAttributeCenterY;
+                    break;
+                case LPMBannerPositionCenter:
+                    horizontalAttribute = NSLayoutAttributeCenterX;
+                    verticalAttribute = NSLayoutAttributeCenterY;
+                    break;
+                case LPMBannerPositionCenterRight:
+                    horizontalAttribute = NSLayoutAttributeTrailing;
+                    verticalAttribute = NSLayoutAttributeCenterY;
+                    break;
+                case LPMBannerPositionBottomLeft:
+                    horizontalAttribute = NSLayoutAttributeLeading;
+                    verticalAttribute = NSLayoutAttributeBottom;
+                    break;
+                case LPMBannerPositionBottomCenter:
+                    horizontalAttribute = NSLayoutAttributeCenterX;
+                    verticalAttribute = NSLayoutAttributeBottom;
+                    break;
+                case LPMBannerPositionBottomRight:
+                    horizontalAttribute = NSLayoutAttributeTrailing;
+                    verticalAttribute = NSLayoutAttributeBottom;
+                    break;
+            }
+
+            CGFloat scale = [UIScreen mainScreen].scale;
+            CGFloat xInPoints = xOffset / scale;
+            CGFloat yInPoints = yOffset / scale;
+
+            CGFloat safeAreaLeft = rootView.safeAreaInsets.left;
+            CGFloat safeAreaTop = rootView.safeAreaInsets.top;
+
+            CGPoint positionOffset = bannerPosition == LPMBannerPositionCustom
+                ? CGPointMake(xInPoints + safeAreaLeft, yInPoints + safeAreaTop)
+                : CGPointZero;
+
+            id safeArea = rootView.safeAreaLayoutGuide ? rootView.safeAreaLayoutGuide : rootView;
+
+            // Apply Horizontal Positioning
             [constraints addObject:
                  [NSLayoutConstraint constraintWithItem:bannerAdView
-                                              attribute:NSLayoutAttributeCenterX
+                                              attribute:horizontalAttribute
                                               relatedBy:NSLayoutRelationEqual
-                                                 toItem:rootView
-                                              attribute:NSLayoutAttributeCenterX
+                                                 toItem:safeArea
+                                              attribute:horizontalAttribute
                                              multiplier:1.0
-                                               constant:0]
+                                               constant:positionOffset.x]
             ];
-            // Position vertically
-            NSLayoutAttribute verticalAttribute =
-            (position == 1) ? NSLayoutAttributeTop : NSLayoutAttributeBottom;
+
+            // Apply Vertical Positioning
             [constraints addObject:
-                [NSLayoutConstraint constraintWithItem:bannerAdView
-                                             attribute:verticalAttribute
-                                             relatedBy:NSLayoutRelationEqual
-                                                toItem:rootView.safeAreaLayoutGuide
-                                             attribute:verticalAttribute
-                                            multiplier:1.0
-                                              constant:0]
+                 [NSLayoutConstraint constraintWithItem:bannerAdView
+                                              attribute:verticalAttribute
+                                              relatedBy:NSLayoutRelationEqual
+                                                 toItem:safeArea
+                                              attribute:verticalAttribute
+                                             multiplier:1.0
+                                               constant:positionOffset.y]
             ];
+
             // Specify height and width
             [constraints addObject:
                  [NSLayoutConstraint constraintWithItem:bannerAdView
@@ -141,6 +223,7 @@ extern "C" {
                                              multiplier:1.0
                                                constant:bannerAdView.frame.size.width]
             ];
+
             [NSLayoutConstraint activateConstraints:constraints];
         });
     }

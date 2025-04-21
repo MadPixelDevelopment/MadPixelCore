@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7875766025419721369}
   - component: {fileID: 1637731151}
   - component: {fileID: 4983588585077373511}
+  - component: {fileID: 8635729869805989882}
   m_Layer: 0
   m_Name: Ads
   m_TagString: Untagged
@@ -76,3 +77,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bIsDebug: 0
   bUseTestSuite: 0
+--- !u!114 &8635729869805989882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6963895332198784093}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9c7b51bb5d34b846a58e32d48f7238a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

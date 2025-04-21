@@ -150,6 +150,9 @@ namespace Unity.Services.LevelPlay
 #endif
         }
 
+        /// <summary>
+        /// Dispose the rewarded ad
+        /// </summary>
         public void Dispose()
         {
             m_RewardedAd.Dispose();
@@ -158,7 +161,7 @@ namespace Unity.Services.LevelPlay
         /// <summary>
         /// Gets the ad ID associated with this ad.
         /// </summary>
-        //// <returns>The ID of the ad.</returns>
+        /// <returns>The ID of the ad.</returns>
         public string GetAdId()
         {
             return m_RewardedAd.AdId;

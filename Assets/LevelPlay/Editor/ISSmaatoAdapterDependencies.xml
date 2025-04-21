@@ -1,5 +1,5 @@
 <dependencies>
-  <unityversion>4.3.18.0</unityversion>
+  <unityversion>4.3.19.0</unityversion>
   <androidPackages>
     <androidPackage spec="com.smaato.android.sdk:smaato-sdk-banner:22.7.2">
       <repositories>
@@ -25,7 +25,7 @@
     </androidPackage>
   </androidPackages>
   <iosPods>
-    <iosPod name="IronSourceSmaatoAdapter" version="4.3.16.0">
+    <iosPod name="IronSourceSmaatoAdapter" version="4.3.17.0">
       <sources>
         <source>https://github.com/CocoaPods/Specs</source>
       </sources>

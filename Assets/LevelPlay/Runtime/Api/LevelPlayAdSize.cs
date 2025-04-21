@@ -42,6 +42,11 @@ namespace com.unity3d.mediation
         {
             return new LevelPlayAdSize(Unity.Services.LevelPlay.LevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
         }
+
+        internal Unity.Services.LevelPlay.IPlatformLevelPlayAdSize GetPlatformLevelPlayAdSize()
+        {
+            return m_AdSize.GetPlatformLevelPlayAdSize();
+        }
     }
 }
 
@@ -52,41 +57,62 @@ namespace Unity.Services.LevelPlay
     /// </summary>
     public class LevelPlayAdSize
     {
-        int width;
-        int height;
-        string description;
-        int customWidth = -1;
+        IPlatformLevelPlayAdSize m_PlatformLevelPlayAdSize;
+
+        internal IPlatformLevelPlayAdSize GetPlatformLevelPlayAdSize()
+        {
+            return m_PlatformLevelPlayAdSize;
+        }
 
         /// <summary>
         /// Standard banner size
         /// </summary>
-        public static LevelPlayAdSize BANNER = new LevelPlayAdSize("BANNER");
+        public static LevelPlayAdSize BANNER = new LevelPlayAdSize(PlatformLevelPlayAdSizeType.Banner);
 
         /// <summary>
         /// Standard large size
         /// </summary>
-        public static LevelPlayAdSize LARGE = new LevelPlayAdSize("LARGE");
+        public static LevelPlayAdSize LARGE = new LevelPlayAdSize(PlatformLevelPlayAdSizeType.Large);
 
         /// <summary>
         /// Standard mrec size
         /// </summary>
-        public static LevelPlayAdSize MEDIUM_RECTANGLE = new LevelPlayAdSize("MEDIUM_RECTANGLE");
+        public static LevelPlayAdSize MEDIUM_RECTANGLE = new LevelPlayAdSize(PlatformLevelPlayAdSizeType.MediumRectangle);
 
         /// <summary>
         /// Standard leaderboard size
         /// </summary>
-        public static LevelPlayAdSize LEADERBOARD = new LevelPlayAdSize("LEADERBOARD");
+        public static LevelPlayAdSize LEADERBOARD = new LevelPlayAdSize(PlatformLevelPlayAdSizeType.LeaderBoard);
 
-        private LevelPlayAdSize(string description)
+        // Constructor for the com.unity3d.mediation namespace to use.
+        internal LevelPlayAdSize() : this(PlatformLevelPlayAdSizeType.Unknown) {}
+
+        // internal constructor for testing and private use inside this class
+        internal LevelPlayAdSize(IPlatformLevelPlayAdSize adSize)
         {
-            this.description = description;
+            m_PlatformLevelPlayAdSize = adSize;
         }
 
-        internal LevelPlayAdSize(string description, int width, int height)
+        LevelPlayAdSize(PlatformLevelPlayAdSizeType adSizeType)
         {
-            this.width = width;
-            this.height = height;
-            this.description = description;
+#if UNITY_EDITOR || UNITY_STANDALONE
+            m_PlatformLevelPlayAdSize = new UnsupportedLevelPlayAdSize();
+#elif (UNITY_IPHONE || UNITY_IOS)
+            m_PlatformLevelPlayAdSize = new IosLevelPlayAdSize(adSizeType);
+#elif UNITY_ANDROID
+            m_PlatformLevelPlayAdSize = new AndroidLevelPlayAdSize(adSizeType);
+#endif
+        }
+
+        LevelPlayAdSize(int width, int height)
+        {
+#if UNITY_EDITOR || UNITY_STANDALONE
+            m_PlatformLevelPlayAdSize = new UnsupportedLevelPlayAdSize();
+#elif (UNITY_IPHONE || UNITY_IOS)
+            m_PlatformLevelPlayAdSize = new IosLevelPlayAdSize(width, height);
+#elif UNITY_ANDROID
+            m_PlatformLevelPlayAdSize = new AndroidLevelPlayAdSize(width, height);
+#endif
         }
 
         /// <summary>
@@ -97,7 +123,7 @@ namespace Unity.Services.LevelPlay
         /// <returns>A new instance of <see cref="LevelPlayAdSize"/> representing the custom size.</returns>
         public static LevelPlayAdSize CreateCustomBannerSize(int width, int height)
         {
-            return new LevelPlayAdSize("CUSTOM", width, height);
+            return new LevelPlayAdSize(width, height);
         }
 
         /// <summary>
@@ -109,33 +135,78 @@ namespace Unity.Services.LevelPlay
         /// <returns>A new instance of <see cref="LevelPlayAdSize"/> representing the Adaptive size.</returns>
         public static LevelPlayAdSize CreateAdaptiveAdSize(int customWidth = -1)
         {
-            var adaptiveBanner = new LevelPlayAdSize("ADAPTIVE") { customWidth = customWidth };
-            return adaptiveBanner;
+            if (customWidth < 0)
+            {
+#if UNITY_EDITOR || UNITY_STANDALONE
+                return new LevelPlayAdSize(new UnsupportedLevelPlayAdSize());
+#elif (UNITY_IPHONE || UNITY_IOS)
+                return new LevelPlayAdSize(IosLevelPlayAdSize.CreateAdaptiveAdSize());
+#elif UNITY_ANDROID
+                return new LevelPlayAdSize(AndroidLevelPlayAdSize.CreateAdaptiveAdSize());
+#else
+                throw new PlatformNotSupportedException("Adaptive Ad Size is not supported on this platform.");
+#endif
+            }
+            else
+            {
+#if UNITY_EDITOR || UNITY_STANDALONE
+                return new LevelPlayAdSize(new UnsupportedLevelPlayAdSize());
+#elif (UNITY_IPHONE || UNITY_IOS)
+                return new LevelPlayAdSize(IosLevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
+#elif UNITY_ANDROID
+                return new LevelPlayAdSize(AndroidLevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
+#else
+                throw new PlatformNotSupportedException("Adaptive Ad Size is not supported on this platform.");
+#endif
+            }
         }
 
         /// <summary>
         /// Description for the banner
         /// </summary>
-        public string Description { get { return description; } }
+        public string Description
+        {
+            get
+            {
+                switch (m_PlatformLevelPlayAdSize.AdSizeType)
+                {
+                    case PlatformLevelPlayAdSizeType.Banner:
+                        return "BANNER";
+                    case PlatformLevelPlayAdSizeType.Large:
+                        return "LARGE";
+                    case PlatformLevelPlayAdSizeType.MediumRectangle:
+                        return "MEDIUM_RECTANGLE";
+                    case PlatformLevelPlayAdSizeType.LeaderBoard:
+                        return "LEADERBOARD";
+                    case PlatformLevelPlayAdSizeType.Custom:
+                        return "CUSTOM";
+                    case PlatformLevelPlayAdSizeType.Adaptive:
+                        return "ADAPTIVE";
+                    default:
+                        return "UNKNOWN";
+                }
+            }
+        }
 
         /// <summary>
         /// Width of the banner
         /// </summary>
-        public int Width { get { return width; } }
+        public int Width { get { return m_PlatformLevelPlayAdSize.Width; } }
 
         /// <summary>
         /// Height of the banner
         /// </summary>
-        public int Height { get { return height; } }
+        public int Height { get { return m_PlatformLevelPlayAdSize.Height; } }
 
         /// <summary>
         /// Custom width of the banner in DP
         /// </summary>
-        public int CustomWidth { get { return customWidth; } }
+        [Obsolete("CustomWidth will be removed in version 9.0.0. Please use LevelPlayAdSize.Width instead.")]
+        public int CustomWidth { get { return m_PlatformLevelPlayAdSize.Width; } }
 
         public override string ToString()
         {
-            return string.Format("Description: {0}, Width: {1}, Height: {2}", description, width, height);
+            return string.Format("Description: {0}, Width: {1}, Height: {2}", Description, Width, Height);
         }
     }
 }

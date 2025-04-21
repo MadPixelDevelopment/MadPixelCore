@@ -37,6 +37,7 @@ public class IronSourceDependenciesManager : EditorWindow, IObserver<bool>
     IDrawable m_SdkComponent;
     NetworksComponent m_NetworksComponent;
     IDrawable m_MessageDisplayComponent;
+    IDrawable SkadNetworkIdComponent;
 
     // changeable data:
     PackageType m_PackageType = PackageType.None;
@@ -161,6 +162,8 @@ public class IronSourceDependenciesManager : EditorWindow, IObserver<bool>
         GUILayout.Space(8);
         m_ScrollPosition = m_NetworksComponent.Draw(m_ScrollPosition);
         GUILayout.Space(8);
+        SkadNetworkIdComponent.Draw();
+        GUILayout.Space(8);
         m_MessageDisplayComponent.Draw();
         GUILayout.Space(8);
         GUILayout.EndVertical();
@@ -186,6 +189,8 @@ public class IronSourceDependenciesManager : EditorWindow, IObserver<bool>
 
         var messageDisplayComponentViewModel = GetMessageDisplayComponentViewModel();
         m_MessageDisplayComponent = new MessageDisplayComponent(messageDisplayComponentViewModel);
+
+        SkadNetworkIdComponent = new SkadNetworkIdComponent();
     }
 
     MessageDisplayComponent.ViewModel GetMessageDisplayComponentViewModel()
@@ -307,73 +312,86 @@ public class IronSourceDependenciesManager : EditorWindow, IObserver<bool>
             LatestVersionViewModel = latestVersionViewModel,
         };
 
+        var unityAdapter = m_LevelPlayNetworkManager.Adapters.Values.FirstOrDefault(adapter => adapter.KeyName == EditorConstants.k_UnityAdapterName);
+        var unityAdsLineItemComponentViewModel = GetLineItemViewModel(unityAdapter);
+
         return new LevelPlaySdkComponent.ViewModel
         {
-            LineItemComponentViewModel = lineItemComponent
+            LineItemComponentViewModel = lineItemComponent,
+            UnityAdsLineItemComponentViewModel = unityAdsLineItemComponentViewModel
         };
+    }
+
+    LineItemComponent.ViewModel? GetLineItemViewModel(Adapter adapter)
+    {
+        try
+        {
+            var compatibleVersions = m_LevelPlayNetworkManager.CompatibleAdapterVersions(adapter);
+            var latestAdapterVersion = compatibleVersions.First();
+            var latestVersion = "";
+            if (latestAdapterVersion != null)
+            {
+                latestVersion = latestAdapterVersion.Version;
+            }
+            var currentVersion = m_LevelPlayNetworkManager.InstalledAdapterVersionString(adapter);
+            string currentVersionString = null;
+            var isCurrentVersionCompatible = true;
+            if (currentVersion != null)
+            {
+                currentVersionString = currentVersion;
+                isCurrentVersionCompatible = compatibleVersions.Select(version => version.Version).Contains(currentVersionString);
+            }
+
+            var currentVersionViewModel = new IntegrationManagerVersion.ViewModel
+            {
+                Version = GetVersionDisplayText(currentVersionString),
+                Icon = this.GetVersionIcon(currentVersionString, latestVersion, isCurrentVersionCompatible),
+                IconTooltipText = this.GetAdapterVersionIconTooltip(currentVersionString, latestVersion, isCurrentVersionCompatible),
+            };
+            var latestVersionViewModel = new IntegrationManagerVersion.ViewModel
+            {
+                Version = latestVersion,
+                Icon = null,
+                IconTooltipText = null,
+            };
+            var lineItemViewModel = new LineItemComponent.ViewModel
+            {
+                NetworkName = adapter.DisplayName,
+                CurrentVersion = currentVersionString,
+                IsCurrentVersionCompatible = isCurrentVersionCompatible,
+                LatestVersion = latestVersion,
+                TooltipText = this.GetAdapterVersionButtonTooltip(adapter, latestAdapterVersion),
+                IsRecommended = currentVersionString == null ? adapter.IsRecommended : false,
+                RecommendedIconPath = m_FileService.GetPathRelativeToLevelPlayPackage(FilePaths.RecommendedIconPath),
+                IsNew = adapter.IsNew,
+                NewIconPath = m_FileService.GetPathRelativeToLevelPlayPackage(FilePaths.NewIconPath),
+                OnNetworkButtonClick = async() =>
+                {
+                    await DownloadAdapterNetworkAction(adapter);
+                },
+                CurrentVersionViewModel = currentVersionViewModel,
+                LatestVersionViewModel = latestVersionViewModel,
+            };
+            return lineItemViewModel;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     NetworksComponent.ViewModel GetNetworksComponentViewModel()
     {
         var lineItemComponentViewModels = new List<LineItemComponent.ViewModel>();
-        foreach (var adapter in m_LevelPlayNetworkManager.Adapters.Values)
+        var modifiedAdapters = m_LevelPlayNetworkManager.Adapters.Values.Where(adapter => adapter.KeyName != "UnityAds");
+        foreach (var adapter in modifiedAdapters)
         {
-            try
+            var lineItemViewModel = GetLineItemViewModel(adapter);
+            if (lineItemViewModel is LineItemComponent.ViewModel adapterViewModel)
             {
-                var compatibleVersions = m_LevelPlayNetworkManager.CompatibleAdapterVersions(adapter);
-                var latestAdapterVersion = compatibleVersions.First();
-                var latestVersion = "";
-                if (latestAdapterVersion != null)
-                {
-                    latestVersion = latestAdapterVersion.Version;
-                }
-                var currentVersion = m_LevelPlayNetworkManager.InstalledAdapterVersionString(adapter);
-                string currentVersionString = null;
-                var isCurrentVersionCompatible = true;
-                if (currentVersion != null)
-                {
-                    currentVersionString = currentVersion;
-                    isCurrentVersionCompatible = compatibleVersions.Select(version => version.Version).Contains(currentVersionString);
-                }
-
-                var currentVersionViewModel = new IntegrationManagerVersion.ViewModel
-                {
-                    Version = GetVersionDisplayText(currentVersionString),
-                    Icon = this.GetVersionIcon(currentVersionString, latestVersion, isCurrentVersionCompatible),
-                    IconTooltipText = this.GetAdapterVersionIconTooltip(currentVersionString, latestVersion, isCurrentVersionCompatible),
-                };
-                var latestVersionViewModel = new IntegrationManagerVersion.ViewModel
-                {
-                    Version = latestVersion,
-                    Icon = null,
-                    IconTooltipText = null,
-                };
-                var lineItemViewModel = new LineItemComponent.ViewModel
-                {
-                    NetworkName = adapter.DisplayName,
-                    CurrentVersion = currentVersionString,
-                    IsCurrentVersionCompatible = isCurrentVersionCompatible,
-                    LatestVersion = latestVersion,
-                    TooltipText = this.GetAdapterVersionButtonTooltip(adapter, latestAdapterVersion),
-                    IsRecommended = adapter.IsRecommended,
-                    RecommendedIconPath = m_FileService.GetPathRelativeToLevelPlayPackage(FilePaths.RecommendedIconPath),
-                    IsNew = adapter.IsNew,
-                    NewIconPath = m_FileService.GetPathRelativeToLevelPlayPackage(FilePaths.NewIconPath),
-                    OnNetworkButtonClick = async() =>
-                    {
-                        await DownloadAdapterNetworkAction(adapter);
-                    },
-                    CurrentVersionViewModel = currentVersionViewModel,
-                    LatestVersionViewModel = latestVersionViewModel,
-                };
-                lineItemComponentViewModels.Add(lineItemViewModel);
-            }
-            catch
-            {
-                // Skip this line item
+                lineItemComponentViewModels.Add(adapterViewModel);
             }
         }
-        ;
         NetworksComponent.ViewModel viewModel;
         viewModel.LineItemComponentViewModels = lineItemComponentViewModels;
         return viewModel;

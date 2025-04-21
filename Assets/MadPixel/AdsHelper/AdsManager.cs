@@ -360,6 +360,7 @@ namespace MAXHelper {
         public static bool ShowRewardedWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
 #if UNITY_EDITOR
             Callback?.Invoke(true);
+            Debug.LogWarning($"[Mad Pixel] Editor dummy: REWARDED was shown here, placement = {Placement}");
             return true;
 #endif
             if (GO) {
@@ -386,6 +387,7 @@ namespace MAXHelper {
         public static bool ShowInterWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
 #if UNITY_EDITOR
             Callback?.Invoke(true);
+            Debug.LogWarning($"[Mad Pixel] Editor dummy: INTER was shown here, placement = {Placement}");
             return true;
 #endif
             if (GO) {

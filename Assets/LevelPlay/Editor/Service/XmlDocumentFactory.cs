@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace Unity.Services.LevelPlay.Editor
 {
@@ -9,6 +10,11 @@ namespace Unity.Services.LevelPlay.Editor
         public void Load(string filename)
         {
             m_XmlDocument.Load(filename);
+        }
+
+        public void Load(Stream stream)
+        {
+            m_XmlDocument.Load(stream);
         }
 
         public void LoadXml(string xml)
@@ -26,6 +32,11 @@ namespace Unity.Services.LevelPlay.Editor
         public void Save(string filename)
         {
             m_XmlDocument.Save(filename);
+        }
+
+        public System.Xml.XmlNodeList GetElementsByTagName(string name)
+        {
+            return m_XmlDocument.GetElementsByTagName(name);
         }
     }
 

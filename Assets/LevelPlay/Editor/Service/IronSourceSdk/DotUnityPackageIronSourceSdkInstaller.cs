@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 namespace Unity.Services.LevelPlay.Editor
@@ -46,13 +45,17 @@ namespace Unity.Services.LevelPlay.Editor
         {
             if (!m_IsAdsMediationBuilderProject)
             {
+                await m_SdkInstaller.PreInstallAsync();
+
                 if (m_FileService.Exists(FilePaths.DotUnityPackageFootprintFilePath))
                 {
                     m_FileService.Delete(FilePaths.DotUnityPackageFootprintFilePath);
                     m_FileService.Delete(FilePaths.DotUnityPackageFootprintMetaFilePath);
                     SendInstallAnalyticsEvent();
-                    await m_SdkInstaller.InstallLatestIronSourceSdk();
+                    await m_SdkInstaller.InstallLatestIronSourceSdkAsync();
                 }
+
+                await m_SdkInstaller.InstallUnityAdsAdapterAsync();
             }
         }
 

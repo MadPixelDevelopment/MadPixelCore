@@ -10,5 +10,7 @@ namespace Unity.Services.LevelPlay.Editor
         void SendUpdateAdapterEvent(string adapterName, string newVersion, string currentVersion);
         void SendNewSession(string packageType);
         void SendInstallPackage(string component);
+        void SendInteractWithSkanIdCheckBox(bool action);
+        void SendFailedToAddSkAdNetworkId(string adapterName);
     }
 }

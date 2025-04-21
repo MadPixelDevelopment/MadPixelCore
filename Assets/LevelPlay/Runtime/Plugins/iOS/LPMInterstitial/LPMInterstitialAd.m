@@ -45,12 +45,12 @@ extern "C" {
     bool LPMInterstitialAdIsPlacementCapped(const char *placementName) {
         return [LPMInterstitialAd isPlacementCapped:[LPMUtilities getStringFromCString:placementName]];
     }
-  
+
     const char *LPMInterstitialAdAdId(void *interstitialAdRef) {
         LPMInterstitialAd *interstitialAd = (__bridge LPMInterstitialAd *)interstitialAdRef;
         return strdup([[interstitialAd adId] UTF8String]);
     }
-  
+
 #ifdef __cplusplus
 }
 #endif

@@ -41,7 +41,7 @@ namespace Unity.Services.LevelPlay
         /// Gets the ad ID associated with this ad.
         /// </summary>
         /// <returns>The ID of the ad.</returns>
-        public string GetAdId();
+        string GetAdId();
 
         /// <summary>
         /// Gets the ad unit ID associated with this ad.

@@ -1,3 +1,8 @@
-﻿# Version 27 - March 14, 2025
+﻿# Version 29 - March 14, 2025
+* iOS: ATT flow changed
+* LevelPlay updated to 8.8.1
+* AdQuality updated
+
+# Version 27 - March 14, 2025
 * LevelPlay updated to 8.7.0
 * Purchase Connector updated to 2.1.1

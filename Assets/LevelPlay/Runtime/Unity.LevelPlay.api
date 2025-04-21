@@ -15,7 +15,7 @@ public static class dataSource
 
 public class IronSource : IronSourceIAgent
 {
-    [System.Obsolete(@"Please use the pluginVersion function", false)] public static string UNITY_PLUGIN_VERSION = @"8.7.0-r";
+    [System.Obsolete(@"Please use the pluginVersion function", false)] public static string UNITY_PLUGIN_VERSION = @"8.8.1-r";
     public static IronSource Agent { get; }
     public void clearRewardedVideoServerParams();
     [System.Obsolete(@"This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.DestroyAd() method instead.")] public void destroyBanner();
@@ -318,7 +318,7 @@ public class IronSourceImpressionData
     [System.Obsolete(@"This function will be made private in a future version. Please avoid triggering events manually.", false)] public void onAdShowSucceeded(string args);
 }
 
-public class IronSourceMediationSettings : UnityEngine.ScriptableObject
+[UnityEngine.HelpURL(@"https://developers.is.com/ironsource-mobile/unity/unity-developer-tools/")] public class IronSourceMediationSettings : UnityEngine.ScriptableObject
 {
     [UnityEngine.Header(@"Ironsource SKAdNetwork ID")] [UnityEngine.Tooltip(@"Add Ironsource SKAdNetworkIdentifier to your Info.plist for iOS 14+")] public bool AddIronsourceSkadnetworkID;
     [UnityEngine.Tooltip(@"Add your application AppKeys, as provided in Ironsource Platform")] public string AndroidAppKey;
@@ -583,13 +583,21 @@ namespace com.unity3d.mediation
 
     [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerAd under the new namespace Unity.Services.LevelPlay.")] public sealed class LevelPlayBannerAd : Unity.Services.LevelPlay.LevelPlayBannerAd
     {
-        public LevelPlayBannerAd(string adUnitId, LevelPlayAdSize size = default(LevelPlayAdSize), LevelPlayBannerPosition position = LevelPlayBannerPosition.BottomCenter, string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
+        public LevelPlayBannerAd(string adUnitId, LevelPlayAdSize size = default(LevelPlayAdSize), LevelPlayBannerPosition position = default(LevelPlayBannerPosition), string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
     }
 
-    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerPosition under the new namespace Unity.Services.LevelPlay.")] public enum LevelPlayBannerPosition
+    [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerPosition under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayBannerPosition
     {
-        BottomCenter = 2,
-        TopCenter = 1,
+        public static readonly LevelPlayBannerPosition BottomCenter;
+        public static readonly LevelPlayBannerPosition BottomLeft;
+        public static readonly LevelPlayBannerPosition BottomRight;
+        public static readonly LevelPlayBannerPosition Center;
+        public static readonly LevelPlayBannerPosition CenterLeft;
+        public static readonly LevelPlayBannerPosition CenterRight;
+        public static readonly LevelPlayBannerPosition TopCenter;
+        public static readonly LevelPlayBannerPosition TopLeft;
+        public static readonly LevelPlayBannerPosition TopRight;
+        public LevelPlayBannerPosition(UnityEngine.Vector2 position) {}
     }
 
     [System.Obsolete(@"The namespace com.unity3d.mediation is deprecated. Use LevelPlayConfiguration under the new namespace Unity.Services.LevelPlay.")] public class LevelPlayConfiguration : Unity.Services.LevelPlay.LevelPlayConfiguration
@@ -764,7 +772,7 @@ namespace Unity.Services.LevelPlay
         public static LevelPlayAdSize LARGE;
         public static LevelPlayAdSize LEADERBOARD;
         public static LevelPlayAdSize MEDIUM_RECTANGLE;
-        public int CustomWidth { get; }
+        [System.Obsolete(@"CustomWidth will be removed in version 9.0.0. Please use LevelPlayAdSize.Width instead.")] public int CustomWidth { get; }
         public string Description { get; }
         public int Height { get; }
         public int Width { get; }
@@ -783,7 +791,7 @@ namespace Unity.Services.LevelPlay
         public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLeftApplication;
         public event System.Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
         public event System.Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
-        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = default(com.unity3d.mediation.LevelPlayAdSize), com.unity3d.mediation.LevelPlayBannerPosition position = com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter, string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
+        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = default(com.unity3d.mediation.LevelPlayAdSize), com.unity3d.mediation.LevelPlayBannerPosition position = default(com.unity3d.mediation.LevelPlayBannerPosition), string placementName = default(string), bool displayOnLoad = true, bool respectSafeArea = false) {}
         public void DestroyAd();
         public void Dispose();
         public string GetAdId();
@@ -798,10 +806,20 @@ namespace Unity.Services.LevelPlay
         public void ShowAd();
     }
 
-    public enum LevelPlayBannerPosition
+    public class LevelPlayBannerPosition
     {
-        BottomCenter = 2,
-        TopCenter = 1,
+        public static readonly LevelPlayBannerPosition BottomCenter;
+        public static readonly LevelPlayBannerPosition BottomLeft;
+        public static readonly LevelPlayBannerPosition BottomRight;
+        public static readonly LevelPlayBannerPosition Center;
+        public static readonly LevelPlayBannerPosition CenterLeft;
+        public static readonly LevelPlayBannerPosition CenterRight;
+        public readonly string Description;
+        public static readonly LevelPlayBannerPosition TopCenter;
+        public static readonly LevelPlayBannerPosition TopLeft;
+        public static readonly LevelPlayBannerPosition TopRight;
+        public LevelPlayBannerPosition(UnityEngine.Vector2 position) {}
+        public override string ToString();
     }
 
     public class LevelPlayConfiguration

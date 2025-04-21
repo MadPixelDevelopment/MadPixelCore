@@ -138,6 +138,9 @@ namespace Unity.Services.LevelPlay
 #endif
         }
 
+        /// <summary>
+        /// Dispose the interstitial ad
+        /// </summary>
         public void Dispose()
         {
             m_InterstitialAd.Dispose();

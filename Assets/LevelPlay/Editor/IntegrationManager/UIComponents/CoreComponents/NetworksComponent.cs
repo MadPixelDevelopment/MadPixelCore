@@ -55,7 +55,7 @@ namespace Unity.Services.LevelPlay.Editor.IntegrationManager.UIComponents
                 padding = new RectOffset(1, 1, 1, 1),
                 margin = new RectOffset(0, 0, 0, 0),
                 normal = { background = IntegrationManagerUIUtils.CreateTexture(Theme.GetColors().BorderColor) },
-                fixedHeight = 400
+                fixedHeight = 376
             };
             var boxStyle = new GUIStyle("box")
             {

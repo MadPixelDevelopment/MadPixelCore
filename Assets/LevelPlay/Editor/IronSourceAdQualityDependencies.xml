@@ -1,17 +1,13 @@
 <dependencies>
-  <unityversion>7.21.3</unityversion>
-
-  <androidPackages>
-    <androidPackage spec="com.unity3d.ads-mediation:adquality-sdk:7.21.3">
-    </androidPackage>
-  </androidPackages>
-
-  <iosPods>
-    <iosPod name="IronSourceAdQualitySDK" version="7.21.3">
-      <sources>
-        <source>https://github.com/CocoaPods/Specs</source>
-      </sources>
-    </iosPod>
-  </iosPods>
-
+<unityversion>7.24.1</unityversion>
+<androidPackages>
+<androidPackage spec="com.unity3d.ads-mediation:adquality-sdk:7.24.1"> </androidPackage>
+</androidPackages>
+<iosPods>
+<iosPod name="IronSourceAdQualitySDK" version="7.24.1">
+<sources>
+<source>https://github.com/CocoaPods/Specs</source>
+</sources>
+</iosPod>
+</iosPods>
 </dependencies>

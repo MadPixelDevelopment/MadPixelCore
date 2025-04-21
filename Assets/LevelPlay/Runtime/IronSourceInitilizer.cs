@@ -1,6 +1,7 @@
 using System;
 using Unity.Services.LevelPlay;
 using UnityEngine;
+using LevelPlayAdFormat = com.unity3d.mediation.LevelPlayAdFormat;
 
 [Obsolete("This class will be made private in a future version.", false)]
 public class IronSourceInitilizer
@@ -21,12 +22,14 @@ public class IronSourceInitilizer
             {
                 if (appKey.Equals(string.Empty))
                 {
-                    LevelPlayLogger.LogWarning("IronSourceInitilizer Cannot init without AppKey");
+                    LevelPlayLogger.LogWarning("LevelPlay SDK cannot initialize without AppKey");
                 }
                 else
                 {
                     IronSource.UNITY_PLUGIN_VERSION += IronSource.UNITY_PLUGIN_VERSION.Contains("-r") ? "i" : "-i";
-                    IronSource.Agent.init(appKey);
+
+                    LevelPlayAdFormat[] adFormats = { LevelPlayAdFormat.REWARDED, LevelPlayAdFormat.INTERSTITIAL, LevelPlayAdFormat.BANNER};
+                    LevelPlay.Init(appKey:appKey, adFormats:adFormats);
                 }
             }
 

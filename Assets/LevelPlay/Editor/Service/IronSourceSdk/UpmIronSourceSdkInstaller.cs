@@ -2,8 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using Unity.Services.LevelPlay;
-using UnityEditor;
 
 namespace Unity.Services.LevelPlay.Editor
 {
@@ -38,7 +36,8 @@ namespace Unity.Services.LevelPlay.Editor
 
     internal class UpmIronSourceSdkInstaller : IIronSourceSdkInstaller
     {
-        private readonly SdkInstaller m_SdkInstaller;
+        readonly SdkInstaller m_SdkInstaller;
+        readonly ILevelPlayLogger m_Logger;
 
         internal UpmIronSourceSdkInstaller(ILevelPlayLogger logger, ILevelPlayNetworkManager levelPlayNetworkManager)
         {
@@ -55,22 +54,30 @@ namespace Unity.Services.LevelPlay.Editor
 
         async void OnRegisteredPackages(UnityEditor.PackageManager.PackageRegistrationEventArgs packageRegistrationEventArgs)
         {
-            var packageRegistrationEvent = new PackageRegistrationEvent(packageRegistrationEventArgs);
-            await OnRegisteredPackages(packageRegistrationEvent);
+            try
+            {
+                var packageRegistrationEvent = new PackageRegistrationEvent(packageRegistrationEventArgs);
+                await OnRegisteredPackages(packageRegistrationEvent);
+            }
+            catch (Exception e)
+            {
+                m_Logger.LogError($"Error in OnRegisteredPackages: {e}");
+            }
         }
 
         // Internal for testing
         internal async Task OnRegisteredPackages(PackageRegistrationEvent packageRegistrationEvent)
         {
-            var adddedLevelPlayPackages = packageRegistrationEvent.added.ToList()
+            var addedLevelPlayPackages = packageRegistrationEvent.added.ToList()
                 .Where(packageInfo => packageInfo.name == Constants.PackageName);
             var changedToLevelPlayPackages = packageRegistrationEvent.changedTo.ToList()
                 .Where(packageInfo => packageInfo.name == Constants.PackageName);
 
-            if (adddedLevelPlayPackages.Any() || changedToLevelPlayPackages.Any())
+            if (addedLevelPlayPackages.Any() || changedToLevelPlayPackages.Any())
             {
-                // Install Latest IronSource SDK
-                await m_SdkInstaller.InstallLatestIronSourceSdk();
+                await m_SdkInstaller.PreInstallAsync();
+                await m_SdkInstaller.InstallLatestIronSourceSdkAsync();
+                await m_SdkInstaller.InstallUnityAdsAdapterAsync();
             }
         }
     }

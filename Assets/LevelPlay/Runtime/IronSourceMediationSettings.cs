@@ -6,6 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Holds the editor settings for LevelPlay.
 /// </summary>
+[HelpURL("https://developers.is.com/ironsource-mobile/unity/unity-developer-tools/")]
 public class IronSourceMediationSettings : ScriptableObject
 {
     public static readonly string IRONSOURCE_SETTINGS_ASSET_PATH = Path.Combine(IronSourceConstants.IRONSOURCE_RESOURCES_PATH, IronSourceConstants.IRONSOURCE_MEDIATION_SETTING_NAME + ".asset");
@@ -29,6 +30,5 @@ public class IronSourceMediationSettings : ScriptableObject
 
     [Header("Project Features")]
     public bool EnableAdapterDebug;
-
     public bool EnableIntegrationHelper;
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Annotations;
 using UnityEngine;
+using com.unity3d.mediation;
 
 namespace com.unity3d.mediation
 {
@@ -248,7 +249,8 @@ namespace Unity.Services.LevelPlay
                         height = Int32.Parse(obj.ToString());
                     }
 
-                    return new LevelPlayAdSize(description, width, height);
+                    LevelPlayAdSize adSize = GetAdSize(description, width, height);
+                    return adSize;
                 }
                 catch (Exception e)
                 {
@@ -257,6 +259,27 @@ namespace Unity.Services.LevelPlay
                 }
             }
             return null;
+        }
+
+        static LevelPlayAdSize GetAdSize(string description, int width = 0, int height = 0)
+        {
+            switch (description)
+            {
+                case "BANNER":
+                    return LevelPlayAdSize.BANNER;
+                case "LARGE":
+                    return LevelPlayAdSize.LARGE;
+                case "MEDIUM_RECTANGLE":
+                    return LevelPlayAdSize.MEDIUM_RECTANGLE;
+                case "CUSTOM":
+                    return LevelPlayAdSize.CreateCustomBannerSize(width, height);
+                case "LEADERBOARD":
+                    return LevelPlayAdSize.LEADERBOARD;
+                case "ADAPTIVE":
+                    return LevelPlayAdSize.CreateAdaptiveAdSize(width);
+                default:
+                    return LevelPlayAdSize.BANNER;
+            }
         }
 
         public override string ToString()

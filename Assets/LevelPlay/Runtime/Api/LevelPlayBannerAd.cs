@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace com.unity3d.mediation
 {
@@ -9,7 +8,7 @@ namespace com.unity3d.mediation
     [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayBannerAd under the new namespace Unity.Services.LevelPlay.")]
     public sealed class LevelPlayBannerAd : Unity.Services.LevelPlay.LevelPlayBannerAd
     {
-        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = null, com.unity3d.mediation.LevelPlayBannerPosition position = com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter, string placementName = null, bool displayOnLoad = true, bool respectSafeArea = false) : base(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea) {}
+        public LevelPlayBannerAd(string adUnitId, LevelPlayAdSize size = null, LevelPlayBannerPosition position = null, string placementName = null, bool displayOnLoad = true, bool respectSafeArea = false) : base(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea) {}
     }
 }
 
@@ -45,15 +44,23 @@ namespace Unity.Services.LevelPlay
         /// Defaults to <see cref="LevelPlayBannerPosition.BottomCenter"/> if not specified.</param>
         /// <param name="placementName">Optional name used for reporting and targeting. This parameter is optional and can be null.</param>
         /// <param name="displayOnLoad">Determines whether the ad should be displayed immediately after loading.</param>
-        /// <param name="respectSafeArea">Determines whether the ad should be displayed within the safe area of the screen, where no notch, status bar or camera is present..
+        /// <param name="respectSafeArea">Determines whether the ad should be displayed within the safe area of the screen, where no notch, status bar or camera is present.
         /// Defaults to true.</param>
-        public LevelPlayBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size = null, com.unity3d.mediation.LevelPlayBannerPosition position = com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter,
-                                 string placementName = null, bool displayOnLoad = true, bool respectSafeArea = false)
+        public LevelPlayBannerAd(
+            string adUnitId,
+            com.unity3d.mediation.LevelPlayAdSize size = null,
+            com.unity3d.mediation.LevelPlayBannerPosition position = null,
+            string placementName = null,
+            bool displayOnLoad = true,
+            bool respectSafeArea = false)
         {
             if (size == null)
             {
                 size = com.unity3d.mediation.LevelPlayAdSize.BANNER;
             }
+
+            position = position ?? com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter;
+
 #if UNITY_ANDROID && !UNITY_EDITOR
             _bannerAd = new AndroidBannerAd(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea);
 #elif UNITY_IOS && !UNITY_EDITOR
@@ -61,6 +68,7 @@ namespace Unity.Services.LevelPlay
 #else
             _bannerAd = new UnsupportedBannerAd(adUnitId, size, position, placementName);
 #endif
+
             SetupCallbacks();
         }
 

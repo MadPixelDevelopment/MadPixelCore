@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Xml;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -8,9 +7,6 @@ using System.Text.RegularExpressions;
 using Unity.Services.LevelPlay.Editor.IntegrationManager;
 using UnityEngine.Networking;
 using UnityEngine;
-using UnityEditor;
-using Unity.Services.LevelPlay.Editor;
-using Unity.Services.LevelPlay;
 
 namespace Unity.Services.LevelPlay.Editor
 {
@@ -75,6 +71,8 @@ namespace Unity.Services.LevelPlay.Editor
             SpecificVersionRegex = new Regex(@"^[\.0-9]+$", RegexOptions.None, TimeSpan.FromSeconds(2));
             m_Observers = new List<IObserver<bool>>();
         }
+
+        public bool ShouldSkipAutoInstall(Adapter adapter) => IsInstalled(adapter);
 
         public void UiUpdate()
         {

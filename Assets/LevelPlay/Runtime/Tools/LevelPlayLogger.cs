@@ -27,7 +27,7 @@ namespace Unity.Services.LevelPlay
         /// Logs an error in the console
         /// <param name="message">Message to log</param>
         /// </summary>
-         public static void LogError(object message) => Debug.unityLogger.LogError(k_Tag, message);
+        public static void LogError(object message) => Debug.unityLogger.LogError(k_Tag, message);
 
         /// <summary>
         /// Logs an exception in the console

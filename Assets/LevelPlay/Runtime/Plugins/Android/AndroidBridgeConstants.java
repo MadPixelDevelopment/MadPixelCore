@@ -21,7 +21,20 @@ class AndroidBridgeConstants {
    public static final String BANNER_SIZE_SMART = "SMART";
    public static final String BANNER_SIZE_LEADERBOARD = "LEADERBOARD";
    public static final String BANNER_SIZE_ADAPTIVE = "ADAPTIVE";
+
+   // Deprecate it when the usage in AndroidBridge is deprecated
    public static final int BANNER_POSITION_TOP = 1;
+
+   public static final String BANNER_POSITION_TOPLEFT = "TopLeft";
+   public static final String BANNER_POSITION_TOPCENTER = "TopCenter";
+   public static final String BANNER_POSITION_TOPRIGHT = "TopRight";
+   public static final String BANNER_POSITION_CENTERLEFT = "CenterLeft";
+   public static final String BANNER_POSITION_CENTER = "Center";
+   public static final String BANNER_POSITION_CENTERRIGHT = "CenterRight";
+   public static final String BANNER_POSITION_BOTTOMLEFT = "BottomLeft";
+   public static final String BANNER_POSITION_BOTTOMCENTER = "BottomCenter";
+   public static final String BANNER_POSITION_BOTTOMRIGHT = "BottomRight";
+   public static final String BANNER_POSITION_CUSTOM = "Custom";
 
    public static final String SEGMENT_AGE = "age";
    public static final String SEGMENT_GENDER = "gender";

@@ -13,10 +13,12 @@ namespace Unity.Services.LevelPlay.Editor.IntegrationManager.UIComponents
         internal struct ViewModel
         {
             internal LineItemComponent.ViewModel LineItemComponentViewModel;
+            internal LineItemComponent.ViewModel? UnityAdsLineItemComponentViewModel;
         }
 
         readonly ViewModel m_ViewModel;
         readonly LineItemComponent m_SdkLineItemComponent;
+        readonly LineItemComponent m_UnityAdsLineItemComponent;
         const int k_InfoTextFontSize = 11;
         private Rect m_InstalledRect;
         private Rect m_LatestRect;
@@ -26,6 +28,10 @@ namespace Unity.Services.LevelPlay.Editor.IntegrationManager.UIComponents
             m_ViewModel = viewModel;
             m_ViewModel.LineItemComponentViewModel.NetworkName = "LevelPlay Mediation";
             m_SdkLineItemComponent = new LineItemComponent(m_ViewModel.LineItemComponentViewModel);
+            if(m_ViewModel.UnityAdsLineItemComponentViewModel is LineItemComponent.ViewModel unityAdsLineItemComponentViewModel)
+            {
+                m_UnityAdsLineItemComponent = new LineItemComponent(unityAdsLineItemComponentViewModel);
+            }
             m_InstalledRect = new Rect(IronSourceDependenciesManager.k_Width / 3 + 75, 0, 200, 20);
             m_LatestRect = new Rect(IronSourceDependenciesManager.k_Width / 3 + 200, 0, 200, 20);
         }
@@ -103,8 +109,8 @@ namespace Unity.Services.LevelPlay.Editor.IntegrationManager.UIComponents
             EditorGUI.LabelField(m_InstalledRect, "Installed version", titleStyle);
             EditorGUI.LabelField(m_LatestRect, "Latest compatible version", titleStyle);
             GUILayout.EndHorizontal();
-            GUILayout.Label("A bundled SDK that includes LevelPlay Mediation " +
-                "and the ironSource Ad Network.", infoTextStyle);
+
+            GUILayout.Label("A bundled SDK that includes Unity LevelPlay mediation, the Unity Ads network, and the ironSource Ads network.", infoTextStyle);
             GUILayout.Space(8);
             GUILayout.BeginVertical(verticalBorderBoxStyle);
             GUILayout.BeginVertical(verticalBoxStyle);
@@ -112,6 +118,10 @@ namespace Unity.Services.LevelPlay.Editor.IntegrationManager.UIComponents
             GUI.enabled = m_ViewModel.LineItemComponentViewModel.CurrentVersion != m_ViewModel.LineItemComponentViewModel.LatestVersion;
             GUILayout.Label("ironSource Ads", ironSourceTextStyle);
             GUI.enabled = true;
+            if (m_UnityAdsLineItemComponent != null)
+            {
+                m_UnityAdsLineItemComponent.Draw(1);
+            }
             GUILayout.EndVertical();
             GUILayout.EndVertical();
 

@@ -70,7 +70,7 @@ class LevelPlayUtils {
       }
       return errorData.toString();
    }
-   
+
    private static String adSizeToString(LevelPlayAdSize adSize) {
       if (adSize == null) {
          return null;

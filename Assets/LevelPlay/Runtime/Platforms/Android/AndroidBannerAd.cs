@@ -6,7 +6,6 @@ namespace Unity.Services.LevelPlay
 {
     class AndroidBannerAd : IPlatformBannerAd, IUnityBannerAdListener
     {
-        const string k_BannerSizeClassName = "com.ironsource.unity.androidbridge.BannerUtils";
         const string k_BannerAdClassName   = "com.ironsource.unity.androidbridge.BannerAd";
 
         const string k_FuncGetAdSize = "getAdSize";
@@ -100,6 +99,8 @@ namespace Unity.Services.LevelPlay
             Position = position;
             PlacementName = placementName;
 
+            AndroidLevelPlayAdSize androidAdSize = (AndroidLevelPlayAdSize)AdSize.GetPlatformLevelPlayAdSize();
+
             ThreadUtil.Send(state =>
             {
                 try
@@ -108,9 +109,16 @@ namespace Unity.Services.LevelPlay
                     {
                         _mBannerAdListener = new UnityBannerAdListener(this);
                     }
-                    _mBannerAd = new AndroidJavaObject(k_BannerAdClassName, adUnitId,
-                        adSize.Description, adSize.Width, adSize.Height, adSize.CustomWidth,
-                        (int)position, placementName, displayOnLoad, respectSafeArea, _mBannerAdListener);
+
+                    _mBannerAd = new AndroidJavaObject(
+                        k_BannerAdClassName,
+                        adUnitId,
+                        androidAdSize.AndroidAdSize,
+                        position.Description, position.Position.x, position.Position.y,
+                        placementName,
+                        displayOnLoad,
+                        respectSafeArea,
+                        _mBannerAdListener);
                 }
                 catch (Exception e)
                 {

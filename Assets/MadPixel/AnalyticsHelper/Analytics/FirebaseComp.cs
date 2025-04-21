@@ -14,6 +14,9 @@ public class FirebaseComp : MonoBehaviour {
 
     #region Unity events
     void Start() {
+#if UNITY_EDITOR
+        return;
+#endif
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
             var dependencyStatus = task.Result;
             if (dependencyStatus == Firebase.DependencyStatus.Available) {

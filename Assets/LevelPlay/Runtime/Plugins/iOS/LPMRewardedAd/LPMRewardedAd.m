@@ -45,12 +45,12 @@ extern "C" {
     bool LPMRewardedAdIsPlacementCapped(const char *placementName) {
         return [LPMRewardedAd isPlacementCapped:[LPMUtilities getStringFromCString:placementName]];
     }
-  
+
     const char *LPMRewardedAdAdId(void *rewardedAdRef) {
         LPMRewardedAd *rewardedAd = (__bridge LPMRewardedAd *)rewardedAdRef;
         return strdup([[rewardedAd adId] UTF8String]);
     }
-  
+
 #ifdef __cplusplus
 }
 #endif

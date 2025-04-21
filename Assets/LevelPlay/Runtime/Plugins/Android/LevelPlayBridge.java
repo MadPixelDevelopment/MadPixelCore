@@ -17,69 +17,69 @@ import java.util.List;
 
 
 public class LevelPlayBridge implements LevelPlayInitListener {
-	private IUnityLevelPlayInitListener mUnityLevelPlayInitListener;
+    private IUnityLevelPlayInitListener mUnityLevelPlayInitListener;
 
-	private static final LevelPlayBridge mInstance = new LevelPlayBridge();
-	private LevelPlayBridge() {
+    private static final LevelPlayBridge mInstance = new LevelPlayBridge();
+    private LevelPlayBridge() {
 
-	}
+    }
 
-	public static synchronized LevelPlayBridge getInstance() {
-		return mInstance;
-	}
-	public void initialize(String appKey, String userId, String[] adFormats, IUnityLevelPlayInitListener listener){
-		List<LevelPlay.AdFormat> adFormatList = getAdFormatList(adFormats);
+    public static synchronized LevelPlayBridge getInstance() {
+        return mInstance;
+    }
+    public void initialize(String appKey, String userId, String[] adFormats, IUnityLevelPlayInitListener listener){
+        List<LevelPlay.AdFormat> adFormatList = getAdFormatList(adFormats);
 
-		Builder requestBuilder = new LevelPlayInitRequest.Builder(appKey);
-		if (userId != null && userId != "") {
-			requestBuilder.withUserId(userId);
-		}
+        Builder requestBuilder = new LevelPlayInitRequest.Builder(appKey);
+        if (userId != null && userId != "") {
+            requestBuilder.withUserId(userId);
+        }
 
-		if (adFormatList != null) {
-			requestBuilder.withLegacyAdFormats(adFormatList);
-		}
-		LevelPlayInitRequest initRequest = requestBuilder.build();
+        if (adFormatList != null) {
+            requestBuilder.withLegacyAdFormats(adFormatList);
+        }
+        LevelPlayInitRequest initRequest = requestBuilder.build();
 
-		mUnityLevelPlayInitListener = listener;
-		LevelPlay.init(UnityPlayer.currentActivity, initRequest, this);
-	}
+        mUnityLevelPlayInitListener = listener;
+        LevelPlay.init(UnityPlayer.currentActivity, initRequest, this);
+    }
 
-	public void setPluginData(String pluginType, String pluginVersion, String pluginFrameworkVersion) {
-		ConfigFile.getConfigFile().setPluginData(pluginType, pluginVersion, pluginFrameworkVersion);
-	}
+    public void setPluginData(String pluginType, String pluginVersion, String pluginFrameworkVersion) {
+        ConfigFile.getConfigFile().setPluginData(pluginType, pluginVersion, pluginFrameworkVersion);
+    }
 
 
-	@Override
-	public void onInitFailed(LevelPlayInitError initError) {
-		if (mUnityLevelPlayInitListener != null) {
-			postBackgroundTask(new Runnable() {
-				@Override
-				public void run() {
-					mUnityLevelPlayInitListener.onInitFailed(LevelPlayUtils.initErrorToString(initError));
-				}
-			});
-		}
-	}
+    @Override
+    public void onInitFailed(LevelPlayInitError initError) {
+        if (mUnityLevelPlayInitListener != null) {
+            postBackgroundTask(new Runnable() {
+                @Override
+                public void run() {
+                    mUnityLevelPlayInitListener.onInitFailed(LevelPlayUtils.initErrorToString(initError));
+                }
+            });
+        }
+    }
 
-	@Override
-	public void onInitSuccess(LevelPlayConfiguration configuration) {
-			if (mUnityLevelPlayInitListener != null) {
-				postBackgroundTask(new Runnable() {
-					@Override
-					public void run() {
-						mUnityLevelPlayInitListener.onInitSuccess(LevelPlayUtils.configurationToString(configuration));
-					}
-				});
-			}
-	}
+    @Override
+    public void onInitSuccess(LevelPlayConfiguration configuration) {
+            if (mUnityLevelPlayInitListener != null) {
+                postBackgroundTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        mUnityLevelPlayInitListener.onInitSuccess(LevelPlayUtils.configurationToString(configuration));
+                    }
+                });
+            }
+    }
 
-	private List<LevelPlay.AdFormat> getAdFormatList(String[] adFormats) {
-		if(adFormats == null)
-			return null;
-		List<LevelPlay.AdFormat> adFormatList = new ArrayList<>();
-		for (String adFormat : adFormats) {
-			adFormatList.add(LevelPlay.AdFormat.valueOf(adFormat.toUpperCase()));
-		}
-		return adFormatList;
-	}
+    private List<LevelPlay.AdFormat> getAdFormatList(String[] adFormats) {
+        if(adFormats == null)
+            return null;
+        List<LevelPlay.AdFormat> adFormatList = new ArrayList<>();
+        for (String adFormat : adFormats) {
+            adFormatList.add(LevelPlay.AdFormat.valueOf(adFormat.toUpperCase()));
+        }
+        return adFormatList;
+    }
 }

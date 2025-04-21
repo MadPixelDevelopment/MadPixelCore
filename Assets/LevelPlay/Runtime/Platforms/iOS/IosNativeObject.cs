@@ -55,6 +55,5 @@ namespace com.unity3d.mediation
             Debug.LogErrorFormat("LevelPlay SDK: {0}: Instance of type {1} is disposed. Please create a new instance in order to call any method.", message, GetType().FullName);
             return true;
         }
-
     }
 }

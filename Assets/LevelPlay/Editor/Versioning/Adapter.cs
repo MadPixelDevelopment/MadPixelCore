@@ -14,16 +14,19 @@ namespace Unity.Services.LevelPlay.Editor
         internal string DisplayName { get; }
         internal string DependencyXmlURL { get; }
         internal string DependencyXmlFileName { get; }
+        internal string SKAdNetworkIdXmlURL { get; }
         internal bool IsRecommended { get; }
         internal bool IsNew { get; }
+
         internal Dictionary<string, AdapterVersion> Versions { get; }
 
-        internal Adapter(string keyName, string displayName, string dependencyXmlURL, string dependencyXmlFileName, bool isRecommended, bool isNew, Dictionary<string, AdapterVersion> versions)
+        internal Adapter(string keyName, string displayName, string dependencyXmlURL, string dependencyXmlFileName, string skAdNetworkIdUrl, bool isRecommended, bool isNew, Dictionary<string, AdapterVersion> versions)
         {
             KeyName = keyName;
             DisplayName = displayName;
             DependencyXmlURL = dependencyXmlURL;
             DependencyXmlFileName = dependencyXmlFileName;
+            SKAdNetworkIdXmlURL = skAdNetworkIdUrl;
             IsRecommended = isRecommended;
             IsNew = isNew;
             Versions = versions;
@@ -35,6 +38,7 @@ namespace Unity.Services.LevelPlay.Editor
             DisplayName = jsonDictionary["displayName"] as string;
             DependencyXmlURL = jsonDictionary["dependencyXmlURL"] as string;
             DependencyXmlFileName = jsonDictionary["dependencyXmlFileName"] as string;
+            SKAdNetworkIdXmlURL = jsonDictionary.TryGetValue("SKAdNetworkIdXmlURL", out var value) ? value as string : string.Empty;
             if (jsonDictionary.ContainsKey("isRecommended"))
             {
                 IsRecommended = (bool)jsonDictionary["isRecommended"];
@@ -87,6 +91,11 @@ namespace Unity.Services.LevelPlay.Editor
             }
 
             if (!DependencyXmlFileName.Equals(other.DependencyXmlFileName))
+            {
+                return false;
+            }
+
+            if (!SKAdNetworkIdXmlURL.Equals(other.SKAdNetworkIdXmlURL))
             {
                 return false;
             }
