@@ -7,3 +7,10 @@ Builds/
 Temp/
 *.csproj
 Assets/GeneratedLocalRepo/Firebase/
+Assets/Plugins/Android/
+.utmp/
+Assets/Scripts/UnityPurchasing/generated.meta
+Assets/Scripts/UnityPurchasing/
+Assets/Scripts/UnityPurchasing.meta
+Assets/GoogleMobileAds/
+Build/
