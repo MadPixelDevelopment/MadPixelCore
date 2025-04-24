@@ -29,7 +29,7 @@ namespace MAXHelper {
         #region Public
         public void BeginPlay() {
             MobileAds.RaiseAdEventsOnUnityMainThread = true;
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
             ATTIOSDialogHelper attHelperComponent = GetComponent<ATTIOSDialogHelper>();
             if (attHelperComponent){
                 attHelperComponent.BeginPlay(OnAuthTrackingStatusChangeCallback);
