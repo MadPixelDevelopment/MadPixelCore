@@ -242,8 +242,12 @@ namespace MadPixel.InApps {
         /// </example>
         /// </summary>
         public bool IsSubscribedTo(string SKU) {
+            if (!IsInitialized()) {
+                return false;
+            }
+
             Product product = GetProduct(SKU);
-            if (product.receipt == null) {
+            if (product == null || product.receipt == null) {
                 return false;
             }
 
