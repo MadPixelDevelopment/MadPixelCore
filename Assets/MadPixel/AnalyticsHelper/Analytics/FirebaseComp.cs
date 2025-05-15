@@ -55,8 +55,7 @@ public class FirebaseComp : MonoBehaviour{
                 // Set a flag here to indicate whether Firebase is ready to use by your app.
             }
             else {
-                Debug.LogError(System.String.Format(
-                    "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
+                Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
                 // Firebase Unity SDK is not safe to use here.
             }
         });
@@ -67,12 +66,15 @@ public class FirebaseComp : MonoBehaviour{
     }
     #endregion
 
+
+
+    #region Helpers
     private void InnerInit() {
         m_initialized = true;
         IronSourceEvents.onImpressionDataReadyEvent += LogAdPurchase;
     }
 
-    public void LogAdPurchase(IronSourceImpressionData a_impressionData) {
+    private void LogAdPurchase(IronSourceImpressionData a_impressionData) {
         if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
 
         double revenue = a_impressionData.revenue.Value;
@@ -90,5 +92,6 @@ public class FirebaseComp : MonoBehaviour{
 
             //Debug.Log($"[MadPixel] Firebase Revenue logged {revenue}");
         }
-    }
+    } 
+    #endregion
 }

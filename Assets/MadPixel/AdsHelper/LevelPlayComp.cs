@@ -8,24 +8,29 @@ using static MAXHelper.AdsManager;
 
 namespace MadPixel {
     public class LevelPlayComp : MonoBehaviour {
-        [SerializeField] private bool bIsDebug;
-        [SerializeField] private bool bUseTestSuite;
-        private MAXCustomSettings customSettings;
+        #region Fields
+        [SerializeField] private bool m_debugLogsOn;
+        [SerializeField] private bool m_debugTestSuiteOn;
+
+        private MAXCustomSettings m_customSettings;
         private bool m_isBannerLoadedOnce = false;
+        private bool m_sdkFailedToInitSent = false;
+
+        private LevelPlayRewardedAd m_rewardedAd;
+        private LevelPlayBannerAd m_bannerAd;
+        private LevelPlayInterstitialAd m_interstitialAd;
+
+        #endregion
+
+
 
         #region Events Declaration
-        public UnityAction<bool> onFinishAdsEvent;
-        public UnityAction<LevelPlayAdDisplayInfoError, AdsManager.EAdType> onErrorEvent;
-        public UnityAction onInterDismissedEvent;
+        public UnityAction<bool> e_onFinishAds;
+        public UnityAction<LevelPlayAdDisplayInfoError, AdsManager.EAdType> e_onDisplayAdError;
+        public UnityAction e_onInterDismissed;
+        public UnityAction<AdsManager.EAdType> m_onAdLoaded;
+        public UnityAction<LevelPlayAdInfo> m_onBannerAdLoaded;
 
-        public UnityAction<AdsManager.EAdType> onAdLoadedEvent;
-        public UnityAction<LevelPlayAdInfo> onBannerAdLoadedEvent;
-
-        private LevelPlayRewardedAd rewardedAd;
-        private LevelPlayBannerAd bannerAd;
-        private LevelPlayInterstitialAd interstitialAd;
-
-        private bool m_sdkFailedToInitSent = false;
         #endregion
 
 
@@ -34,6 +39,7 @@ namespace MadPixel {
         void OnApplicationPause(bool isPaused) {
             IronSource.Agent.onApplicationPause(isPaused);
         }
+
         void OnDestroy() {
             UnsubscribeAll();
         }
@@ -43,17 +49,17 @@ namespace MadPixel {
 
         #region Public
         public void Init(MAXCustomSettings a_madPixelSettings) {
-            customSettings = a_madPixelSettings;
-            if (bIsDebug) {
-                if (bUseTestSuite) {
+            m_customSettings = a_madPixelSettings;
+            if (m_debugLogsOn) {
+                if (m_debugTestSuiteOn) {
                     IronSource.Agent.setMetaData("is_test_suite", "enable");
                 }
             }
             SubscribeAll();
-            IronSource.Agent.setAdaptersDebug(bIsDebug);
+            IronSource.Agent.setAdaptersDebug(m_debugLogsOn);
             TryToInit();
 
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 IronSource.Agent.validateIntegration();
             }
         }
@@ -62,11 +68,11 @@ namespace MadPixel {
 #if UNITY_EDITOR
             return true;
 #endif
-            if (a_adType == EAdType.REWARDED && rewardedAd != null) {
-                return rewardedAd.IsAdReady();
+            if (a_adType == EAdType.REWARDED && m_rewardedAd != null) {
+                return m_rewardedAd.IsAdReady();
             }
-            else if (a_adType == EAdType.INTER && interstitialAd != null) {
-                return interstitialAd.IsAdReady();
+            else if (a_adType == EAdType.INTER && m_interstitialAd != null) {
+                return m_interstitialAd.IsAdReady();
 
             }
 
@@ -74,8 +80,8 @@ namespace MadPixel {
         }
 
         public bool ShowRewarded() {
-            if (rewardedAd != null && rewardedAd.IsAdReady()) {
-                rewardedAd.ShowAd();
+            if (m_rewardedAd != null && m_rewardedAd.IsAdReady()) {
+                m_rewardedAd.ShowAd();
                 return true;
             }
 
@@ -83,8 +89,8 @@ namespace MadPixel {
         }
 
         public bool ShowInter() {
-            if (interstitialAd != null && interstitialAd.IsAdReady()) {
-                interstitialAd.ShowAd();
+            if (m_interstitialAd != null && m_interstitialAd.IsAdReady()) {
+                m_interstitialAd.ShowAd();
                 return true;
             }
 
@@ -96,41 +102,37 @@ namespace MadPixel {
 
         #region General Helpers
         private void SubscribeAll() {
-            //Add Init Event
             LevelPlay.OnInitSuccess += SdkInitializationCompletedEvent;
             LevelPlay.OnInitFailed += SdkInitializationFailedEvent;
 
-            //Add ImpressionSuccess Event
             IronSourceEvents.onImpressionDataReadyEvent += ImpressionDataReadyEvent;
         }
 
 
         private void UnsubscribeAll() {
-            //Add Init Event
             LevelPlay.OnInitSuccess -= SdkInitializationCompletedEvent;
             LevelPlay.OnInitFailed -= SdkInitializationFailedEvent;
 
-            //Add ImpressionSuccess Event
             IronSourceEvents.onImpressionDataReadyEvent -= ImpressionDataReadyEvent;
         }
 
 
         private void LoadInter() {
-            if (interstitialAd != null) {
-                interstitialAd.LoadAd();
+            if (m_interstitialAd != null) {
+                m_interstitialAd.LoadAd();
             }
 
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I called LoadInter");
             }
         }
 
         private void LoadRewarded() {
-            if (rewardedAd != null) {
-                rewardedAd.LoadAd();
+            if (m_rewardedAd != null) {
+                m_rewardedAd.LoadAd();
             }
 
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I called LoadRewarded");
             }
         }
@@ -139,24 +141,23 @@ namespace MadPixel {
 
         #region Rewarded callbacks
         private void Rewarded_OnAdRewarded(LevelPlayAdInfo a_adInfo, LevelPlayReward a_reward) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got Rewarded_OnAdRewarded " + a_adInfo);
             }
 
-            onFinishAdsEvent?.Invoke(true);
-            //LoadRewarded();
+            e_onFinishAds?.Invoke(true);
         }
 
         private void Rewarded_OnAdLoaded(LevelPlayAdInfo a_adInfo) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got Rewarded_OnAdLoaded " + a_adInfo);
             }
 
-            onAdLoadedEvent?.Invoke(EAdType.REWARDED);
+            m_onAdLoaded?.Invoke(EAdType.REWARDED);
         }
 
         private void Rewarded_OnAdLoadFailed(LevelPlayAdError a_error) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got Rewarded_OnAdLoadFailed");
             }
 
@@ -164,26 +165,26 @@ namespace MadPixel {
         }
 
         private void Rewarded_OnAdDisplayFailed(LevelPlayAdDisplayInfoError a_error) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got Rewarded_OnAdDisplayFailed " + a_error.LevelPlayError.ErrorMessage);
             }
-            onErrorEvent?.Invoke(a_error, EAdType.REWARDED);
-            onFinishAdsEvent?.Invoke(false);
+            e_onDisplayAdError?.Invoke(a_error, EAdType.REWARDED);
+            e_onFinishAds?.Invoke(false);
 
             LoadRewarded();
         }
 
         private void Rewarded_OnAdClosed(LevelPlayAdInfo a_adInfo) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got Rewarded_OnAdClosed " + a_adInfo);
             }
-            onFinishAdsEvent?.Invoke(false);
+            e_onFinishAds?.Invoke(false);
             LoadRewarded();
         }
 
         private void Rewarded_OnAdDisplayed(LevelPlayAdInfo a_adInfo) {
             Debug.Log(a_adInfo.Revenue);
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got Rewarded_OnAdDisplayed With AdInfo " + a_adInfo);
             }
         }
@@ -191,35 +192,35 @@ namespace MadPixel {
 
         #region Inter callbacks
         private void Interstitial_OnAdLoaded(LevelPlayAdInfo a_adInfo) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got InterstitialOnAdReadyEvent With AdInfo " + a_adInfo);
             }
 
-            onAdLoadedEvent?.Invoke(EAdType.INTER);
+            m_onAdLoaded?.Invoke(EAdType.INTER);
         }
         private void Interstitial_OnAdClosedEvent(LevelPlayAdInfo a_adInfo) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got InterstitialOnAdClosedEvent " + a_adInfo);
             }
 
-            onInterDismissedEvent?.Invoke();
+            e_onInterDismissed?.Invoke();
             LoadInter();
         }
 
         private void Interstitial_OnAdDisplayed(LevelPlayAdInfo a_adInfo) {
-            onInterDismissedEvent?.Invoke();
+            e_onInterDismissed?.Invoke();
         }
 
         private void Interstitial_OnAdLoadFailed(LevelPlayAdError a_error) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got InterstitialOnAdLoadFailed With Error " + a_error);
             }
 
             Invoke(nameof(LoadInter), 5f);
         }
         private void Interstitial_OnAdShowFailedEvent(LevelPlayAdDisplayInfoError a_error) {
-            onErrorEvent?.Invoke(a_error, EAdType.INTER);
-            onInterDismissedEvent?.Invoke();
+            e_onDisplayAdError?.Invoke(a_error, EAdType.INTER);
+            e_onInterDismissed?.Invoke();
         }
 
         #endregion
@@ -229,40 +230,41 @@ namespace MadPixel {
         #region Banner Callbacks
 
         public void ToggleBanner(bool a_show) {
-            if (bannerAd == null) {
+            if (m_bannerAd == null) {
                 return;
             }
+
             if (a_show) {
-                bannerAd.ShowAd();
+                m_bannerAd.ShowAd();
             }
             else {
-                bannerAd.HideAd();
+                m_bannerAd.HideAd();
             }
         }
 
-        void BannerOnAdLoadedEvent(LevelPlayAdInfo a_adInfo) {
-            if (bIsDebug) {
+        private void BannerOnAdLoadedEvent(LevelPlayAdInfo a_adInfo) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got BannerOnAdLoadedEvent With AdInfo " + a_adInfo);
             }
 
             m_isBannerLoadedOnce = true;
-            onBannerAdLoadedEvent?.Invoke(a_adInfo);
+            m_onBannerAdLoaded?.Invoke(a_adInfo);
         }
 
         private void BannerOnAdScreenPresentedEvent(LevelPlayAdInfo a_adInfo) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got BannerOnAdScreenPresentedEvent With AdInfo " + a_adInfo);
             }
         }
 
         private void BannerOnAdLoadFailedEvent(LevelPlayAdError a_adInfo) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got BannerOnAdLoadFailedEvent With AdInfo " + a_adInfo);
             }
 
             if (!m_isBannerLoadedOnce) {
-                if (bannerAd != null) {
-                    bannerAd.DestroyAd();
+                if (m_bannerAd != null) {
+                    m_bannerAd.DestroyAd();
                 }
 
                 Invoke(nameof(LoadBannerFirstTime), 5f);
@@ -275,40 +277,40 @@ namespace MadPixel {
 
         #region General callbacks
         private void SdkInitializationCompletedEvent(LevelPlayConfiguration a_configuration) {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] I got SdkInitializationCompletedEvent");
-                if (bUseTestSuite) {
+                if (m_debugTestSuiteOn) {
                     IronSource.Agent.launchTestSuite();
                 }
             }
 
 
 #if UNITY_ANDROID
-            interstitialAd = new LevelPlayInterstitialAd(customSettings.InterstitialID);
-            rewardedAd = new LevelPlayRewardedAd(customSettings.RewardedID);
+            m_interstitialAd = new LevelPlayInterstitialAd(m_customSettings.InterstitialID);
+            m_rewardedAd = new LevelPlayRewardedAd(m_customSettings.RewardedID);
 #else
-            interstitialAd = new LevelPlayInterstitialAd(customSettings.InterstitialID_IOS);
-            rewardedAd = new LevelPlayRewardedAd(customSettings.RewardedID_IOS);
+            m_interstitialAd = new LevelPlayInterstitialAd(m_customSettings.InterstitialID_IOS);
+            m_rewardedAd = new LevelPlayRewardedAd(m_customSettings.RewardedID_IOS);
 #endif
 
-            rewardedAd.OnAdLoaded += Rewarded_OnAdLoaded;
-            rewardedAd.OnAdLoadFailed += Rewarded_OnAdLoadFailed;
-            rewardedAd.OnAdDisplayed += Rewarded_OnAdDisplayed;
-            rewardedAd.OnAdDisplayFailed += Rewarded_OnAdDisplayFailed;
-            rewardedAd.OnAdRewarded += Rewarded_OnAdRewarded;
-            rewardedAd.OnAdClosed += Rewarded_OnAdClosed;
+            m_rewardedAd.OnAdLoaded += Rewarded_OnAdLoaded;
+            m_rewardedAd.OnAdLoadFailed += Rewarded_OnAdLoadFailed;
+            m_rewardedAd.OnAdDisplayed += Rewarded_OnAdDisplayed;
+            m_rewardedAd.OnAdDisplayFailed += Rewarded_OnAdDisplayFailed;
+            m_rewardedAd.OnAdRewarded += Rewarded_OnAdRewarded;
+            m_rewardedAd.OnAdClosed += Rewarded_OnAdClosed;
 
-            interstitialAd.OnAdLoaded += Interstitial_OnAdLoaded;
-            interstitialAd.OnAdLoadFailed += Interstitial_OnAdLoadFailed;
-            interstitialAd.OnAdDisplayed += Interstitial_OnAdDisplayed;
-            interstitialAd.OnAdDisplayFailed += Interstitial_OnAdShowFailedEvent;
-            interstitialAd.OnAdClosed += Interstitial_OnAdClosedEvent;
+            m_interstitialAd.OnAdLoaded += Interstitial_OnAdLoaded;
+            m_interstitialAd.OnAdLoadFailed += Interstitial_OnAdLoadFailed;
+            m_interstitialAd.OnAdDisplayed += Interstitial_OnAdDisplayed;
+            m_interstitialAd.OnAdDisplayFailed += Interstitial_OnAdShowFailedEvent;
+            m_interstitialAd.OnAdClosed += Interstitial_OnAdClosedEvent;
 
             LoadInter();
             LoadRewarded();
 
 
-            if (customSettings.bUseBanners) {
+            if (m_customSettings.bUseBanners) {
                 LoadBannerFirstTime();
             }
 
@@ -330,14 +332,14 @@ namespace MadPixel {
         }
 
         private void TryToInit() {
-            if (bIsDebug) {
+            if (m_debugLogsOn) {
                 Debug.Log("[MadPixel] Try to init");
             }
 
 #if UNITY_ANDROID
-            LevelPlay.Init(customSettings.levelPlayKey);
+            LevelPlay.Init(m_customSettings.levelPlayKey);
 #else
-            LevelPlay.Init(customSettings.levelPlayKey_ios);
+            LevelPlay.Init(m_customSettings.levelPlayKey_ios);
 #endif
         }
 
@@ -345,27 +347,27 @@ namespace MadPixel {
             com.unity3d.mediation.LevelPlayAdSize adSize = com.unity3d.mediation.LevelPlayAdSize.CreateAdaptiveAdSize();
 
 #if UNITY_ANDROID
-            bannerAd = new LevelPlayBannerAd(customSettings.BannerID, adSize,
-                customSettings.useTopBannerPosition ?
+            m_bannerAd = new LevelPlayBannerAd(m_customSettings.BannerID, adSize,
+                m_customSettings.useTopBannerPosition ?
                     com.unity3d.mediation.LevelPlayBannerPosition.TopCenter :
                     com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter,
-                null, true, customSettings.useTopBannerPosition);
+                null, true, m_customSettings.useTopBannerPosition);
 #else
-            bannerAd = new LevelPlayBannerAd(customSettings.BannerID_IOS, adSize, 
-                customSettings.useTopBannerPosition ? 
+            m_bannerAd = new LevelPlayBannerAd(m_customSettings.BannerID_IOS, adSize, 
+                m_customSettings.useTopBannerPosition ? 
                     com.unity3d.mediation.LevelPlayBannerPosition.TopCenter : 
                     com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter,
-                null, true, customSettings.useTopBannerPosition);
+                null, true, m_customSettings.useTopBannerPosition);
 #endif
-            bannerAd.OnAdLoaded += BannerOnAdLoadedEvent;
-            bannerAd.OnAdLoadFailed += BannerOnAdLoadFailedEvent;
+            m_bannerAd.OnAdLoaded += BannerOnAdLoadedEvent;
+            m_bannerAd.OnAdLoadFailed += BannerOnAdLoadFailedEvent;
 
-            bannerAd.LoadAd();
+            m_bannerAd.LoadAd();
         }
 
-        void ImpressionDataReadyEvent(IronSourceImpressionData impressionData) {
-            if (bIsDebug) {
-                Debug.Log("[MadPixel] I got ImpressionDataReadyEvent allData: " + impressionData.allData);
+        void ImpressionDataReadyEvent(IronSourceImpressionData a_impressionData) {
+            if (m_debugLogsOn) {
+                Debug.Log("[MadPixel] I got ImpressionDataReadyEvent allData: " + a_impressionData.allData);
             }
         }
         #endregion

@@ -12,34 +12,33 @@ namespace MAXHelper {
 
     [RequireComponent(typeof(LevelPlayComp))]
     public class AdsManager : MonoBehaviour {
-        private const string version = "1.2.9";
+        private const string version = "1.3.1";
         public enum EResultCode { OK = 0, NOT_LOADED, ADS_FREE, ON_COOLDOWN, ERROR }
         public enum EAdType { REWARDED, INTER, BANNER }
 
         #region Fields
-
         [SerializeField] private bool bInitializeOnStart = true;
         [SerializeField] private int CooldownBetweenInterstitials = 30;
 
-        private bool bCanShowBanner = true;
-        private bool bIntersOn = true;
-        private bool bHasInternet = true;
+        private bool m_canShowBanner = true;
+        private bool m_intersOn = true;
+        private bool m_hasInternet = true;
 
         private TermsAndPrivacyPolicyFlow m_termsFlow;
-        private MAXCustomSettings madPixelSettings;
-        private LevelPlayComp LPComp;
-        private AdInfo CurrentAdInfo;
-        private float LastInterShown;
-        private GameObject AdsInstigatorObj;
-        private UnityAction<bool> CallbackPending;
-
+        private MAXCustomSettings m_madPixelSettings;
+        private LevelPlayComp m_levelPlayComp;
+        private AdInfo m_currentAdInfo;
+        private float m_lastInterShown;
+        private GameObject m_adsInstigatorObj;
+        private UnityAction<bool> m_callbackPending;
         #endregion
+
 
         #region Events Declaration (Can be used for Analytics)
 
-        public UnityAction OnAdsManagerInitialized;
+        public UnityAction e_onAdsManagerInitialized;
 
-        public bool bReady { get; private set; }
+        public bool m_ready { get; private set; }
 
         public UnityAction<EAdType> OnNewAdLoaded;
         public UnityAction<LevelPlayAdDisplayInfoError, EAdType, string> OnAdDisplayError;
@@ -73,7 +72,7 @@ namespace MAXHelper {
 
         public static bool Ready() {
             if (Exist) {
-                return Instance.bReady;
+                return Instance.m_ready;
             }
             return (false);
         }
@@ -81,7 +80,7 @@ namespace MAXHelper {
         public static float CooldownLeft {
             get {
                 if (Exist) {
-                    return Instance.LastInterShown + Instance.CooldownBetweenInterstitials - Time.time;
+                    return Instance.m_lastInterShown + Instance.CooldownBetweenInterstitials - Time.time;
                 }
 
                 return -1f;
@@ -138,67 +137,65 @@ namespace MAXHelper {
             }
         }
 
-        private void AppLovin_OnAdLoaded(EAdType a_type) {
+        private void LevelPlay_OnAdLoaded(EAdType a_type) {
             OnNewAdLoaded?.Invoke(a_type);
         }
 
-        private void AppLovin_OnFinishAds(bool IsFinished) {
-            if (AdsInstigatorObj != null) {
-                AdsInstigatorObj = null;
-                CallbackPending?.Invoke(IsFinished);
-                CallbackPending = null;
+        private void LevelPlay_OnFinishAds(bool IsFinished) {
+            if (m_adsInstigatorObj != null) {
+                m_adsInstigatorObj = null;
+                m_callbackPending?.Invoke(IsFinished);
+                m_callbackPending = null;
             }
             else {
                 Debug.LogWarning("[Mad Pixel] Ads Instigator was destroyed or nulled");
             }
 
-            if (CurrentAdInfo == null) {
-                //Debug.LogWarning("[Mad Pixel] Current AdInfo was nulled before");
-                // after rewarded ad dismissed
+            if (m_currentAdInfo == null) {
+                // NOTE: after rewarded ad dismissed
                 return;
             }
 
-            CurrentAdInfo.Availability = IsFinished ? "watched" : "canceled";
-            OnAdShown?.Invoke(CurrentAdInfo);
+            m_currentAdInfo.Availability = IsFinished ? "watched" : "canceled";
+            OnAdShown?.Invoke(m_currentAdInfo);
 
             RestartInterCooldown();
 
-            CurrentAdInfo = null;
-            //Debug.LogWarning("[Mad Pixel] Current AdInfo set as null");
+            m_currentAdInfo = null;
             //NOTE: Temporary disable sounds - off
         }
 
-        private void AppLovin_OnInterDismissed() {
-            if (AdsInstigatorObj != null) {
-                AdsInstigatorObj = null;
-                CallbackPending?.Invoke(true);
-                CallbackPending = null;
+        private void LevelPlay_OnInterDismissed() {
+            if (m_adsInstigatorObj != null) {
+                m_adsInstigatorObj = null;
+                m_callbackPending?.Invoke(true);
+                m_callbackPending = null;
             }
             else {
-                //Debug.LogError("[Mad Pixel] Ads Instigator was destroyed or nulled");
+                Debug.LogWarning("[Mad Pixel] Ads Instigator was destroyed or nulled");
             }
 
             RestartInterCooldown();
 
-            if (CurrentAdInfo != null) {
-                OnAdShown?.Invoke(CurrentAdInfo);
+            if (m_currentAdInfo != null) {
+                OnAdShown?.Invoke(m_currentAdInfo);
             }
 
-            CurrentAdInfo = null;
+            m_currentAdInfo = null;
             //NOTE: Temporary disable sounds - off
         }
 
         private void LevelPlay_OnError(LevelPlayAdDisplayInfoError a_error, EAdType a_adType) {
-            if (CurrentAdInfo != null) {
-                OnAdDisplayError?.Invoke(a_error, a_adType, CurrentAdInfo.Placement);
+            if (m_currentAdInfo != null) {
+                OnAdDisplayError?.Invoke(a_error, a_adType, m_currentAdInfo.Placement);
             }
         }
 
 
-        private void LevelPlay_onBannerAdLoaded(LevelPlayAdInfo a_levelPlayAdInfo) {
-            AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, bHasInternet); 
+        private void LevelPlay_OnBannerAdLoaded(LevelPlayAdInfo a_levelPlayAdInfo) {
+            AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet); 
             OnAdAvailable?.Invoke(BannerInfo);
-            if (bCanShowBanner) {
+            if (m_canShowBanner) {
                 OnAdStarted?.Invoke(BannerInfo);
                 OnAdShown?.Invoke(BannerInfo);
             }
@@ -211,7 +208,7 @@ namespace MAXHelper {
             if (_instance == null) {
                 _instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
-                LPComp = GetComponent<LevelPlayComp>();
+                m_levelPlayComp = GetComponent<LevelPlayComp>();
             }
             else {
                 GameObject.Destroy(gameObject);
@@ -245,12 +242,8 @@ namespace MAXHelper {
         /// Shows a Rewarded As. Returns OK if the ad is starting to show, NOT_LOADED if Applovin has no loaded ad yet.
         /// </summary>
         public static EResultCode ShowRewarded(GameObject ObjectRef, UnityAction<bool> OnFinishAds, string Placement = "none") {
-#if UNITY_EDITOR
-            OnFinishAds?.Invoke(true);
-            return EResultCode.OK;
-#endif
             if (Exist) {
-                if (Instance.LPComp.IsReady(EAdType.REWARDED)) {
+                if (Instance.m_levelPlayComp.IsReady(EAdType.REWARDED)) {
                     Instance.SetCallback(OnFinishAds, ObjectRef);
                     Instance.ShowAdInner(EAdType.REWARDED, Placement);
                     return EResultCode.OK;
@@ -277,9 +270,9 @@ namespace MAXHelper {
             return EResultCode.OK;
 #endif
             if (Exist) {
-                if (Instance.bIntersOn) {
+                if (Instance.m_intersOn) {
                     if (Instance.IsCooldownElapsed()) {
-                        if (Instance.LPComp.IsReady(EAdType.INTER)) {
+                        if (Instance.m_levelPlayComp.IsReady(EAdType.INTER)) {
                             Instance.SetCallback(OnAdDismissed, ObjectRef);
                             Instance.ShowAdInner(EAdType.INTER, Placement);
                             return EResultCode.OK;
@@ -308,7 +301,7 @@ namespace MAXHelper {
         /// </summary>
         public static EResultCode ShowInterForced(GameObject ObjectRef, UnityAction<bool> OnAdDismissed, string Placement = "none") {
             if (Exist) {
-                if (Instance.LPComp.IsReady(EAdType.INTER)) {
+                if (Instance.m_levelPlayComp.IsReady(EAdType.INTER)) {
                     Instance.SetCallback(OnAdDismissed, ObjectRef);
                     Instance.ShowAdInner(EAdType.INTER, Placement);
                     return EResultCode.OK;
@@ -324,15 +317,12 @@ namespace MAXHelper {
         /// Returns TRUE if LevelPlay has a loaded ad ready to show
         /// </summary>
         public static bool HasLoadedAd(EAdType a_adType) {
-#if UNITY_EDITOR
-            return true;
-#endif
             if (a_adType == EAdType.INTER) {
-                return (Instance.bIntersOn && Instance.LPComp.IsReady(a_adType) && Instance.IsCooldownElapsed());
+                return (Instance.m_intersOn && Instance.m_levelPlayComp.IsReady(a_adType) && Instance.IsCooldownElapsed());
             }
 
-            //NOTE: rewarded can always be shown
-            return Instance.LPComp.IsReady(a_adType);
+            //NOTE: rewarded ads can always be shown
+            return Instance.m_levelPlayComp.IsReady(a_adType);
         }
 
 
@@ -340,13 +330,13 @@ namespace MAXHelper {
         /// Turns banners and inters off and prevents them from showing (this session only)
         /// Call this on AdsFree bought or on AdsFree checked at game start
         /// </summary>
-        public static void CancelAllAds(bool bDisableInters = true, bool bDisableBanners = true) {
+        public static void CancelAllAds(bool a_disableInters = true, bool a_disableBanners = true) {
             if (Exist) {
-                if (bDisableInters) {
-                    Instance.bIntersOn = false;
+                if (a_disableInters) {
+                    Instance.m_intersOn = false;
                 }
-                if (bDisableBanners) {
-                    Instance.bCanShowBanner = false;
+                if (a_disableBanners) {
+                    Instance.m_canShowBanner = false;
                     ToggleBanner(false);
                     PlayerPrefs.SetInt("displayBannerOnLoad", 0);
                 }
@@ -356,16 +346,16 @@ namespace MAXHelper {
             }
         }
 
-        public static void ToggleBanner(bool bShow) {
+        public static void ToggleBanner(bool a_show) {
 #if UNITY_EDITOR
             return;
 #endif
             if (Exist) {
-                if (bShow && Instance.bCanShowBanner) {
-                    Instance.LPComp.ToggleBanner(true);
+                if (a_show && Instance.m_canShowBanner) {
+                    Instance.m_levelPlayComp.ToggleBanner(true);
                 }
                 else {
-                    Instance.LPComp.ToggleBanner(false);
+                    Instance.m_levelPlayComp.ToggleBanner(false);
                 }
             }
             else {
@@ -378,11 +368,6 @@ namespace MAXHelper {
         /// Tries to show a Rewarded ad; if a Rewarded ad is not loaded, tries to show an Inter ad instead (ignoring COOLDOWN and ADSFREE conditions)
         /// </summary>
         public static bool ShowRewardedWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
-#if UNITY_EDITOR
-            Callback?.Invoke(true);
-            Debug.LogWarning($"[Mad Pixel] Editor dummy: REWARDED was shown here, placement = {Placement}");
-            return true;
-#endif
             if (GO) {
                 EResultCode Result = ShowRewarded(GO, Callback, Placement);
                 if (Result == EResultCode.OK) {
@@ -457,49 +442,60 @@ namespace MAXHelper {
         }
 
         private void InitInternal() {
-            LastInterShown = -CooldownBetweenInterstitials;
+            m_lastInterShown = -CooldownBetweenInterstitials;
 
-            madPixelSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
-            LPComp.Init(madPixelSettings);
-            LPComp.onFinishAdsEvent += AppLovin_OnFinishAds;
-            LPComp.onAdLoadedEvent += AppLovin_OnAdLoaded;
-            LPComp.onInterDismissedEvent += AppLovin_OnInterDismissed;
-            LPComp.onErrorEvent += LevelPlay_OnError;
+            m_madPixelSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            m_levelPlayComp.Init(m_madPixelSettings);
 
-            LPComp.onBannerAdLoadedEvent += LevelPlay_onBannerAdLoaded;
+            m_levelPlayComp.e_onFinishAds += LevelPlay_OnFinishAds;
+            m_levelPlayComp.m_onAdLoaded += LevelPlay_OnAdLoaded;
+            m_levelPlayComp.e_onInterDismissed += LevelPlay_OnInterDismissed;
+            m_levelPlayComp.e_onDisplayAdError += LevelPlay_OnError;
+            m_levelPlayComp.m_onBannerAdLoaded += LevelPlay_OnBannerAdLoaded;
 
-            bReady = true;
+            m_ready = true;
 
-            OnAdsManagerInitialized?.Invoke();
+            e_onAdsManagerInitialized?.Invoke();
         }
 
-        private void SetCallback(UnityAction<bool> Callback, GameObject objectRef) {
-            AdsInstigatorObj = objectRef;
-            CallbackPending = Callback;
+        private void SetCallback(UnityAction<bool> a_callback, GameObject a_objectRef) {
+            m_adsInstigatorObj = a_objectRef;
+            m_callbackPending = a_callback;
         }
 
-        private void ShowAdInner(EAdType AdType, string Placement) {
-            CurrentAdInfo = new AdInfo(Placement, AdType);
-            OnAdAvailable?.Invoke(CurrentAdInfo);
-            OnAdStarted?.Invoke(CurrentAdInfo);
+        private void ShowAdInner(EAdType a_adType, string a_placement) {
+            m_currentAdInfo = new AdInfo(a_placement, a_adType);
+            OnAdAvailable?.Invoke(m_currentAdInfo);
+            OnAdStarted?.Invoke(m_currentAdInfo);
             // NOTE: Temporary Disable Sounds
 
 
-            if (AdType == EAdType.REWARDED) {
-                LPComp.ShowRewarded();
+#if UNITY_EDITOR
+            if (a_adType == EAdType.REWARDED) {
+                LevelPlay_OnFinishAds(true);
             }
-            else if (AdType == EAdType.INTER) {
-                LPComp.ShowInter();
+            else if (a_adType == EAdType.INTER) {
+                LevelPlay_OnInterDismissed();
+            }
+
+            return;
+#endif
+
+            if (a_adType == EAdType.REWARDED) {
+                m_levelPlayComp.ShowRewarded();
+            }
+            else if (a_adType == EAdType.INTER) {
+                m_levelPlayComp.ShowInter();
             }
         }
 
         private bool IsCooldownElapsed() {
-            return (Time.time - LastInterShown > CooldownBetweenInterstitials);
+            return (Time.time - m_lastInterShown > CooldownBetweenInterstitials);
         }
 
         private void RestartInterCooldown() {
             if (CooldownBetweenInterstitials > 0) {
-                LastInterShown = Time.time;
+                m_lastInterShown = Time.time;
             }
         }
 
@@ -519,13 +515,13 @@ namespace MAXHelper {
         }
 
         private void OnPingComplete(bool bHasInternet) {
-            if (CurrentAdInfo != null) {
-                CurrentAdInfo.Availability = "not_available";
-                CurrentAdInfo.HasInternet = bHasInternet;
-                OnAdAvailable?.Invoke(CurrentAdInfo);
+            if (m_currentAdInfo != null) {
+                m_currentAdInfo.Availability = "not_available";
+                m_currentAdInfo.HasInternet = bHasInternet;
+                OnAdAvailable?.Invoke(m_currentAdInfo);
             }
 
-            this.bHasInternet = bHasInternet;
+            this.m_hasInternet = bHasInternet;
         }
 
         #endregion

@@ -1,4 +1,8 @@
-﻿# Version 30 - March 14, 2025
+﻿# Version 31 - May 15, 2025
+* New TermsAndPrivacyPanelFlow
+* 
+
+# Version 30 - March 14, 2025
 * MobileInAppPurchaser: IsSubscribed null check
 
 # Version 29 - March 14, 2025

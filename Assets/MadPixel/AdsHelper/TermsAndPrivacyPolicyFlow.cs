@@ -4,6 +4,7 @@ using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 #if UNITY_IOS
 using Unity.Advertisement.IosSupport;
@@ -19,15 +20,18 @@ namespace MAXHelper {
         #region Fields
         public event UnityAction<bool> e_onTermsAccepted;
 
-        [SerializeField] protected UITermsPanel TermsPanelPrefab;
-        [SerializeField] protected Transform PanelParentCanvas;
+        [FormerlySerializedAs("TermsPanelPrefab")]
+        [SerializeField] protected UITermsPanel m_termsPanelPrefab;
+        [FormerlySerializedAs("PanelParentCanvas")]
+        [SerializeField] protected Transform m_termsPanelParentCanvas;
 
         private UITermsPanel m_madPixelTermsPanel;
 
-        private bool MadPixelTermsAcceptedFlag{
-            get{ return(PlayerPrefs.GetInt(TermsAcceptedKey, 0) != 0); }
+        private bool MadPixelTermsAcceptedFlag {
+            get { return (PlayerPrefs.GetInt(TermsAcceptedKey, 0) != 0); }
             set { PlayerPrefs.SetInt(TermsAcceptedKey, value ? 1 : 0); }
         }
+
         #endregion
 
         #region Public
@@ -114,14 +118,14 @@ namespace MAXHelper {
         }
 
         private void ShowMadPixelTermsPanel(){
-            Transform panelParent = PanelParentCanvas;
+            Transform panelParent = m_termsPanelParentCanvas;
             if (!panelParent) {
                 Canvas canvas = FindFirstObjectByType<Canvas>();
                 if (canvas) {
                     panelParent = canvas.transform;
                 }
             }
-            m_madPixelTermsPanel = Instantiate(TermsPanelPrefab, panelParent);
+            m_madPixelTermsPanel = Instantiate(m_termsPanelPrefab, panelParent);
             
             ToggleSubsToMadPixelTermsPanelResult(true);
             

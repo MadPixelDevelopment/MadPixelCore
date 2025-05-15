@@ -13,23 +13,31 @@ namespace MadPixel.InApps {
         #region Fields
         public const string VERSION = "1.0.6";
 
-        private IStoreController StoreController;
-        private IExtensionProvider StoreExstensionProvider;
+        private IStoreController m_storeController;
+        private IExtensionProvider m_storeExtensionProvider;
+        [FormerlySerializedAs("bInitOnStart")]
+        [SerializeField] private bool m_initOnStart;
+        [SerializeField] private bool m_logDebugOn;
 
-        [SerializeField] private bool bInitOnStart;
-        [SerializeField] private bool bDebugLogging;
-        [SerializeField] private string adsFreeSKU;
-        [SerializeField] private List<string> otherNonConsumablesSKUs;
+        [FormerlySerializedAs("adsFreeSKU")]
+        [SerializeField] private string m_adsFreeSKU;
+
+        [FormerlySerializedAs("otherNonConsumablesSKUs")]
+        [SerializeField] private List<string> m_otherNonConsumablesSKUs;
+
         [FormerlySerializedAs("productsSKUs")] 
         [SerializeField] private List<string> consumablesSKUs;
-        [SerializeField] private List<string> subscriptionsSKUs;
+        
+        [FormerlySerializedAs("subscriptionsSKUs")]
+        [SerializeField] private List<string> m_subscriptionsSKUs;
 
-        [SerializeField] private GamingServices GamingServices;
+        [FormerlySerializedAs("GamingServices")]
+        [SerializeField] private GamingServices m_gamingServices;
 
         public static string AdsFreeSKU {
             get {
                 if (Exist) {
-                    return Instance.adsFreeSKU;
+                    return Instance.m_adsFreeSKU;
                 }
 
                 return null;
@@ -48,7 +56,7 @@ namespace MadPixel.InApps {
         public static List<string> NonConsumablesList {
             get {
                 if (Exist) {
-                    return Instance.otherNonConsumablesSKUs;
+                    return Instance.m_otherNonConsumablesSKUs;
                 }
 
                 return null;
@@ -58,7 +66,7 @@ namespace MadPixel.InApps {
         public static List<string> SubscriptionsList {
             get {
                 if (Exist) {
-                    return Instance.subscriptionsSKUs;
+                    return Instance.m_subscriptionsSKUs;
                 }
 
                 return null;
@@ -74,50 +82,37 @@ namespace MadPixel.InApps {
 
         #region Static
 
-        protected static MobileInAppPurchaser _instance;
+        protected static MobileInAppPurchaser m_instance;
 
         public static bool Exist {
-            get { return (_instance != null); }
+            get { return (m_instance != null); }
         }
 
         public static MobileInAppPurchaser Instance {
             get {
-                if (_instance == null) {
+                if (m_instance == null) {
                     Debug.LogError("MobileInAppPurchaser wasn't created yet!");
 
                     GameObject go = new GameObject();
                     go.name = "MobileInAppPurchaser";
-                    _instance = go.AddComponent(typeof(MobileInAppPurchaser)) as MobileInAppPurchaser;
+                    m_instance = go.AddComponent(typeof(MobileInAppPurchaser)) as MobileInAppPurchaser;
                 }
 
-                return _instance;
+                return m_instance;
             }
         }
-
-        public static void Destroy(bool immediate = false) {
-            if (_instance != null && _instance.gameObject != null) {
-                if (immediate) {
-                    DestroyImmediate(_instance.gameObject);
-                } else {
-                    GameObject.Destroy(_instance.gameObject);
-                }
-            }
-
-            _instance = null;
-        }
-
         #endregion
 
 
         #region Initialization
         private void Awake() {
-            if (_instance == null) {
-                _instance = this;
+            if (m_instance == null) {
+                m_instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
-                if (GamingServices == null) {
-                    GamingServices = GetComponent<GamingServices>();
+                if (m_gamingServices == null) {
+                    m_gamingServices = GetComponent<GamingServices>();
                 }
-                GamingServices.Initialize();
+                m_gamingServices.Initialize();
             } else {
                 GameObject.Destroy(gameObject);
                 Debug.LogError($"Already have MobileInAppPurchaser on scene!");
@@ -126,16 +121,24 @@ namespace MadPixel.InApps {
 
 
         private void Start() {
-            if (bInitOnStart) {
-                if (!string.IsNullOrEmpty(AdsFreeSKU) 
-                    || (ConsumablesList != null && ConsumablesList.Count > 0) 
-                    || (NonConsumablesList != null && NonConsumablesList.Count > 0) 
-                    || (SubscriptionsList != null && SubscriptionsList.Count > 0)) {
-                    Init(AdsFreeSKU, ConsumablesList, NonConsumablesList, SubscriptionsList);
-                }
-                else {
-                    Debug.LogWarning("Cant init InApps with null Data!");
-                }
+            if (m_initOnStart) {
+                Init();
+            }
+        }
+
+
+        /// <summary>
+        /// Initializes Consumables, Non-Consumables and Subscriptions from Prefab's serialized values
+        /// </summary>
+        public void Init() {
+            if (!string.IsNullOrEmpty(AdsFreeSKU)
+                || (ConsumablesList != null && ConsumablesList.Count > 0)
+                || (NonConsumablesList != null && NonConsumablesList.Count > 0)
+                || (SubscriptionsList != null && SubscriptionsList.Count > 0)) {
+                Init(AdsFreeSKU, ConsumablesList, NonConsumablesList, SubscriptionsList);
+            }
+            else {
+                Debug.LogWarning("Cant init InApps with null Data!");
             }
         }
 
@@ -171,42 +174,42 @@ namespace MadPixel.InApps {
             StartCoroutine(InitCoroutine(NonConsumableSKUs, ConsumableSKUs, SubscriptionSKUs));
         }
 
-        private IEnumerator InitCoroutine(List<string> NonConsumableSKUs, List<string> ConsumableSKUs, List<string> SubscriptionSKUs) {
-            ConfigurationBuilder Builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
+        private IEnumerator InitCoroutine(List<string> a_nonConsumableSKUs, List<string> a_consumableSKUs, List<string> a_subscriptionSKUs) {
+            ConfigurationBuilder builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-            if (NonConsumableSKUs != null && NonConsumableSKUs.Count > 0) {
-                foreach (string SKU in NonConsumableSKUs) {
-                    Builder.AddProduct(SKU, ProductType.NonConsumable);
+            if (a_nonConsumableSKUs != null && a_nonConsumableSKUs.Count > 0) {
+                foreach (string sku in a_nonConsumableSKUs) {
+                    builder.AddProduct(sku, ProductType.NonConsumable);
                 }
             }
 
-            if (ConsumableSKUs != null && ConsumableSKUs.Count > 0) {
-                foreach (string SKU in ConsumableSKUs) {
-                    Builder.AddProduct(SKU, ProductType.Consumable);
+            if (a_consumableSKUs != null && a_consumableSKUs.Count > 0) {
+                foreach (string sku in a_consumableSKUs) {
+                    builder.AddProduct(sku, ProductType.Consumable);
                 }
             }
 
-            if (SubscriptionSKUs != null && SubscriptionSKUs.Count > 0) {
-                foreach (string SKU in SubscriptionSKUs) {
-                    Builder.AddProduct(SKU, ProductType.Subscription);
+            if (a_subscriptionSKUs != null && a_subscriptionSKUs.Count > 0) {
+                foreach (string sku in a_subscriptionSKUs) {
+                    builder.AddProduct(sku, ProductType.Subscription);
                 }
             }
 
-            if (bDebugLogging) {
-                foreach (var product in Builder.products) {
+            if (m_logDebugOn) {
+                foreach (var product in builder.products) {
                     Debug.Log($"Added product: {product.id}, type; {product.type}");
                 }
             }
 
-            yield return new WaitWhile(() => GamingServices.IsLoading);
+            yield return new WaitWhile(() => m_gamingServices.IsLoading);
 
-            UnityPurchasing.Initialize(this, Builder);
+            UnityPurchasing.Initialize(this, builder);
         }
         #endregion
 
         #region Public
         public bool IsInitialized() {
-            return (StoreController != null && StoreExstensionProvider != null);
+            return (m_storeController != null && m_storeExtensionProvider != null);
         }
 
 
@@ -223,7 +226,7 @@ namespace MadPixel.InApps {
         public Product GetProduct(string SKU) {
             if (!string.IsNullOrEmpty(SKU)) {
                 if (IsInitialized()) {
-                    return StoreController.products.WithID(SKU);
+                    return m_storeController.products.WithID(SKU);
                 }
             }
             return null;
@@ -267,13 +270,13 @@ namespace MadPixel.InApps {
         
         public bool BuyProductInner(string SKU) {
             if (IsInitialized()) {
-                Product Product = StoreController.products.WithID(SKU);
+                Product Product = m_storeController.products.WithID(SKU);
                 if (Product != null && Product.availableToPurchase) {
-                    if (bDebugLogging){
+                    if (m_logDebugOn){
                         Debug.LogWarning($"[MobileInAppPurchaser] Purchasing product asynchronously: {Product.definition.id}");
                     }
 
-                    StoreController.InitiatePurchase(Product);
+                    m_storeController.InitiatePurchase(Product);
                     return true;
                 } else {
                     Debug.LogError("[MobileInAppPurchaser] BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase");
@@ -294,22 +297,22 @@ namespace MadPixel.InApps {
             }
 
             if (Application.platform == RuntimePlatform.Android) {
-                if (bDebugLogging) {
+                if (m_logDebugOn) {
                     Debug.LogWarning("[MobileInAppPurchaser] RestorePurchases started ...");
                 }
 
-                var google = StoreExstensionProvider.GetExtension<IGooglePlayStoreExtensions>();
+                var google = m_storeExtensionProvider.GetExtension<IGooglePlayStoreExtensions>();
                 // Begin the asynchronous process of restoring purchases. Expect a confirmation response in 
                 // the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
                 google.RestoreTransactions(OnTransactionsRestored);
             }
             if (Application.platform == RuntimePlatform.IPhonePlayer ||
                 Application.platform == RuntimePlatform.OSXPlayer) {
-                if (bDebugLogging) {
+                if (m_logDebugOn) {
                     Debug.LogWarning("[MobileInAppPurchaser] RestorePurchases started ...");
                 }
 
-                var apple = StoreExstensionProvider.GetExtension<IAppleExtensions>();
+                var apple = m_storeExtensionProvider.GetExtension<IAppleExtensions>();
                 // Begin the asynchronous process of restoring purchases. Expect a confirmation response in 
                 // the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
                 apple.RestoreTransactions(OnTransactionsRestored);
@@ -347,7 +350,7 @@ namespace MadPixel.InApps {
 
                 // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                 // no purchases are available to be restored.
-                if (bDebugLogging) {
+                if (m_logDebugOn) {
                     Debug.LogWarning($"[MobileInAppPurchaser] RestorePurchases continuing: {result}. If no further messages, no purchases available to restore.");
                 }
             }
@@ -360,8 +363,8 @@ namespace MadPixel.InApps {
 
         #region IStoreListener
         public void OnInitialized(IStoreController controller, IExtensionProvider extensions) {
-            StoreController = controller;
-            StoreExstensionProvider = extensions;
+            m_storeController = controller;
+            m_storeExtensionProvider = extensions;
         }
 
         public void OnInitializeFailed(InitializationFailureReason error) {
@@ -375,7 +378,7 @@ namespace MadPixel.InApps {
         public void OnPurchaseFailed(Product Prod, PurchaseFailureReason FailureReason) {
             string ProductSKU = Prod.definition.id;
 
-            if (bDebugLogging) {
+            if (m_logDebugOn) {
                 Debug.LogWarning($"[MobileInAppPurchaser] OnPurchaseFailed: FAIL. Product: '{ProductSKU}' Receipt: {Prod.receipt}");
                 Debug.LogWarning($"PurchaseFailureReason: {FailureReason}");
             }
@@ -386,7 +389,7 @@ namespace MadPixel.InApps {
         public void OnPurchaseFailed(Product Prod, PurchaseFailureDescription FailureDescription) {
             string ProductSKU = Prod.definition.id;
 
-            if (bDebugLogging) {
+            if (m_logDebugOn) {
                 Debug.LogWarning($"[MobileInAppPurchaser] OnPurchaseFailed: FAIL. Product: '{ProductSKU}' Receipt: {Prod.receipt}" +
                     $" Purchase failure reason: {FailureDescription.reason}," +
                     $" Purchase failure details: {FailureDescription.message}");
@@ -397,7 +400,7 @@ namespace MadPixel.InApps {
 
         // Proccess purchase and use Unity validation to check it for freud
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs E) {
-            if (bDebugLogging) {
+            if (m_logDebugOn) {
                 Debug.LogWarning($"[MobileInAppPurchaser] ProcessPurchase: PASS. Product: '{E.purchasedProduct.definition.id}' Receipt: {E.purchasedProduct.receipt}");
             }
 
