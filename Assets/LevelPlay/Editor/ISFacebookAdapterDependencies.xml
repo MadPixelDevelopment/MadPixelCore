@@ -1,14 +1,14 @@
 <dependencies>
-  <unityversion>4.3.71.0</unityversion>
+  <unityversion>4.3.72.0</unityversion>
   <androidPackages>
-    <androidPackage spec="com.facebook.android:audience-network-sdk:6.19.0">
+    <androidPackage spec="com.facebook.android:audience-network-sdk:6.20.0">
       <repositories>
         <repository>https://maven.google.com/</repository>
       </repositories>
     </androidPackage>
   </androidPackages>
   <androidPackages>
-    <androidPackage spec="com.unity3d.ads-mediation:facebook-adapter:4.3.49">
+    <androidPackage spec="com.unity3d.ads-mediation:facebook-adapter:4.3.50">
     </androidPackage>
   </androidPackages>
   <iosPods>

@@ -1,7 +1,7 @@
 <dependencies>
-  <unityversion>4.3.43.0</unityversion>
+  <unityversion>4.3.44.0</unityversion>
   <androidPackages>
-    <androidPackage spec="com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.61">
+    <androidPackage spec="com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.71">
       <repositories>
         <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea/</repository>
       </repositories>
@@ -15,7 +15,7 @@
     </androidPackage>
   </androidPackages>
   <androidPackages>
-    <androidPackage spec="com.unity3d.ads-mediation:mintegral-adapter:4.3.39">
+    <androidPackage spec="com.unity3d.ads-mediation:mintegral-adapter:4.3.40">
     </androidPackage>
   </androidPackages>
   <iosPods>

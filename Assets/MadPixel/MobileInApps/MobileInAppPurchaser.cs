@@ -139,9 +139,6 @@ namespace MadPixel.InApps {
             }
         }
 
-
-
-
         /// <summary>
         /// Initializes Consumables, Non-Consumables and Subscriptions
         /// </summary>
