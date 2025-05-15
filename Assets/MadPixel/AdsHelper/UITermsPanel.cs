@@ -9,7 +9,7 @@ namespace MAXHelper {
     
     public class UITermsPanel : MonoBehaviour {
         
-        public event UnityAction EventOnAcceptClick;
+        public event UnityAction e_onAcceptResult;
 
         #region Fields
         [SerializeField] protected Button AcceptButton;
@@ -43,7 +43,7 @@ namespace MAXHelper {
 
         #region Helpers
         protected virtual void OnAcceptClick() {
-            EventOnAcceptClick?.Invoke();
+            e_onAcceptResult?.Invoke();
             Hide();
         }
 

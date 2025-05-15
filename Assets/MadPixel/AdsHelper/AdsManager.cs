@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Unity.Services.LevelPlay;
 using GoogleMobileAds.Ump.Api;
 using MadPixel;
@@ -24,7 +25,7 @@ namespace MAXHelper {
         private bool bIntersOn = true;
         private bool bHasInternet = true;
 
-        private TermsAndATT terms;
+        private TermsAndPrivacyPolicyFlow m_termsFlow;
         private MAXCustomSettings madPixelSettings;
         private LevelPlayComp LPComp;
         private AdInfo CurrentAdInfo;
@@ -106,7 +107,25 @@ namespace MAXHelper {
         #endregion
 
         #region Event Catchers
-        private void TermsOnEventOnTermsAccepted() {
+        private void OnTermsFlowAcceptedEvent(bool a_hasConsent) {
+            Debug.LogWarning($"ON TERMS AND ATT FLOW RESULT: {a_hasConsent}");
+            IronSource.Agent.setConsent(a_hasConsent);
+#if UNITY_EDITOR
+                OnFirebaseInit(a_hasConsent);
+#else
+                StartCoroutine(WaitForFirebaseInit(a_hasConsent));
+#endif
+        }
+
+        private IEnumerator WaitForFirebaseInit(bool a_hasConsent){
+            yield return (new WaitUntil(FirebaseComp.Initialized));
+            OnFirebaseInit(a_hasConsent);
+        }
+
+        private void OnFirebaseInit(bool a_hasConsent){
+#if !UNITY_EDITOR
+            FirebaseComp.SetConsentValues(a_hasConsent);
+#endif
             InitInternal();
 
             if (MadPixelAnalytics.AnalyticsManager.Exist) {
@@ -192,16 +211,17 @@ namespace MAXHelper {
             if (_instance == null) {
                 _instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
-
                 LPComp = GetComponent<LevelPlayComp>();
-
-                if (bInitializeOnStart) {
-                    TermsAndATTRoutine();
-                }
             }
             else {
                 GameObject.Destroy(gameObject);
                 Debug.LogError($"[Mad Pixel] Two AdsManagers at the same time!");
+            }
+        }
+
+        private void Start(){
+            if (bInitializeOnStart) {
+                StartTermsAndPrivacyPolicyFlow();
             }
         }
 
@@ -430,10 +450,10 @@ namespace MAXHelper {
         #endregion
 
         #region Helpers
-        private void TermsAndATTRoutine() {
-            terms = GetComponent<TermsAndATT>();
-            terms.EventOnTermsAccepted += TermsOnEventOnTermsAccepted;
-            terms.BeginPlay();
+        private void StartTermsAndPrivacyPolicyFlow() {
+            m_termsFlow = GetComponent<TermsAndPrivacyPolicyFlow>();
+            m_termsFlow.e_onTermsAccepted += OnTermsFlowAcceptedEvent;
+            m_termsFlow.StartFlow();
         }
 
         private void InitInternal() {

@@ -7,9 +7,34 @@ using MadPixel;
 using MAXHelper;
 using UnityEngine;
 
-public class FirebaseComp : MonoBehaviour {
-    private static bool bInitialized = false;
+public class FirebaseComp : MonoBehaviour{
 
+
+
+    private static bool m_initialized = false;
+
+
+    #region Public Static
+    public static bool Initialized(){
+        return (m_initialized);
+    }
+
+    public static void SetConsentValues(bool a_hasConsent){
+        if (m_initialized){
+            ConsentStatus statusValue = a_hasConsent ? ConsentStatus.Granted : ConsentStatus.Denied;
+            var consentMap = new Dictionary<ConsentType, ConsentStatus> {
+                { ConsentType.AdStorage, statusValue },
+                { ConsentType.AnalyticsStorage, statusValue },
+                { ConsentType.AdPersonalization, statusValue },
+                { ConsentType.AdUserData, statusValue },
+            };
+            // Set the consent status
+            FirebaseAnalytics.SetConsent(consentMap);
+        } else { 
+            Debug.LogError($"Trying to set consent status but Firebase doesn't initialized! Please fix it!");
+        }
+    }
+    #endregion
 
 
     #region Unity events
@@ -43,8 +68,7 @@ public class FirebaseComp : MonoBehaviour {
     #endregion
 
     private void InnerInit() {
-        bInitialized = true;
-
+        m_initialized = true;
         IronSourceEvents.onImpressionDataReadyEvent += LogAdPurchase;
     }
 
@@ -52,7 +76,7 @@ public class FirebaseComp : MonoBehaviour {
         if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
 
         double revenue = a_impressionData.revenue.Value;
-        if (revenue > 0 && bInitialized) {
+        if (revenue > 0) {
             var impressionParameters = new[] {
                 new Firebase.Analytics.Parameter("ad_platform", "IronSource"),
                 new Firebase.Analytics.Parameter("ad_source", a_impressionData.adNetwork),
