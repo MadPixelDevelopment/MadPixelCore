@@ -6,7 +6,7 @@ using MadPixel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-
+using UnityEngine.Serialization;
 
 namespace MAXHelper {
 
@@ -18,7 +18,8 @@ namespace MAXHelper {
 
         #region Fields
         [SerializeField] private bool bInitializeOnStart = true;
-        [SerializeField] private int CooldownBetweenInterstitials = 30;
+        [FormerlySerializedAs("CooldownBetweenInterstitials")]
+        [SerializeField] private int m_cooldownBetweenInterstitials = 30;
 
         private bool m_canShowBanner = true;
         private bool m_intersOn = true;
@@ -80,7 +81,7 @@ namespace MAXHelper {
         public static float CooldownLeft {
             get {
                 if (Exist) {
-                    return Instance.m_lastInterShown + Instance.CooldownBetweenInterstitials - Time.time;
+                    return Instance.m_lastInterShown + Instance.m_cooldownBetweenInterstitials - Time.time;
                 }
 
                 return -1f;
@@ -237,15 +238,15 @@ namespace MAXHelper {
         #endregion
 
         #region Public Static
-        /// <param name="ObjectRef">Instigator gameobject</param>
+        /// <param name="a_objectRef">Instigator gameobject</param>
         /// <summary>
-        /// Shows a Rewarded As. Returns OK if the ad is starting to show, NOT_LOADED if Applovin has no loaded ad yet.
+        /// Shows a Rewarded Ad. Returns OK if the ad is starting to show, NOT_LOADED if Applovin has no loaded ad yet.
         /// </summary>
-        public static EResultCode ShowRewarded(GameObject ObjectRef, UnityAction<bool> OnFinishAds, string Placement = "none") {
+        public static EResultCode ShowRewarded(GameObject a_objectRef, UnityAction<bool> a_onFinishAds, string a_placement = "none") {
             if (Exist) {
                 if (Instance.m_levelPlayComp.IsReady(EAdType.REWARDED)) {
-                    Instance.SetCallback(OnFinishAds, ObjectRef);
-                    Instance.ShowAdInner(EAdType.REWARDED, Placement);
+                    Instance.SetCallback(a_onFinishAds, a_objectRef);
+                    Instance.ShowAdInner(EAdType.REWARDED, a_placement);
                     return EResultCode.OK;
                 }
                 else {
@@ -260,21 +261,21 @@ namespace MAXHelper {
             return EResultCode.ERROR;
         }
 
-        public static EResultCode ShowInter(string Placement = "none") {
-            return ShowInter(null, null, Placement);
+        public static EResultCode ShowInter(string a_placement = "none") {
+            return ShowInter(null, null, a_placement);
         }
 
-        public static EResultCode ShowInter(GameObject ObjectRef, UnityAction<bool> OnAdDismissed, string Placement = "none") {
+        public static EResultCode ShowInter(GameObject a_objectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
 #if UNITY_EDITOR
-            OnAdDismissed?.Invoke(true);
+            a_onAdDismissed?.Invoke(true);
             return EResultCode.OK;
 #endif
             if (Exist) {
                 if (Instance.m_intersOn) {
                     if (Instance.IsCooldownElapsed()) {
                         if (Instance.m_levelPlayComp.IsReady(EAdType.INTER)) {
-                            Instance.SetCallback(OnAdDismissed, ObjectRef);
-                            Instance.ShowAdInner(EAdType.INTER, Placement);
+                            Instance.SetCallback(a_onAdDismissed, a_objectRef);
+                            Instance.ShowAdInner(EAdType.INTER, a_placement);
                             return EResultCode.OK;
                         }
                         else {
@@ -299,11 +300,11 @@ namespace MAXHelper {
         /// <summary>
         /// Ignores ADS FREE and COOLDOWN conditions for interstitials
         /// </summary>
-        public static EResultCode ShowInterForced(GameObject ObjectRef, UnityAction<bool> OnAdDismissed, string Placement = "none") {
+        public static EResultCode ShowInterForced(GameObject a_objectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
             if (Exist) {
                 if (Instance.m_levelPlayComp.IsReady(EAdType.INTER)) {
-                    Instance.SetCallback(OnAdDismissed, ObjectRef);
-                    Instance.ShowAdInner(EAdType.INTER, Placement);
+                    Instance.SetCallback(a_onAdDismissed, a_objectRef);
+                    Instance.ShowAdInner(EAdType.INTER, a_placement);
                     return EResultCode.OK;
                 }
                 else {
@@ -418,7 +419,7 @@ namespace MAXHelper {
         /// </summary>
         public static int GetCooldownBetweenInters() {
             if (Exist) {
-                return Instance.CooldownBetweenInterstitials;
+                return Instance.m_cooldownBetweenInterstitials;
             }
 
             return 0;
@@ -442,7 +443,7 @@ namespace MAXHelper {
         }
 
         private void InitInternal() {
-            m_lastInterShown = -CooldownBetweenInterstitials;
+            m_lastInterShown = -m_cooldownBetweenInterstitials;
 
             m_madPixelSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
             m_levelPlayComp.Init(m_madPixelSettings);
@@ -490,11 +491,11 @@ namespace MAXHelper {
         }
 
         private bool IsCooldownElapsed() {
-            return (Time.time - m_lastInterShown > CooldownBetweenInterstitials);
+            return (Time.time - m_lastInterShown > m_cooldownBetweenInterstitials);
         }
 
         private void RestartInterCooldown() {
-            if (CooldownBetweenInterstitials > 0) {
+            if (m_cooldownBetweenInterstitials > 0) {
                 m_lastInterShown = Time.time;
             }
         }
@@ -530,15 +531,6 @@ namespace MAXHelper {
 
         public static void ShowCMPFlow() {
             if (Ready()) {
-                //var cmpService = MaxSdk.CmpService;
-                //cmpService.ShowCmpForExistingUser(error => {
-                //    if (null == error) {
-                //        // The CMP alert was shown successfully.
-                //    }
-                //    else {
-                //        Debug.LogError(error);
-                //    }
-                //});
                 ConsentForm.ShowPrivacyOptionsForm((FormError formError) => {
                     Debug.Log($"Error: {formError}");
                 });
@@ -547,7 +539,6 @@ namespace MAXHelper {
 
         public static bool IsGDPR() {
             if (Ready()) {
-                //return MaxSdk.GetSdkConfiguration().ConsentFlowUserGeography == MaxSdkBase.ConsentFlowUserGeography.Gdpr;
                 Debug.LogWarning($"[MadPixel] My status: {ConsentInformation.PrivacyOptionsRequirementStatus}");
                 return ConsentInformation.PrivacyOptionsRequirementStatus == PrivacyOptionsRequirementStatus.Required;
             }
