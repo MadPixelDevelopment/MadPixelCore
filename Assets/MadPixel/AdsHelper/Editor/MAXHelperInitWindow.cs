@@ -11,43 +11,40 @@ namespace MAXHelper {
         private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
         private const string LP_MAXPACK_PACKAGE_PATH = "Assets/MadPixel/AdsHelper/Configs/MPC_LevelPlay_MaximunPack.unitypackage";
 
-        private const string LevelPlay_FOLDER = "https://drive.google.com/drive/u/0/folders/1Lr8CUtKAu6DpOrcfJ6xQ9f7Viu67x8BN";
-        private const string LevelPlay_MAXPACK_DRIVE = "https://drive.google.com/file/d/1MUzNhwh6LnT_fv6viwMbIzMzc42e7kfL/view?usp=sharing";
+        private const string LP_FOLDER = "https://drive.google.com/drive/u/0/folders/1Lr8CUtKAu6DpOrcfJ6xQ9f7Viu67x8BN";
+        private const string LP_MAXPACK_DRIVE = "https://drive.google.com/file/d/1MUzNhwh6LnT_fv6viwMbIzMzc42e7kfL/view?usp=sharing";
 
-        private Vector2 scrollPosition;
-        private static readonly Vector2 windowMinSize = new Vector2(450, 250);
-        private static readonly Vector2 windowPrefSize = new Vector2(850, 400);
+        private Vector2 m_scrollPosition;
+        private static readonly Vector2 m_windowMinSize = new Vector2(450, 250);
+        private static readonly Vector2 m_windowPrefSize = new Vector2(850, 400);
 
-        private GUIStyle titleLabelStyle;
-        private GUIStyle warningLabelStyle;
-        private GUIStyle linkLabelStyle;
-        private GUIStyle versionsLabelStyle;
+        private GUIStyle m_titleLabelStyle;
+        private GUIStyle m_linkLabelStyle;
+        private GUIStyle m_versionsLabelStyle;
 
-        private static GUILayoutOption sdkKeyLabelFieldWidthOption = GUILayout.Width(120);
-        private static GUILayoutOption sdkKeyTextFieldWidthOption = GUILayout.Width(650);
-        private static GUILayoutOption buttonFieldWidth = GUILayout.Width(160);
-        private static GUILayoutOption adUnitLabelWidthOption = GUILayout.Width(140);
-        private static GUILayoutOption adUnitTextWidthOption = GUILayout.Width(150);
-        private static GUILayoutOption adMobLabelFieldWidthOption = GUILayout.Width(100);
-        private static GUILayoutOption adMobUnitTextWidthOption = GUILayout.Width(280);
-        private static GUILayoutOption adUnitToggleOption = GUILayout.Width(180);
-        private static GUILayoutOption bannerColorLabelOption = GUILayout.Width(250);
+        private static GUILayoutOption m_sdkKeyTextFieldWidthOption = GUILayout.Width(650);
+        private static GUILayoutOption m_buttonFieldWidth = GUILayout.Width(160);
+        private static GUILayoutOption m_adUnitLabelWidthOption = GUILayout.Width(140);
+        private static GUILayoutOption m_adUnitTextWidthOption = GUILayout.Width(150);
+        private static GUILayoutOption m_adMobLabelFieldWidthOption = GUILayout.Width(100);
+        private static GUILayoutOption m_adMobUnitTextWidthOption = GUILayout.Width(280);
+        private static GUILayoutOption m_adUnitToggleOption = GUILayout.Width(180);
+        private static GUILayoutOption m_bannerColorLabelOption = GUILayout.Width(250);
 
-        private MAXCustomSettings CustomSettings;
-        private bool bMaxVariantInstalled;
-        private bool bUseAmazon;
+        private MAXCustomSettings m_customSettings;
+        private bool m_isMaxVariantInstalled;
         #endregion
 
         #region Menu Item
         [MenuItem("Mad Pixel/SDK Setup", priority = 0)]
         public static void ShowWindow() {
-            var Window = EditorWindow.GetWindow<MAXHelperInitWindow>("Mad Pixel. SDK Setup", true);
+            var window = EditorWindow.GetWindow<MAXHelperInitWindow>("Mad Pixel. SDK Setup", true);
 
-            Window.Setup();
+            window.Setup();
         }
 
         private void Setup() {
-            minSize = windowMinSize;
+            minSize = m_windowMinSize;
             LoadConfigFromFile();
 
         }
@@ -58,36 +55,36 @@ namespace MAXHelper {
         #region Editor Window Lifecyle Methods
 
         private void OnGUI() {
-            if (CustomSettings != null) {
-                using (var scrollView = new EditorGUILayout.ScrollViewScope(scrollPosition, false, false)) {
-                    scrollPosition = scrollView.scrollPosition;
+            if (m_customSettings != null) {
+                using (var scrollView = new EditorGUILayout.ScrollViewScope(m_scrollPosition, false, false)) {
+                    m_scrollPosition = scrollView.scrollPosition;
 
                     GUILayout.Space(5);
 
-                    titleLabelStyle = new GUIStyle(EditorStyles.label) {
+                    m_titleLabelStyle = new GUIStyle(EditorStyles.label) {
                         fontSize = 14,
                         fontStyle = FontStyle.Bold,
                         fixedHeight = 20
                     };
 
-                    versionsLabelStyle = new GUIStyle(EditorStyles.label) {
+                    m_versionsLabelStyle = new GUIStyle(EditorStyles.label) {
                         fontSize = 12,
                     };
                     ColorUtility.TryParseHtmlString("#C4ECFD", out Color vColor);
-                    versionsLabelStyle.normal.textColor = vColor;
+                    m_versionsLabelStyle.normal.textColor = vColor;
 
 
-                    if (linkLabelStyle == null) {
-                        linkLabelStyle = new GUIStyle(EditorStyles.label) {
+                    if (m_linkLabelStyle == null) {
+                        m_linkLabelStyle = new GUIStyle(EditorStyles.label) {
                             fontSize = 12,
                             wordWrap = false,
                         };
                     }
                     ColorUtility.TryParseHtmlString("#7FD6FD", out Color C);
-                    linkLabelStyle.normal.textColor = C;
+                    m_linkLabelStyle.normal.textColor = C;
 
                     // Draw AppLovin MAX plugin details
-                    EditorGUILayout.LabelField("1. Fill in your SDK Key", titleLabelStyle);
+                    EditorGUILayout.LabelField("1. Fill in your SDK Key", m_titleLabelStyle);
 
                     DrawSDKKeyPart();
                     DrawUnitIDsPart();
@@ -101,7 +98,7 @@ namespace MAXHelper {
 
 
             if (GUI.changed) {
-                EditorUtility.SetDirty(CustomSettings);
+                EditorUtility.SetDirty(m_customSettings);
             }
         }
 
@@ -118,15 +115,15 @@ namespace MAXHelper {
             GUILayout.BeginHorizontal();
             GUILayout.Space(10);
 
-            CustomSettings.levelPlayKey = DrawTextField("LevelPlay Key (Droid)", CustomSettings.levelPlayKey, adUnitTextWidthOption, adMobLabelFieldWidthOption);
-            CustomSettings.levelPlayKey_ios = DrawTextField("LevelPlay Key (IOS)", CustomSettings.levelPlayKey_ios, adUnitTextWidthOption, adMobLabelFieldWidthOption);
+            m_customSettings.levelPlayKey = DrawTextField("LevelPlay Key (Droid)", m_customSettings.levelPlayKey, m_adUnitTextWidthOption, m_adMobLabelFieldWidthOption);
+            m_customSettings.levelPlayKey_ios = DrawTextField("LevelPlay Key (IOS)", m_customSettings.levelPlayKey_ios, m_adUnitTextWidthOption, m_adMobLabelFieldWidthOption);
 
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
-            CustomSettings.bUseBanners = GUILayout.Toggle(CustomSettings.bUseBanners, "Use Banners", adUnitToggleOption);
+            m_customSettings.bUseBanners = GUILayout.Toggle(m_customSettings.bUseBanners, "Use Banners", m_adUnitToggleOption);
 
-            if (CustomSettings.bUseBanners) {
+            if (m_customSettings.bUseBanners) {
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
@@ -135,7 +132,7 @@ namespace MAXHelper {
 
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
-                CustomSettings.useTopBannerPosition = EditorGUILayout.Toggle("show banner on top?", CustomSettings.useTopBannerPosition);
+                m_customSettings.useTopBannerPosition = EditorGUILayout.Toggle("show banner on top?", m_customSettings.useTopBannerPosition);
                 GUILayout.EndHorizontal();
             }
         }
@@ -143,9 +140,9 @@ namespace MAXHelper {
 
         private void DrawUnitIDsPart() {
             GUILayout.Space(16);
-            EditorGUILayout.LabelField("2. Fill in your Ad Unit IDs (from MadPixel managers)", titleLabelStyle);
+            EditorGUILayout.LabelField("2. Fill in your Ad Unit IDs (from MadPixel managers)", m_titleLabelStyle);
             using (new EditorGUILayout.VerticalScope("box")) {
-                if (CustomSettings == null) {
+                if (m_customSettings == null) {
                     LoadConfigFromFile();
                 }
 
@@ -153,10 +150,10 @@ namespace MAXHelper {
                 GUILayout.Space(4);
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(4);
-                CustomSettings.bUseRewardeds = GUILayout.Toggle(CustomSettings.bUseRewardeds, "Use Rewarded Ads", adUnitToggleOption);
-                GUI.enabled = CustomSettings.bUseRewardeds;
-                CustomSettings.RewardedID = DrawTextField("Rewarded Ad Unit (Android)", CustomSettings.RewardedID, adUnitLabelWidthOption, adUnitTextWidthOption);
-                CustomSettings.RewardedID_IOS = DrawTextField("Rewarded Ad Unit (IOS)", CustomSettings.RewardedID_IOS, adUnitLabelWidthOption, adUnitTextWidthOption);
+                m_customSettings.bUseRewardeds = GUILayout.Toggle(m_customSettings.bUseRewardeds, "Use Rewarded Ads", m_adUnitToggleOption);
+                GUI.enabled = m_customSettings.bUseRewardeds;
+                m_customSettings.RewardedID = DrawTextField("Rewarded Ad Unit (Android)", m_customSettings.RewardedID, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
+                m_customSettings.RewardedID_IOS = DrawTextField("Rewarded Ad Unit (IOS)", m_customSettings.RewardedID_IOS, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
                 GUILayout.EndHorizontal();
                 GUILayout.Space(4);
 
@@ -164,10 +161,10 @@ namespace MAXHelper {
                 GUILayout.Space(4);
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(4);
-                CustomSettings.bUseInters = GUILayout.Toggle(CustomSettings.bUseInters, "Use Interstitials", adUnitToggleOption);
-                GUI.enabled = CustomSettings.bUseInters;
-                CustomSettings.InterstitialID = DrawTextField("Inerstitial Ad Unit (Android)", CustomSettings.InterstitialID, adUnitLabelWidthOption, adUnitTextWidthOption);
-                CustomSettings.InterstitialID_IOS = DrawTextField("Interstitial Ad Unit (IOS)", CustomSettings.InterstitialID_IOS, adUnitLabelWidthOption, adUnitTextWidthOption);
+                m_customSettings.bUseInters = GUILayout.Toggle(m_customSettings.bUseInters, "Use Interstitials", m_adUnitToggleOption);
+                GUI.enabled = m_customSettings.bUseInters;
+                m_customSettings.InterstitialID = DrawTextField("Inerstitial Ad Unit (Android)", m_customSettings.InterstitialID, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
+                m_customSettings.InterstitialID_IOS = DrawTextField("Interstitial Ad Unit (IOS)", m_customSettings.InterstitialID_IOS, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
                 GUILayout.EndHorizontal();
                 GUILayout.Space(4);
 
@@ -175,20 +172,20 @@ namespace MAXHelper {
                 GUILayout.Space(4);
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(4);
-                CustomSettings.bUseBanners = GUILayout.Toggle(CustomSettings.bUseBanners, "Use Banners", adUnitToggleOption);
-                GUI.enabled = CustomSettings.bUseBanners;
-                CustomSettings.BannerID = DrawTextField("Banner Ad Unit (Android)", CustomSettings.BannerID, adUnitLabelWidthOption, adUnitTextWidthOption);
-                CustomSettings.BannerID_IOS = DrawTextField("Banner Ad Unit (IOS)", CustomSettings.BannerID_IOS, adUnitLabelWidthOption, adUnitTextWidthOption);
+                m_customSettings.bUseBanners = GUILayout.Toggle(m_customSettings.bUseBanners, "Use Banners", m_adUnitToggleOption);
+                GUI.enabled = m_customSettings.bUseBanners;
+                m_customSettings.BannerID = DrawTextField("Banner Ad Unit (Android)", m_customSettings.BannerID, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
+                m_customSettings.BannerID_IOS = DrawTextField("Banner Ad Unit (IOS)", m_customSettings.BannerID_IOS, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
                 GUILayout.EndHorizontal();
                 GUILayout.Space(4);
 
                 GUI.enabled = true;
                 GUILayout.Space(4);
                 GUILayout.BeginHorizontal();
-                if (CustomSettings.bUseBanners) {
+                if (m_customSettings.bUseBanners) {
                     GUILayout.Space(24);
 
-                    CustomSettings.BannerBackground = EditorGUILayout.ColorField("Banner Background Color: ", CustomSettings.BannerBackground, bannerColorLabelOption);
+                    m_customSettings.BannerBackground = EditorGUILayout.ColorField("Banner Background Color: ", m_customSettings.BannerBackground, m_bannerColorLabelOption);
 
                     GUILayout.Space(4);
 
@@ -202,20 +199,20 @@ namespace MAXHelper {
 
         private void DrawInstallButtons() {
             GUILayout.Space(16);
-            EditorGUILayout.LabelField("4. Install our full mediations", titleLabelStyle);
+            EditorGUILayout.LabelField("4. Install our full mediations", m_titleLabelStyle);
             using (new EditorGUILayout.VerticalScope("box")) {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
 
                 if (!MackPackUnitypackageExists()) {
-                    EditorGUILayout.LabelField("You dont have MPC_LevelPlay_MaximunPack.unitypackage in your project. Probably your git added it to gitignore", sdkKeyTextFieldWidthOption);
+                    EditorGUILayout.LabelField("You dont have MPC_LevelPlay_MaximunPack.unitypackage in your project. Probably your git added it to gitignore", m_sdkKeyTextFieldWidthOption);
 
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(10);
 
-                    if (GUILayout.Button(new GUIContent("Download latest Maximum mediations package"), adMobUnitTextWidthOption)) {
-                        Application.OpenURL(LevelPlay_MAXPACK_DRIVE);
+                    if (GUILayout.Button(new GUIContent("Download latest Maximum mediations package"), m_adMobUnitTextWidthOption)) {
+                        Application.OpenURL(LP_MAXPACK_DRIVE);
                     }
 
                     GUILayout.EndHorizontal();
@@ -225,13 +222,13 @@ namespace MAXHelper {
                 }
 
                 GUI.enabled = MackPackUnitypackageExists();
-                if (bMaxVariantInstalled) {
-                    EditorGUILayout.LabelField("You have installed default Maximum pack of mediations", sdkKeyTextFieldWidthOption);
+                if (m_isMaxVariantInstalled) {
+                    EditorGUILayout.LabelField("You have installed default Maximum pack of mediations", m_sdkKeyTextFieldWidthOption);
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(10);
                 }
-                if (GUILayout.Button(new GUIContent(bMaxVariantInstalled ? "Reimport maximum pack" : "Install maximum pack"), buttonFieldWidth)) {
+                if (GUILayout.Button(new GUIContent(m_isMaxVariantInstalled ? "Reimport maximum pack" : "Install maximum pack"), m_buttonFieldWidth)) {
                     AssetDatabase.ImportPackage(LP_MAXPACK_PACKAGE_PATH, true);
                     //CheckMaxVersion();
                 }
@@ -244,14 +241,14 @@ namespace MAXHelper {
 
         private void DrawAnalyticsKeys() {
             GUILayout.Space(16);
-            EditorGUILayout.LabelField("5. Insert analytics info", titleLabelStyle);
+            EditorGUILayout.LabelField("5. Insert analytics info", m_titleLabelStyle);
             GUILayout.BeginHorizontal();
             GUILayout.Space(10);
 
-            CustomSettings.appmetricaKey = DrawTextField("AppmetricaKey",
-                CustomSettings.appmetricaKey, adMobLabelFieldWidthOption, adMobUnitTextWidthOption);
-            CustomSettings.appsFlyerID_ios = DrawTextField("IOS App ID",
-                CustomSettings.appsFlyerID_ios, adMobLabelFieldWidthOption, adMobUnitTextWidthOption);
+            m_customSettings.appmetricaKey = DrawTextField("AppmetricaKey",
+                m_customSettings.appmetricaKey, m_adMobLabelFieldWidthOption, m_adMobUnitTextWidthOption);
+            m_customSettings.appsFlyerID_ios = DrawTextField("IOS App ID",
+                m_customSettings.appsFlyerID_ios, m_adMobLabelFieldWidthOption, m_adMobUnitTextWidthOption);
 
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
@@ -263,30 +260,30 @@ namespace MAXHelper {
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("MPC_LevelPlay plugin and documentation:", GUILayout.Width(245));
             if (GUILayout.Button(new GUIContent("here"), GUILayout.Width(70))) {
-                Application.OpenURL(LevelPlay_FOLDER);
+                Application.OpenURL(LP_FOLDER);
             }
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetVersion("Assets/MadPixel/Version_levelPlay.md"), versionsLabelStyle, adUnitToggleOption);
+            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetVersion("Assets/MadPixel/Version_levelPlay.md"), m_versionsLabelStyle, m_adUnitToggleOption);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Forked from MPC v." + GetVersion(), versionsLabelStyle, adUnitTextWidthOption);
+            EditorGUILayout.LabelField("Forked from MPC v." + GetVersion(), m_versionsLabelStyle, m_adUnitTextWidthOption);
             GUILayout.EndHorizontal();
         }
 
-        private string DrawTextField(string fieldTitle, string text, GUILayoutOption labelWidth, GUILayoutOption textFieldWidthOption = null) {
+        private string DrawTextField(string a_fieldTitle, string a_text, GUILayoutOption a_labelWidth, GUILayoutOption a_textFieldWidthOption = null) {
             GUILayout.BeginHorizontal();
             GUILayout.Space(4);
-            EditorGUILayout.LabelField(new GUIContent(fieldTitle), labelWidth);
+            EditorGUILayout.LabelField(new GUIContent(a_fieldTitle), a_labelWidth);
             GUILayout.Space(4);
-            text = (textFieldWidthOption == null) ? GUILayout.TextField(text) : GUILayout.TextField(text, textFieldWidthOption);
+            a_text = (a_textFieldWidthOption == null) ? GUILayout.TextField(a_text) : GUILayout.TextField(a_text, a_textFieldWidthOption);
             GUILayout.Space(4);
             GUILayout.EndHorizontal();
             GUILayout.Space(4);
 
-            return text;
+            return a_text;
         }
 
         #endregion
@@ -295,7 +292,7 @@ namespace MAXHelper {
         private void LoadConfigFromFile() {
             var Obj = AssetDatabase.LoadAssetAtPath(NEW_CONFIGS_PATH, typeof(MAXCustomSettings));
             if (Obj != null) {
-                CustomSettings = (MAXCustomSettings)Obj;
+                m_customSettings = (MAXCustomSettings)Obj;
             }
             else {
                 Debug.Log("CustomSettings file doesn't exist, creating a new one...");
