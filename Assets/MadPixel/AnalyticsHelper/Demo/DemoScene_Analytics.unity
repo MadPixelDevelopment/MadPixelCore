@@ -617,6 +617,10 @@ PrefabInstance:
       propertyPath: monetizaionPubKey
       value: MIIBIjANBgkqhki..........
       objectReference: {fileID: 0}
+    - target: {fileID: 3194373316483798984, guid: 80dfd38ed10d0d64a85dc773c4624df4, type: 3}
+      propertyPath: m_usePurchaseConnector
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8766461110375483086, guid: 80dfd38ed10d0d64a85dc773c4624df4, type: 3}
       propertyPath: m_Name
       value: Analytics

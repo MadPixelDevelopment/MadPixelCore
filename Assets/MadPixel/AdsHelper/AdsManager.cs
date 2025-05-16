@@ -17,13 +17,18 @@ namespace MAXHelper {
         public enum EAdType { REWARDED, INTER, BANNER }
 
         #region Fields
-        [SerializeField] private bool bInitializeOnStart = true;
+        [FormerlySerializedAs("bInitializeOnStart")]
+        [SerializeField] private bool m_initializeOnStart = true;
+
         [FormerlySerializedAs("CooldownBetweenInterstitials")]
         [SerializeField] private int m_cooldownBetweenInterstitials = 30;
+
+        [SerializeField] private bool m_debugLogsOn;
 
         private bool m_canShowBanner = true;
         private bool m_intersOn = true;
         private bool m_hasInternet = true;
+        private bool m_ready = false;
 
         private TermsAndPrivacyPolicyFlow m_termsFlow;
         private MAXCustomSettings m_madPixelSettings;
@@ -38,8 +43,6 @@ namespace MAXHelper {
         #region Events Declaration (Can be used for Analytics)
 
         public UnityAction e_onAdsManagerInitialized;
-
-        public bool m_ready { get; private set; }
 
         public UnityAction<EAdType> OnNewAdLoaded;
         public UnityAction<LevelPlayAdDisplayInfoError, EAdType, string> OnAdDisplayError;
@@ -108,7 +111,10 @@ namespace MAXHelper {
 
         #region Event Catchers
         private void OnTermsFlowAcceptedEvent(bool a_hasConsent) {
-            Debug.LogWarning($"ON TERMS AND ATT FLOW RESULT: {a_hasConsent}");
+            if (m_debugLogsOn) {
+                Debug.LogWarning($"ON TERMS AND ATT FLOW RESULT: {a_hasConsent}");
+            }
+
             IronSource.Agent.setConsent(a_hasConsent);
 #if UNITY_EDITOR
                 OnFirebaseInit(a_hasConsent);
@@ -129,7 +135,7 @@ namespace MAXHelper {
             InitInternal();
 
             if (MadPixelAnalytics.AnalyticsManager.Exist) {
-                if (MadPixelAnalytics.AnalyticsManager.Instance.bUseAutoInit) {
+                if (MadPixelAnalytics.AnalyticsManager.Instance.m_useAutoInit) {
                     MadPixelAnalytics.AnalyticsManager.Instance.Init();
                 }
             }
@@ -218,7 +224,7 @@ namespace MAXHelper {
         }
 
         private void Start(){
-            if (bInitializeOnStart) {
+            if (m_initializeOnStart) {
                 StartTermsAndPrivacyPolicyFlow();
             }
         }

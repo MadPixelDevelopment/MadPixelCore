@@ -6,15 +6,20 @@ using AppsFlyerConnector;
 using MadPixel;
 using MAXHelper;
 using System.Globalization;
+using UnityEngine.Serialization;
 
 namespace MadPixelAnalytics {
     public class AppsFlyerComp : MonoBehaviour {
-        #region Field
-        [SerializeField] private bool bIsDebug;
-        [SerializeField] private bool bUsePurchaseConnector;
+        #region Fields
+        [FormerlySerializedAs("bUsePurchaseConnector")]
+        [SerializeField] private bool m_usePurchaseConnector;
         [SerializeField] private string monetizaionPubKey;
+        [Space]
+        [Header("Turn Debug OFF for production builds")]
+        [SerializeField] private bool DebugMode;
 
-        public bool UseInappConnector => bUsePurchaseConnector; 
+
+        public bool UseInappConnector => m_usePurchaseConnector; 
         #endregion
 
 
@@ -22,7 +27,7 @@ namespace MadPixelAnalytics {
         #region Init
 
         public void Init() {
-            AppsFlyer.setIsDebug(bIsDebug);
+            AppsFlyer.setIsDebug(DebugMode);
 
 #if UNITY_ANDROID
             AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, null, this);
@@ -38,7 +43,7 @@ namespace MadPixelAnalytics {
             AppsFlyer.enableTCFDataCollection(true);
 
             // Purchase connector implementation 
-            if (bUsePurchaseConnector) {
+            if (m_usePurchaseConnector) {
                 AppsFlyerPurchaseConnector.init(this, AppsFlyerConnector.Store.GOOGLE);
                 AppsFlyerPurchaseConnector.setIsSandbox(false);
                 AppsFlyerPurchaseConnector.setAutoLogPurchaseRevenue(

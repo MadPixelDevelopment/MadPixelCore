@@ -11,13 +11,14 @@ namespace MadPixel.InApps {
     [RequireComponent(typeof(GamingServices))]
     public class MobileInAppPurchaser : MonoBehaviour, IDetailedStoreListener {
         #region Fields
-        public const string VERSION = "1.0.6";
+        public const string VERSION = "1.0.7";
 
         private IStoreController m_storeController;
         private IExtensionProvider m_storeExtensionProvider;
         [FormerlySerializedAs("bInitOnStart")]
         [SerializeField] private bool m_initOnStart;
-        [SerializeField] private bool m_logDebugOn;
+
+        [SerializeField] private bool m_debugLogsOn;
 
         [FormerlySerializedAs("adsFreeSKU")]
         [SerializeField] private string m_adsFreeSKU;
@@ -195,7 +196,7 @@ namespace MadPixel.InApps {
                 }
             }
 
-            if (m_logDebugOn) {
+            if (m_debugLogsOn) {
                 foreach (var product in builder.products) {
                     Debug.Log($"Added product: {product.id}, type; {product.type}");
                 }
@@ -272,7 +273,7 @@ namespace MadPixel.InApps {
             if (IsInitialized()) {
                 Product Product = m_storeController.products.WithID(SKU);
                 if (Product != null && Product.availableToPurchase) {
-                    if (m_logDebugOn){
+                    if (m_debugLogsOn){
                         Debug.LogWarning($"[MobileInAppPurchaser] Purchasing product asynchronously: {Product.definition.id}");
                     }
 
@@ -297,7 +298,7 @@ namespace MadPixel.InApps {
             }
 
             if (Application.platform == RuntimePlatform.Android) {
-                if (m_logDebugOn) {
+                if (m_debugLogsOn) {
                     Debug.LogWarning("[MobileInAppPurchaser] RestorePurchases started ...");
                 }
 
@@ -308,7 +309,7 @@ namespace MadPixel.InApps {
             }
             if (Application.platform == RuntimePlatform.IPhonePlayer ||
                 Application.platform == RuntimePlatform.OSXPlayer) {
-                if (m_logDebugOn) {
+                if (m_debugLogsOn) {
                     Debug.LogWarning("[MobileInAppPurchaser] RestorePurchases started ...");
                 }
 
@@ -350,7 +351,7 @@ namespace MadPixel.InApps {
 
                 // The first phase of restoration. If no more responses are received on ProcessPurchase then 
                 // no purchases are available to be restored.
-                if (m_logDebugOn) {
+                if (m_debugLogsOn) {
                     Debug.LogWarning($"[MobileInAppPurchaser] RestorePurchases continuing: {result}. If no further messages, no purchases available to restore.");
                 }
             }
@@ -378,7 +379,7 @@ namespace MadPixel.InApps {
         public void OnPurchaseFailed(Product Prod, PurchaseFailureReason FailureReason) {
             string ProductSKU = Prod.definition.id;
 
-            if (m_logDebugOn) {
+            if (m_debugLogsOn) {
                 Debug.LogWarning($"[MobileInAppPurchaser] OnPurchaseFailed: FAIL. Product: '{ProductSKU}' Receipt: {Prod.receipt}");
                 Debug.LogWarning($"PurchaseFailureReason: {FailureReason}");
             }
@@ -389,7 +390,7 @@ namespace MadPixel.InApps {
         public void OnPurchaseFailed(Product Prod, PurchaseFailureDescription FailureDescription) {
             string ProductSKU = Prod.definition.id;
 
-            if (m_logDebugOn) {
+            if (m_debugLogsOn) {
                 Debug.LogWarning($"[MobileInAppPurchaser] OnPurchaseFailed: FAIL. Product: '{ProductSKU}' Receipt: {Prod.receipt}" +
                     $" Purchase failure reason: {FailureDescription.reason}," +
                     $" Purchase failure details: {FailureDescription.message}");
@@ -400,7 +401,7 @@ namespace MadPixel.InApps {
 
         // Proccess purchase and use Unity validation to check it for freud
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs E) {
-            if (m_logDebugOn) {
+            if (m_debugLogsOn) {
                 Debug.LogWarning($"[MobileInAppPurchaser] ProcessPurchase: PASS. Product: '{E.purchasedProduct.definition.id}' Receipt: {E.purchasedProduct.receipt}");
             }
 

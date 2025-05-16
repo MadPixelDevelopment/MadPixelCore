@@ -9,6 +9,7 @@ using static MAXHelper.AdsManager;
 namespace MadPixel {
     public class LevelPlayComp : MonoBehaviour {
         #region Fields
+        [Header("Turn both Debugs OFF for production builds")]
         [SerializeField] private bool m_debugLogsOn;
         [SerializeField] private bool m_debugTestSuiteOn;
 

@@ -12,7 +12,6 @@ using static MAXHelper.AdsManager;
 namespace MadPixelAnalytics {
     public class AppMetricaComp : MonoBehaviour {
         [SerializeField] private bool bSendAdRevenue = false;
-        [SerializeField] private bool bSendLatencyEvents = false;
         [SerializeField] private bool bLogEventsOnDevice = false;
 #if UNITY_EDITOR
         [SerializeField] private bool bLogEventsInEditor = true;
@@ -44,10 +43,6 @@ namespace MadPixelAnalytics {
         public void Init() {
             if (bSendAdRevenue) {
                 IronSourceEvents.onImpressionDataReadyEvent += OnAdRevenuePaidEvent;
-            }
-
-            if (bSendLatencyEvents) {
-                Debug.Log("Sending Latency is deprecated");
             }
         }
 
