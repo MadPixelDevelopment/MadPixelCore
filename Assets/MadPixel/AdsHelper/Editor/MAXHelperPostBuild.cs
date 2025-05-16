@@ -5,7 +5,7 @@ using UnityEditor.iOS.Xcode;
 #endif
 using System.IO;
 
-namespace MAXHelper {
+namespace MadPixelCore.Editor {
     
     public class MAXHelperPostBuild  {
         

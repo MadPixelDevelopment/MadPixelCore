@@ -4,9 +4,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using MAXHelper;
 
-namespace MAXHelper {
-    public class MAXHelperInitWindow : EditorWindow {
+namespace MadPixelCore.Editor {
+    public class MPCSetupWindow : EditorWindow {
         #region Fields
         private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
         private const string LP_MAXPACK_PACKAGE_PATH = "Assets/MadPixel/AdsHelper/Configs/MPC_LevelPlay_MaximunPack.unitypackage";
@@ -38,7 +39,7 @@ namespace MAXHelper {
         #region Menu Item
         [MenuItem("Mad Pixel/SDK Setup", priority = 0)]
         public static void ShowWindow() {
-            var window = EditorWindow.GetWindow<MAXHelperInitWindow>("Mad Pixel. SDK Setup", true);
+            var window = EditorWindow.GetWindow<MPCSetupWindow>("Mad Pixel. SDK Setup", true);
 
             window.Setup();
         }
@@ -265,7 +266,7 @@ namespace MAXHelper {
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetVersion("Assets/MadPixel/Version_levelPlay.md"), m_versionsLabelStyle, m_adUnitToggleOption);
+            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetMPCLevelPlayVersion(), m_versionsLabelStyle, m_adUnitToggleOption);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -311,6 +312,11 @@ namespace MAXHelper {
             versionText = versionText.Substring(10, subLength - 10);
             return versionText;
         }
+        
+        public static string GetMPCLevelPlayVersion() {
+            return GetVersion("Assets/MadPixel/Version_levelPlay.md");
+        }
+
         private bool MackPackUnitypackageExists() {
             return File.Exists(LP_MAXPACK_PACKAGE_PATH);
         }

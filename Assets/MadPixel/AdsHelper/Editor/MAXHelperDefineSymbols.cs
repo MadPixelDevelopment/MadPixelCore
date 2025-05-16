@@ -6,7 +6,7 @@ using UnityEditor.Build;
 using UnityEngine;
 
 #if UNITY_EDITOR
-namespace MAXHelper {
+namespace MadPixelCore.Editor {
     public static class MAXHelperDefineSymbols {
         public static readonly string AMAZON_DEF = "MADPIXEL_AMAZON_DROID";
 
