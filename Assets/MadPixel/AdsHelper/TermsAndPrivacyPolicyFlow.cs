@@ -37,7 +37,7 @@ namespace MAXHelper {
         #region Public
         public void StartFlow() {
             MobileAds.RaiseAdEventsOnUnityMainThread = true; // NOTE: This is mandatory for Google UMP
-            GatherUMPConsent(OnUMPConsentUpdated);
+            StartCoroutine(GatherUMPConsent(OnUMPConsentUpdated));
         }
         #endregion
 
@@ -68,10 +68,13 @@ namespace MAXHelper {
         private void MadPixelTermsOnAcceptResultEvent() {
             ToggleSubsToMadPixelTermsPanelResult(false);
             MadPixelTermsAcceptedFlag = true;
+            FirebaseComp.SetConsentValues(MadPixelTermsAcceptedFlag);
             ConsentAcceptRoutine(MadPixelTermsAcceptedFlag);
         }
 
-        private void GatherUMPConsent(Action<FormError> a_callback) {
+        private IEnumerator GatherUMPConsent(Action<FormError> a_callback) {
+            yield return new WaitUntil(FirebaseComp.Initialized);
+
             Debug.Log($"[MadPixel] gather consent: {ConsentInformation.ConsentStatus}");
             ConsentRequestParameters request = new ConsentRequestParameters();
             ConsentInformation.Update(request, a_callback);
@@ -105,10 +108,9 @@ namespace MAXHelper {
         }
 
         private void MadPixelTermsAndPrivacyPolicyFlow(){
-            
             Debug.LogWarning($"UMP CONSENT STATUS: {ConsentInformation.ConsentStatus}");
             if (ConsentInformation.ConsentStatus == ConsentStatus.Obtained){
-                MadPixelTermsAcceptedFlag = true; // NOTE: Means we are in NOT GDPR region or already gathered consent
+                MadPixelTermsAcceptedFlag = true; // NOTE: Means we already gathered consent
             }
             if (MadPixelTermsAcceptedFlag) {
                 ConsentAcceptRoutine(MadPixelTermsAcceptedFlag);

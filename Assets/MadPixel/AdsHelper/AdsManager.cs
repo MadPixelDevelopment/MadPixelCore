@@ -116,19 +116,7 @@ namespace MAXHelper {
             }
 
             IronSource.Agent.setConsent(a_hasConsent);
-#if UNITY_EDITOR
-                OnFirebaseInit(a_hasConsent);
-#else
-                StartCoroutine(WaitForFirebaseInit(a_hasConsent));
-#endif
-        }
 
-        private IEnumerator WaitForFirebaseInit(bool a_hasConsent){
-            yield return (new WaitUntil(FirebaseComp.Initialized));
-            OnFirebaseInit(a_hasConsent);
-        }
-
-        private void OnFirebaseInit(bool a_hasConsent){
 #if !UNITY_EDITOR
             FirebaseComp.SetConsentValues(a_hasConsent);
 #endif
@@ -439,6 +427,16 @@ namespace MAXHelper {
                 Instance.RestartInterCooldown();
             }
         }
+
+        /// <summary>
+        /// Return false, if we previously called CancelAds();
+        /// </summary>
+        public static bool CanShowBanner() {
+            if (Exist) {
+                return Instance.m_canShowBanner;
+            }
+            return false;
+        }
         #endregion
 
         #region Helpers
@@ -537,19 +535,24 @@ namespace MAXHelper {
 
         public static void ShowCMPFlow() {
             if (Ready()) {
-                ConsentForm.ShowPrivacyOptionsForm((FormError formError) => {
-                    Debug.Log($"Error: {formError}");
-                });
+                ConsentForm.ShowPrivacyOptionsForm(OnPrivacyOptionsFormDissmissed);
+            }
+        }
+
+        private static void OnPrivacyOptionsFormDissmissed(FormError a_formError) {
+            if (a_formError != null) {
+                Debug.LogError($"OnPrivacyOptionsFormDissmissed error: {a_formError.Message}");
+            }
+            else {
+#if !UNITY_EDITOR && UNITY_IOS
+                FirebaseComp.SetConsentValues(true); // NOTE: Param value doesn't matter here
+#endif
             }
         }
 
         public static bool IsGDPR() {
-            if (Ready()) {
-                Debug.LogWarning($"[MadPixel] My status: {ConsentInformation.PrivacyOptionsRequirementStatus}");
-                return ConsentInformation.PrivacyOptionsRequirementStatus == PrivacyOptionsRequirementStatus.Required;
-            }
-
-            return false;
+            Debug.LogWarning($"[MadPixel] UMP requirement status: {ConsentInformation.PrivacyOptionsRequirementStatus}");
+            return ConsentInformation.PrivacyOptionsRequirementStatus == PrivacyOptionsRequirementStatus.Required;
         }
 
         #endregion

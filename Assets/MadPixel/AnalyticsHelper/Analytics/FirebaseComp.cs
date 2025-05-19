@@ -5,13 +5,15 @@ using Firebase.Analytics;
 using Firebase.Extensions;
 using MadPixel;
 using MAXHelper;
+#if UNITY_IOS
+using Unity.Advertisement.IosSupport; 
+#endif
 using UnityEngine;
 
 public class FirebaseComp : MonoBehaviour{
-
-
-
-    private static bool m_initialized = false;
+    #region Fields
+    private static bool m_initialized = false; 
+    #endregion
 
 
     #region Public Static
@@ -19,20 +21,41 @@ public class FirebaseComp : MonoBehaviour{
         return (m_initialized);
     }
 
-    public static void SetConsentValues(bool a_hasConsent){
-        if (m_initialized){
-            ConsentStatus statusValue = a_hasConsent ? ConsentStatus.Granted : ConsentStatus.Denied;
-            var consentMap = new Dictionary<ConsentType, ConsentStatus> {
-                { ConsentType.AdStorage, statusValue },
-                { ConsentType.AnalyticsStorage, statusValue },
-                { ConsentType.AdPersonalization, statusValue },
-                { ConsentType.AdUserData, statusValue },
-            };
-            // Set the consent status
-            FirebaseAnalytics.SetConsent(consentMap);
+    public static void SetConsentValues(bool a_hasConsent) {
+        if (m_initialized) {
+
+#if UNITY_IOS
+            ATTrackingStatusBinding.AuthorizationTrackingStatus status = ATTrackingStatusBinding.GetAuthorizationTrackingStatus();
+            if (status != ATTrackingStatusBinding.AuthorizationTrackingStatus.AUTHORIZED) { // NOTE: if ATT is Denied, consent is always False
+                ApplyConsentValues(false);
+                return;
+            }
+#endif
+            
+            if (AdsManager.IsGDPR()) {
+                // NOTE: we do not override UMP consent status
+            }
+            else {
+                ApplyConsentValues(a_hasConsent);
+            }
         } else { 
-            Debug.LogError($"Trying to set consent status but Firebase doesn't initialized! Please fix it!");
+            Debug.LogError($"Trying to set consent status but Firebase isn't initialized! Please fix it!");
         }
+    }
+
+    /// <summary>
+    /// Sets True consent if it's non-GDPR region. Or False Consent when ATT is denied
+    /// </summary>
+    private static void ApplyConsentValues(bool a_hasConsent) {
+        ConsentStatus statusValue = a_hasConsent ? ConsentStatus.Granted : ConsentStatus.Denied;
+        var consentMap = new Dictionary<ConsentType, ConsentStatus> {
+            { ConsentType.AdStorage, statusValue },
+            { ConsentType.AnalyticsStorage, statusValue },
+            { ConsentType.AdPersonalization, statusValue },
+            { ConsentType.AdUserData, statusValue },
+        };
+        // Set the consent status
+        FirebaseAnalytics.SetConsent(consentMap);
     }
     #endregion
 
@@ -40,6 +63,7 @@ public class FirebaseComp : MonoBehaviour{
     #region Unity events
     void Start() {
 #if UNITY_EDITOR
+        m_initialized = true;
         return;
 #endif
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {

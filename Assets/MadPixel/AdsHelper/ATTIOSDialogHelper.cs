@@ -24,7 +24,7 @@ namespace AudienceNetwork
 #endif
 
 
-namespace MAXHelper{
+namespace MadPixel{
     
     // NOTE: Disable component by default
     public class ATTIOSDialogHelper : MonoBehaviour {

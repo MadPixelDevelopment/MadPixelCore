@@ -173,7 +173,8 @@ namespace MadPixelAnalytics {
             if (debugLog) {
                 string eventParams = "";
                 foreach (string key in parameters.Keys) {
-                    eventParams = eventParams + "\n" + key + ": " + parameters[key].ToString();
+                    var paramValue = parameters[key];
+                    eventParams = eventParams + "\n" + key + ": " + (paramValue == null ? "null" : paramValue.ToString());
                 }
 
                 Debug.Log($"Event: {eventName} and params: {eventParams}");

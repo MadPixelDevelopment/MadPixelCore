@@ -5,11 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.LevelPlay.Editor", "U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.LevelPlay", "Unity.LevelPlay.csproj", "{0239C91F-9233-F4A5-9817-5E03BD27687A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "GoogleMobileAds.Editor.csproj", "{F577EEAA-9DD7-D1CE-D787-1D71DE2694B2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +25,10 @@ Global
 		{0239C91F-9233-F4A5-9817-5E03BD27687A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0239C91F-9233-F4A5-9817-5E03BD27687A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0239C91F-9233-F4A5-9817-5E03BD27687A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,10 +37,6 @@ Global
 		{F577EEAA-9DD7-D1CE-D787-1D71DE2694B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F577EEAA-9DD7-D1CE-D787-1D71DE2694B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F577EEAA-9DD7-D1CE-D787-1D71DE2694B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

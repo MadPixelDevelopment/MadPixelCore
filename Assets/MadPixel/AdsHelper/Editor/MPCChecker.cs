@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Security.Cryptography;
@@ -10,25 +8,35 @@ using MAXHelper;
 namespace MadPixelCore.Editor {
     [InitializeOnLoad]
     public class MPCChecker {
-        private static readonly List<string> ObsoleteDirectoriesToDelete = new List<string> {
-        "Assets/Amazon",
-    };
-
-        private static readonly List<string> ObsoleteFilesToDelete = new List<string> {
-        "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage",
-        "Assets/MadPixel/MAXHelper/Configs/Amazon_APS.unitypackage.meta",
-        "Assets/Amazon.meta",
-    };
+        #region Fields
         private const string OLD_CONFIGS_PATH = "Assets/MadPixel/MAXHelper/Configs/MAXCustomSettings.asset";
         private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
 
         private const string APPMETRICA_FOLDER = "Assets/AppMetrica";
-        private const string EDM4U_FOLDER = "Assets/ExternalDependencyManager";
+        private const string EDM4U_FOLDER = "Assets/ExternalDependencyManager"; 
+        #endregion
 
         static MPCChecker() {
             CheckPackagesExistence();
-            CheckObsoleteFiles();
+            CheckNewResourcesFile();
+            CheckTargetAPI();
+        }
 
+        #region Android Target API 
+
+#if UNITY_ANDROID
+        private static string appKey = null;
+        private static string Key {
+            get {
+                if (string.IsNullOrEmpty(appKey)) {
+                    appKey = GetMd5Hash(Application.dataPath) + "MPCv";
+                }
+
+                return appKey;
+            }
+        }
+
+        private static void CheckTargetAPI() {
 #if UNITY_ANDROID
             int target = (int)PlayerSettings.Android.targetSdkVersion;
             if (target == 0) {
@@ -50,19 +58,6 @@ namespace MadPixelCore.Editor {
             }
             SaveKey();
 #endif
-        }
-
-
-#if UNITY_ANDROID
-        private static string appKey = null;
-        private static string Key {
-            get {
-                if (string.IsNullOrEmpty(appKey)) {
-                    appKey = GetMd5Hash(Application.dataPath) + "MPCv";
-                }
-
-                return appKey;
-            }
         }
 
         private static void ShowSwitchTargetWindow(int target) {
@@ -88,11 +83,6 @@ namespace MadPixelCore.Editor {
             EditorPrefs.SetString(Key, MPCSetupWindow.GetVersion());
         }
 
-        //[MenuItem("Mad Pixel/DeleteKey", priority = 1)]
-        public static void DeleteEditorPrefs() {
-            EditorPrefs.DeleteKey(Key);
-        }
-
         private static int GetHigestInstalledSDK() {
             string s = Path.Combine(GetHighestInstalledAPI(), "platforms");
             string[] directories = Directory.GetDirectories(s);
@@ -112,33 +102,10 @@ namespace MadPixelCore.Editor {
         }
 #endif
 
+        #endregion
 
-        private static void CheckObsoleteFiles() {
-            bool changesMade = false;
-            foreach (var pathToDelete in ObsoleteFilesToDelete) {
-                if (CheckExistence(pathToDelete)) {
-                    FileUtil.DeleteFileOrDirectory(pathToDelete);
-                    changesMade = true;
-                }
-            }
 
-            foreach (string directory in ObsoleteDirectoriesToDelete) {
-                if (CheckExistence(directory)) {
-                    FileUtil.DeleteFileOrDirectory(directory);
-                    changesMade = true;
-                }
-            }
-
-            CheckNewResourcesFile();
-
-            MAXHelperDefineSymbols.DefineSymbols(false);
-
-            if (changesMade) {
-                AssetDatabase.Refresh();
-                Debug.LogWarning("ATTENTION: Amazon removed from this project");
-            }
-        }
-
+        #region Static Helpers
         private static void CheckNewResourcesFile() {
             var oldConfig = AssetDatabase.LoadAssetAtPath(OLD_CONFIGS_PATH, typeof(MAXCustomSettings));
             if (oldConfig != null) {
@@ -166,7 +133,8 @@ namespace MadPixelCore.Editor {
             return File.Exists(location) ||
                    Directory.Exists(location) ||
                    (location.EndsWith("/*") && Directory.Exists(Path.GetDirectoryName(location)));
-        }
+        } 
+        #endregion
 
         #region Appmetrica and EDM as packages
         private static void CheckPackagesExistence() {

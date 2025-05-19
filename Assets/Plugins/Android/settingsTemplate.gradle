@@ -19,7 +19,19 @@ dependencyResolutionManagement {
 // Android Resolver Repos Start
         def unityProjectPath = $/file:///**DIR_UNITYPROJECT**/$.replace("\\", "/")
         maven {
+            url "https://verve.jfrog.io/artifactory/verve-gradle-release" // Assets/MaxSdk/Mediation/Verve/Editor/Dependencies.xml:7
+        }
+        maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Assets/Firebase/Editor/AnalyticsDependencies.xml:18, Assets/Firebase/Editor/AppDependencies.xml:22
+        }
+        maven {
+            url "https://artifactory.bidmachine.io/bidmachine" // Assets/MaxSdk/Mediation/BidMachine/Editor/Dependencies.xml:8
+        }
+        maven {
             url "https://artifact.bytedance.com/repository/pangle" // Assets/MaxSdk/Mediation/ByteDance/Editor/Dependencies.xml:8
+        }
+        maven {
+            url "https://cboost.jfrog.io/artifactory/chartboost-ads/" // Assets/MaxSdk/Mediation/Chartboost/Editor/Dependencies.xml:8
         }
         maven {
             url "https://android-sdk.is.com/" // Assets/MaxSdk/Mediation/IronSource/Editor/Dependencies.xml:8
