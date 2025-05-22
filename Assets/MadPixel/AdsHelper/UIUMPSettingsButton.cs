@@ -1,11 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using MAXHelper;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MergeFight {
+namespace MadPixel {
     
     [RequireComponent(typeof(Button))]
     public class UIUMPSettingsButton : MonoBehaviour {

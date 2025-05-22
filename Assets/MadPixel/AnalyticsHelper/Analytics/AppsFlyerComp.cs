@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using AppsFlyerConnector;
 using MadPixel;
-using MAXHelper;
 using System.Globalization;
 using UnityEngine.Serialization;
 
@@ -30,11 +29,11 @@ namespace MadPixelAnalytics {
             AppsFlyer.setIsDebug(DebugMode);
 
 #if UNITY_ANDROID
-            AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, null, this);
+            AppsFlyer.initSDK(MadPixelCustomSettings.APPSFLYER_SDK_KEY, null, this);
 #else
-            MAXCustomSettings customSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            MadPixelCustomSettings customSettings = AdsManager.LoadMadPixelCustomSettings();
             if (customSettings != null && !string.IsNullOrEmpty(customSettings.appsFlyerID_ios)) {
-                AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, customSettings.appsFlyerID_ios, this);
+                AppsFlyer.initSDK(MadPixelCustomSettings.APPSFLYER_SDK_KEY, customSettings.appsFlyerID_ios, this);
             }
             else {
                 Debug.LogError($"Can not find IOS APP ID for appsflyer ios!");

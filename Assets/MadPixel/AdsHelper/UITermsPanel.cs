@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MAXHelper {
+namespace MadPixel {
     
     public class UITermsPanel : MonoBehaviour {
         

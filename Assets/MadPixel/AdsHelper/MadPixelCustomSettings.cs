@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using MadPixel;
 using UnityEngine;
 
-namespace MAXHelper {
-    [CreateAssetMenu(fileName = "MAXCustomSettings", menuName = "MAXHelper/Configs/MAXCustomSettings", order = 1)]
-    public class MAXCustomSettings : ScriptableObject {
+namespace MadPixel {
+    [CreateAssetMenu(fileName = "MadPixelCustomSettings", menuName = "MadPixel/Configs/MadPixelCustomSettings", order = 1)]
+    public class MadPixelCustomSettings : ScriptableObject {
         public bool bUseRewardeds;
         public bool bUseInters;
         public bool bUseBanners;
@@ -32,7 +32,7 @@ namespace MAXHelper {
         public const string APPSFLYER_SDK_KEY = "bAfXoQibEMwiDKEGT6UHTG";
 
 
-        public void Set(MAXCustomSettings other) {
+        public void Set(MadPixelCustomSettings other) {
             bUseRewardeds = other.bUseRewardeds;
             bUseInters = other.bUseInters;
             bUseBanners = other.bUseBanners;

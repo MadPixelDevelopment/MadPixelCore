@@ -1,4 +1,7 @@
-﻿# Version 31 - May 15, 2025
+﻿# Version 32 - May 22, 2025
+* MAX name is removed, only MadPixel now in namespaces and files
+
+# Version 31 - May 15, 2025
 * New TermsAndPrivacyPanelFlow
 * Refactoring and renaming
 
@@ -11,5 +14,5 @@
 * AdQuality updated
 
 # Version 27 - March 14, 2025
-* LevelPlay updated to 8.7.0
 * Purchase Connector updated to 2.1.1
+* LevelPlay updated to 8.7.0

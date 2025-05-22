@@ -11,7 +11,7 @@ using Unity.Advertisement.IosSupport;
 #endif
 
 
-namespace MAXHelper {
+namespace MadPixel {
 
     public class TermsAndPrivacyPolicyFlow : MonoBehaviour {
 

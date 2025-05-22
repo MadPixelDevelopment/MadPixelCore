@@ -3,11 +3,9 @@ using Unity.Services.LevelPlay;
 using Io.AppMetrica;
 using Io.AppMetrica.Profile;
 using MadPixel;
-using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.MiniJSON;
-using static MAXHelper.AdsManager;
 
 namespace MadPixelAnalytics {
     public class AppMetricaComp : MonoBehaviour {
@@ -20,9 +18,9 @@ namespace MadPixelAnalytics {
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Activate() {
-            MAXCustomSettings MAXCustomSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            MadPixelCustomSettings madPixelCustomSettings = AdsManager.LoadMadPixelCustomSettings();
 
-            Io.AppMetrica.AppMetrica.Activate(new AppMetricaConfig(MAXCustomSettings.appmetricaKey) {
+            Io.AppMetrica.AppMetrica.Activate(new AppMetricaConfig(madPixelCustomSettings.appmetricaKey) {
                 // copy settings from prefab
                 CrashReporting = true, // prefab field 'Exceptions Reporting'
                 SessionTimeout = 300, // prefab field 'Session Timeout Sec'
@@ -61,20 +59,20 @@ namespace MadPixelAnalytics {
             Io.AppMetrica.AppMetrica.ReportAdRevenue(adRevenue);
         }
 
-        public void VideoAdWatched(AdInfo AdInfo) {
-            SendCustomEvent("video_ads_watch", GetAdAttributes(AdInfo));
+        public void VideoAdWatched(AdInfo a_adInfo) {
+            SendCustomEvent("video_ads_watch", GetAdAttributes(a_adInfo));
         }
 
-        public void VideoAdAvailable(AdInfo AdInfo) {
-            SendCustomEvent("video_ads_available", GetAdAttributes(AdInfo));
+        public void VideoAdAvailable(AdInfo a_adInfo) {
+            SendCustomEvent("video_ads_available", GetAdAttributes(a_adInfo));
         }
 
-        public void VideoAdStarted(AdInfo AdInfo) {
-            SendCustomEvent("video_ads_started", GetAdAttributes(AdInfo));
+        public void VideoAdStarted(AdInfo a_adInfo) {
+            SendCustomEvent("video_ads_started", GetAdAttributes(a_adInfo));
         }
 
 
-        public void VideoAdError(LevelPlayAdDisplayInfoError a_error, EAdType AdType, string placement) {
+        public void VideoAdError(LevelPlayAdDisplayInfoError a_error, AdsManager.EAdType a_adType, string a_placement) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
 
             string NetworkName = "unknown";
@@ -95,7 +93,7 @@ namespace MadPixelAnalytics {
             eventAttributes.Add("network", NetworkName);
             eventAttributes.Add("error_message", Message);
             eventAttributes.Add("error_code", Code);
-            eventAttributes.Add("placement", placement);
+            eventAttributes.Add("placement", a_placement);
             SendCustomEvent("ad_display_error", eventAttributes);
         }
 

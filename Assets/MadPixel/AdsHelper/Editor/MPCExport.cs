@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using MAXHelper;
 
 namespace MadPixelCore.Editor {
     public class MPCExport : EditorWindow {

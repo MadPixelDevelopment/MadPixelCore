@@ -2,13 +2,12 @@
 using System.Collections;
 using Unity.Services.LevelPlay;
 using GoogleMobileAds.Ump.Api;
-using MadPixel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.Serialization;
 
-namespace MAXHelper {
+namespace MadPixel {
 
     [RequireComponent(typeof(LevelPlayComp))]
     public class AdsManager : MonoBehaviour {
@@ -31,7 +30,7 @@ namespace MAXHelper {
         private bool m_ready = false;
 
         private TermsAndPrivacyPolicyFlow m_termsFlow;
-        private MAXCustomSettings m_madPixelSettings;
+        private MadPixelCustomSettings m_madPixelSettings;
         private LevelPlayComp m_levelPlayComp;
         private AdInfo m_currentAdInfo;
         private float m_lastInterShown;
@@ -54,23 +53,23 @@ namespace MAXHelper {
 
         #region Static
 
-        protected static AdsManager _instance;
+        protected static AdsManager m_instance;
 
         public static bool Exist {
-            get { return (_instance != null); }
+            get { return (m_instance != null); }
         }
 
         public static AdsManager Instance {
             get {
-                if (_instance == null) {
+                if (m_instance == null) {
                     Debug.LogError("[Mad Pixel] AdsManager wasn't created yet!");
 
                     GameObject go = new GameObject();
                     go.name = "AdsManager";
-                    _instance = go.AddComponent(typeof(AdsManager)) as AdsManager;
+                    m_instance = go.AddComponent(typeof(AdsManager)) as AdsManager;
                 }
 
-                return _instance;
+                return m_instance;
             }
         }
 
@@ -93,19 +92,21 @@ namespace MAXHelper {
 
 
         public static void Destroy(bool immediate = false) {
-            if (_instance != null && _instance.gameObject != null) {
+            if (m_instance != null && m_instance.gameObject != null) {
                 if (immediate) {
-                    DestroyImmediate(_instance.gameObject);
+                    DestroyImmediate(m_instance.gameObject);
                 }
                 else {
-                    GameObject.Destroy(_instance.gameObject);
+                    GameObject.Destroy(m_instance.gameObject);
                 }
             }
 
-            _instance = null;
+            m_instance = null;
         }
 
         public static string Version => version;
+
+        public static string SETTINGS_FILE_NAME = "MadPixelCustomSettings";
 
         #endregion
 
@@ -200,8 +201,8 @@ namespace MAXHelper {
         #region Unity Events
 
         private void Awake() {
-            if (_instance == null) {
-                _instance = this;
+            if (m_instance == null) {
+                m_instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
                 m_levelPlayComp = GetComponent<LevelPlayComp>();
             }
@@ -232,6 +233,10 @@ namespace MAXHelper {
         #endregion
 
         #region Public Static
+        public static MadPixelCustomSettings LoadMadPixelCustomSettings() {
+            return Resources.Load<MadPixelCustomSettings>(SETTINGS_FILE_NAME);
+        }
+
         /// <param name="a_objectRef">Instigator gameobject</param>
         /// <summary>
         /// Shows a Rewarded Ad. Returns OK if the ad is starting to show, NOT_LOADED if Applovin has no loaded ad yet.
@@ -449,7 +454,7 @@ namespace MAXHelper {
         private void InitInternal() {
             m_lastInterShown = -m_cooldownBetweenInterstitials;
 
-            m_madPixelSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            m_madPixelSettings = LoadMadPixelCustomSettings();
             m_levelPlayComp.Init(m_madPixelSettings);
 
             m_levelPlayComp.e_onFinishAds += LevelPlay_OnFinishAds;

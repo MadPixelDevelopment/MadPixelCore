@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Unity.Services.LevelPlay;
 using MadPixel;
-using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
-using static MAXHelper.AdsManager;
 using UnityEngine.Serialization;
 
 namespace MadPixelAnalytics {
@@ -28,37 +26,37 @@ namespace MadPixelAnalytics {
 
         #region Static
 
-        protected static AnalyticsManager _instance;
+        protected static AnalyticsManager m_instance;
 
         public static bool Exist {
-            get { return (_instance != null); }
+            get { return (m_instance != null); }
         }
 
         public static AnalyticsManager Instance {
             get {
-                if (_instance == null) {
+                if (m_instance == null) {
                     Debug.LogError("AnalyticsManager wasn't created yet!");
 
                     GameObject go = new GameObject();
                     go.name = "AnalyticsManager";
-                    _instance = go.AddComponent(typeof(AnalyticsManager)) as AnalyticsManager;
+                    m_instance = go.AddComponent(typeof(AnalyticsManager)) as AnalyticsManager;
                 }
 
-                return _instance;
+                return m_instance;
             }
         }
 
         public static void Destroy(bool immediate = false) {
-            if (_instance != null && _instance.gameObject != null) {
+            if (m_instance != null && m_instance.gameObject != null) {
                 if (immediate) {
-                    DestroyImmediate(_instance.gameObject);
+                    DestroyImmediate(m_instance.gameObject);
                 }
                 else {
-                    GameObject.Destroy(_instance.gameObject);
+                    GameObject.Destroy(m_instance.gameObject);
                 }
             }
 
-            _instance = null;
+            m_instance = null;
         }
 
         #endregion
@@ -67,8 +65,8 @@ namespace MadPixelAnalytics {
         #region UnityEvents
 
         private void Awake() {
-            if (_instance == null) {
-                _instance = this;
+            if (m_instance == null) {
+                m_instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
             }
             else {
@@ -157,7 +155,7 @@ namespace MadPixelAnalytics {
             }
         }
 
-        private static void OnAdError(LevelPlayAdDisplayInfoError a_error, EAdType a_adType, string a_placement) {
+        private static void OnAdError(LevelPlayAdDisplayInfoError a_error, AdsManager.EAdType a_adType, string a_placement) {
             if (Exist) {
                 if (Instance.m_appMetricaComp != null) {
                     Instance.m_appMetricaComp.VideoAdError(a_error, a_adType, a_placement);

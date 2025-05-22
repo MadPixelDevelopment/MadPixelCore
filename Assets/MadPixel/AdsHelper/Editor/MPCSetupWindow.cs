@@ -4,12 +4,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using MAXHelper;
+using MadPixel;
 
 namespace MadPixelCore.Editor {
     public class MPCSetupWindow : EditorWindow {
         #region Fields
-        private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
+        private const string NEW_CONFIGS_PATH = "Assets/Resources/MadPixelCustomSettings.asset";
         private const string LP_MAXPACK_PACKAGE_PATH = "Assets/MadPixel/AdsHelper/Configs/MPC_LevelPlay_MaximunPack.unitypackage";
 
         private const string LP_FOLDER = "https://drive.google.com/drive/u/0/folders/1Lr8CUtKAu6DpOrcfJ6xQ9f7Viu67x8BN";
@@ -32,7 +32,7 @@ namespace MadPixelCore.Editor {
         private static GUILayoutOption m_adUnitToggleOption = GUILayout.Width(180);
         private static GUILayoutOption m_bannerColorLabelOption = GUILayout.Width(250);
 
-        private MAXCustomSettings m_customSettings;
+        private MadPixelCustomSettings m_customSettings;
         private bool m_isMaxVariantInstalled;
         #endregion
 
@@ -121,21 +121,6 @@ namespace MadPixelCore.Editor {
 
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
-            GUILayout.Space(10);
-            m_customSettings.bUseBanners = GUILayout.Toggle(m_customSettings.bUseBanners, "Use Banners", m_adUnitToggleOption);
-
-            if (m_customSettings.bUseBanners) {
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(10);
-                GUILayout.Label("Banner Position", EditorStyles.boldLabel);
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(10);
-                m_customSettings.useTopBannerPosition = EditorGUILayout.Toggle("show banner on top?", m_customSettings.useTopBannerPosition);
-                GUILayout.EndHorizontal();
-            }
         }
 
 
@@ -178,21 +163,21 @@ namespace MadPixelCore.Editor {
                 m_customSettings.BannerID = DrawTextField("Banner Ad Unit (Android)", m_customSettings.BannerID, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
                 m_customSettings.BannerID_IOS = DrawTextField("Banner Ad Unit (IOS)", m_customSettings.BannerID_IOS, m_adUnitLabelWidthOption, m_adUnitTextWidthOption);
                 GUILayout.EndHorizontal();
-                GUILayout.Space(4);
 
                 GUI.enabled = true;
                 GUILayout.Space(4);
-                GUILayout.BeginHorizontal();
                 if (m_customSettings.bUseBanners) {
+                    GUILayout.BeginHorizontal();
                     GUILayout.Space(24);
-
                     m_customSettings.BannerBackground = EditorGUILayout.ColorField("Banner Background Color: ", m_customSettings.BannerBackground, m_bannerColorLabelOption);
-
                     GUILayout.Space(4);
+                    GUILayout.EndHorizontal();
 
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(24);
+                    m_customSettings.useTopBannerPosition = EditorGUILayout.Toggle("Show banner at the top?", m_customSettings.useTopBannerPosition, m_bannerColorLabelOption);
+                    GUILayout.EndHorizontal();
                 }
-
-                GUILayout.EndHorizontal();
 
                 GUI.enabled = true;
             }
@@ -205,7 +190,7 @@ namespace MadPixelCore.Editor {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
 
-                if (!MackPackUnitypackageExists()) {
+                if (!MaxPackUnitypackageExists()) {
                     EditorGUILayout.LabelField("You dont have MPC_LevelPlay_MaximunPack.unitypackage in your project. Probably your git added it to gitignore", m_sdkKeyTextFieldWidthOption);
 
                     GUILayout.EndHorizontal();
@@ -222,7 +207,7 @@ namespace MadPixelCore.Editor {
                     GUILayout.Space(10);
                 }
 
-                GUI.enabled = MackPackUnitypackageExists();
+                GUI.enabled = MaxPackUnitypackageExists();
                 if (m_isMaxVariantInstalled) {
                     EditorGUILayout.LabelField("You have installed default Maximum pack of mediations", m_sdkKeyTextFieldWidthOption);
                     GUILayout.EndHorizontal();
@@ -291,13 +276,13 @@ namespace MadPixelCore.Editor {
 
         #region Helpers
         private void LoadConfigFromFile() {
-            var Obj = AssetDatabase.LoadAssetAtPath(NEW_CONFIGS_PATH, typeof(MAXCustomSettings));
+            var Obj = AssetDatabase.LoadAssetAtPath(NEW_CONFIGS_PATH, typeof(MadPixelCustomSettings));
             if (Obj != null) {
-                m_customSettings = (MAXCustomSettings)Obj;
+                m_customSettings = (MadPixelCustomSettings)Obj;
             }
             else {
                 Debug.Log("CustomSettings file doesn't exist, creating a new one...");
-                var Instance = MAXCustomSettings.CreateInstance("MAXCustomSettings");
+                var Instance = MadPixelCustomSettings.CreateInstance(AdsManager.SETTINGS_FILE_NAME);
                 AssetDatabase.CreateAsset(Instance, NEW_CONFIGS_PATH);
             }
         }
@@ -317,7 +302,7 @@ namespace MadPixelCore.Editor {
             return GetVersion("Assets/MadPixel/Version_levelPlay.md");
         }
 
-        private bool MackPackUnitypackageExists() {
+        private bool MaxPackUnitypackageExists() {
             return File.Exists(LP_MAXPACK_PACKAGE_PATH);
         }
         #endregion

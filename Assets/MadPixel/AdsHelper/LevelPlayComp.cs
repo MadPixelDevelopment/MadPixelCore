@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Unity.Services.LevelPlay;
 using MadPixelAnalytics;
-using MAXHelper;
 using UnityEngine;
 using UnityEngine.Events;
-using static MAXHelper.AdsManager;
+using static MadPixel.AdsManager;
 
 namespace MadPixel {
     public class LevelPlayComp : MonoBehaviour {
@@ -13,7 +12,7 @@ namespace MadPixel {
         [SerializeField] private bool m_debugLogsOn;
         [SerializeField] private bool m_debugTestSuiteOn;
 
-        private MAXCustomSettings m_customSettings;
+        private MadPixelCustomSettings m_customSettings;
         private bool m_isBannerLoadedOnce = false;
         private bool m_sdkFailedToInitSent = false;
 
@@ -49,7 +48,7 @@ namespace MadPixel {
 
 
         #region Public
-        public void Init(MAXCustomSettings a_madPixelSettings) {
+        public void Init(MadPixelCustomSettings a_madPixelSettings) {
             m_customSettings = a_madPixelSettings;
             if (m_debugLogsOn) {
                 if (m_debugTestSuiteOn) {

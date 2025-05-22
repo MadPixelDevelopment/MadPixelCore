@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MAXHelper {
+namespace MadPixel {
     public class AdInfo  {
         public string Placement;
         public AdsManager.EAdType AdType;

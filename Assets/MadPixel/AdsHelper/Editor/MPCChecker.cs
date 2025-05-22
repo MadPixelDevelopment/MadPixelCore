@@ -3,23 +3,27 @@ using UnityEditor;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
-using MAXHelper;
+using MadPixel;
 
 namespace MadPixelCore.Editor {
     [InitializeOnLoad]
     public class MPCChecker {
         #region Fields
-        private const string OLD_CONFIGS_PATH = "Assets/MadPixel/MAXHelper/Configs/MAXCustomSettings.asset";
-        private const string NEW_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
+        private const string OLD_MAX_CONFIGS_PATH = "Assets/MadPixel/MAXHelper/Configs/MAXCustomSettings.asset";
+        private const string OLD_MAX_RESOURCES_CONFIGS_PATH = "Assets/Resources/MAXCustomSettings.asset";
+        private const string NEW_CONFIGS_RESOURCES_PATH = "Assets/Resources/MadPixelCustomSettings.asset";
 
         private const string APPMETRICA_FOLDER = "Assets/AppMetrica";
         private const string EDM4U_FOLDER = "Assets/ExternalDependencyManager"; 
         #endregion
 
         static MPCChecker() {
+            int i = 0;
             CheckPackagesExistence();
             CheckNewResourcesFile();
+#if UNITY_ANDROID
             CheckTargetAPI();
+#endif
         }
 
         #region Android Target API 
@@ -37,7 +41,6 @@ namespace MadPixelCore.Editor {
         }
 
         private static void CheckTargetAPI() {
-#if UNITY_ANDROID
             int target = (int)PlayerSettings.Android.targetSdkVersion;
             if (target == 0) {
                 int highestInstalledVersion = GetHigestInstalledSDK();
@@ -57,7 +60,6 @@ namespace MadPixelCore.Editor {
                 }
             }
             SaveKey();
-#endif
         }
 
         private static void ShowSwitchTargetWindow(int target) {
@@ -107,24 +109,35 @@ namespace MadPixelCore.Editor {
 
         #region Static Helpers
         private static void CheckNewResourcesFile() {
-            var oldConfig = AssetDatabase.LoadAssetAtPath(OLD_CONFIGS_PATH, typeof(MAXCustomSettings));
+            var oldConfig = AssetDatabase.LoadAssetAtPath(OLD_MAX_CONFIGS_PATH, typeof(MadPixelCustomSettings));
             if (oldConfig != null) {
-                var resObj = AssetDatabase.LoadAssetAtPath(NEW_CONFIGS_PATH, typeof(MAXCustomSettings));
+                var resObj = AssetDatabase.LoadAssetAtPath(OLD_MAX_RESOURCES_CONFIGS_PATH, typeof(MadPixelCustomSettings));
                 if (resObj == null) {
-                    Debug.Log("MAXCustomSettings file doesn't exist, creating a new one...");
-                    ScriptableObject so = MAXCustomSettings.CreateInstance("MAXCustomSettings");
-                    AssetDatabase.CreateAsset(so, NEW_CONFIGS_PATH);
+                    Debug.Log("MadPixelCustomSettings file doesn't exist, creating a new one...");
+                    ScriptableObject so = MadPixelCustomSettings.CreateInstance(AdsManager.SETTINGS_FILE_NAME);
+                    AssetDatabase.CreateAsset(so, NEW_CONFIGS_RESOURCES_PATH);
                     resObj = so;
                 }
 
-                var newCustomSettings = (MAXCustomSettings)resObj;
-                newCustomSettings.Set((MAXCustomSettings)oldConfig);
+                var newCustomSettings = (MadPixelCustomSettings)resObj;
+                newCustomSettings.Set((MadPixelCustomSettings)oldConfig);
 
-                FileUtil.DeleteFileOrDirectory(OLD_CONFIGS_PATH);
+                FileUtil.DeleteFileOrDirectory(OLD_MAX_CONFIGS_PATH);
                 EditorUtility.SetDirty(newCustomSettings);
                 AssetDatabase.SaveAssets();
 
-                Debug.Log("MAXCustomSettings migrated");
+                Debug.Log("MadPixelCustomSettings migrated");
+            }
+            else {
+                oldConfig = AssetDatabase.LoadAssetAtPath(OLD_MAX_RESOURCES_CONFIGS_PATH, typeof(MadPixelCustomSettings));
+                if (oldConfig != null) {
+                    string result = AssetDatabase.RenameAsset(OLD_MAX_RESOURCES_CONFIGS_PATH, $"{AdsManager.SETTINGS_FILE_NAME}.asset");
+                    if (!string.IsNullOrEmpty(result)) {
+                        Debug.Log($"[Mad Pixel] {result}");
+                    }
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
             }
         }
 

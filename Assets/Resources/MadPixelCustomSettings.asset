@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80001126de4c827458a1977b489ab4e8, type: 3}
-  m_Name: MAXCustomSettings
+  m_Name: MadPixelCustomSettings
   m_EditorClassIdentifier: 
   bUseRewardeds: 1
   bUseInters: 1
@@ -25,3 +25,7 @@ MonoBehaviour:
   BannerBackground: {r: 0, g: 0, b: 0, a: 1}
   appmetricaKey: appmetricaAPIKey
   appsFlyerID_ios: 1234567890
+  levelPlayKey: 
+  levelPlayKey_ios: 
+  useBanner: 1
+  useTopBannerPosition: 0
