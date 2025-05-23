@@ -21,14 +21,16 @@ namespace MadPixel {
         }
 
         public static void SetConsentValues(bool a_hasConsent) {
+#if UNITY_EDITOR
+            return;
+#endif
             if (m_initialized) {
-
 #if UNITY_IOS
-            ATTrackingStatusBinding.AuthorizationTrackingStatus status = ATTrackingStatusBinding.GetAuthorizationTrackingStatus();
-            if (status != ATTrackingStatusBinding.AuthorizationTrackingStatus.AUTHORIZED) { // NOTE: if ATT is Denied, consent is always False
-                ApplyConsentValues(false);
-                return;
-            }
+                ATTrackingStatusBinding.AuthorizationTrackingStatus status = ATTrackingStatusBinding.GetAuthorizationTrackingStatus();
+                if (status != ATTrackingStatusBinding.AuthorizationTrackingStatus.AUTHORIZED) { // NOTE: if ATT is Denied, consent is always False
+                    ApplyConsentValues(false);
+                    return;
+                }
 #endif
 
                 if (AdsManager.IsGDPR()) {

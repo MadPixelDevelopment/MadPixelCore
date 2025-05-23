@@ -9,10 +9,9 @@ using UnityEngine.Purchasing.MiniJSON;
 
 namespace MadPixelAnalytics {
     public class AppMetricaComp : MonoBehaviour {
-        [SerializeField] private bool bSendAdRevenue = false;
-        [SerializeField] private bool bLogEventsOnDevice = false;
+        [SerializeField] private bool m_debugLogsOnDevice = false;
 #if UNITY_EDITOR
-        [SerializeField] private bool bLogEventsInEditor = true;
+        [SerializeField] private bool m_debugLogsInEditor = true;
 #endif
 
 
@@ -26,39 +25,12 @@ namespace MadPixelAnalytics {
                 SessionTimeout = 300, // prefab field 'Session Timeout Sec'
                 LocationTracking = false, // prefab field 'Location Tracking'
                 Logs = false, // prefab field 'Logs'
-                FirstActivationAsUpdate = !IsFirstLaunch(), // prefab field 'Handle First Activation As Update'
+                FirstActivationAsUpdate = false, // prefab field 'Handle First Activation As Update'
                 DataSendingEnabled = true, // prefab field 'Statistics Sending'
             });
         }
 
-        private static bool IsFirstLaunch() {
-            // Implement logic to detect whether the app is opening for the first time.
-            // For example, you can check for files (settings, databases, and so on),
-            // which the app creates on its first launch.
-            return true;
-        }
-
-        public void Init() {
-            if (bSendAdRevenue) {
-                IronSourceEvents.onImpressionDataReadyEvent += OnAdRevenuePaidEvent;
-            }
-        }
-
-        private void OnDestroy() {
-            if (bSendAdRevenue) {
-                IronSourceEvents.onImpressionDataReadyEvent -= OnAdRevenuePaidEvent;
-            }
-        }
-
-
         #region Ads Related
-        public void OnAdRevenuePaidEvent(IronSourceImpressionData a_impressionData) {
-            if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
-
-            AdRevenue adRevenue = new AdRevenue(a_impressionData.revenue.Value, "USD");
-            Io.AppMetrica.AppMetrica.ReportAdRevenue(adRevenue);
-        }
-
         public void VideoAdWatched(AdInfo a_adInfo) {
             SendCustomEvent("video_ads_watch", GetAdAttributes(a_adInfo));
         }
@@ -117,32 +89,32 @@ namespace MadPixelAnalytics {
 
 
         #region Purchases
-        public void PurchaseSucceed(MPReceipt Receipt) {
+        public void PurchaseSucceed(MPReceipt a_receipt) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
-            eventAttributes.Add("inapp_id", Receipt.Product.definition.storeSpecificId);
-            eventAttributes.Add("currency", Receipt.Product.metadata.isoCurrencyCode);
-            eventAttributes.Add("price", (float)Receipt.Product.metadata.localizedPrice);
+            eventAttributes.Add("inapp_id", a_receipt.Product.definition.storeSpecificId);
+            eventAttributes.Add("currency", a_receipt.Product.metadata.isoCurrencyCode);
+            eventAttributes.Add("price", (float)a_receipt.Product.metadata.localizedPrice);
             SendCustomEvent("payment_succeed", eventAttributes);
 
-            HandlePurchase(Receipt.Product, Receipt.Data, Receipt.Signature);
+            HandlePurchase(a_receipt.Product, a_receipt.Data, a_receipt.Signature);
         }
 
-        public void HandlePurchase(Product Product, string data, string signature) {
-            Revenue Revenue = new Revenue(
-                (long)Product.metadata.localizedPrice, Product.metadata.isoCurrencyCode);
+        public void HandlePurchase(Product a_product, string a_data, string a_signature) {
+            Revenue revenue = new Revenue(
+                (long)a_product.metadata.localizedPrice, a_product.metadata.isoCurrencyCode);
 
             Revenue.Receipt Receipt = new Revenue.Receipt();
-            Receipt.Signature = signature;
-            Receipt.Data = data;
+            Receipt.Signature = a_signature;
+            Receipt.Data = a_data;
 
-            Revenue.ReceiptValue = Receipt;
-            Revenue.Quantity = 1;
-            Revenue.ProductID = Product.definition.storeSpecificId;
+            revenue.ReceiptValue = Receipt;
+            revenue.Quantity = 1;
+            revenue.ProductID = a_product.definition.storeSpecificId;
 
 #if UNITY_EDITOR
             return;
 #else
-            AppMetrica.ReportRevenue(Revenue);
+            AppMetrica.ReportRevenue(revenue);
 #endif
 
         }
@@ -151,70 +123,51 @@ namespace MadPixelAnalytics {
 
         #region Helpers
 
-        public void SendCustomEvent(string eventName, Dictionary<string, object> parameters, bool bSendEventsBuffer = false) {
-            if (parameters == null) {
-                parameters = new Dictionary<string, object>();
+        public void SendCustomEvent(string a_eventName, Dictionary<string, object> a_parameters, bool a_sendEventsBuffer = false) {
+            if (a_parameters == null) {
+                a_parameters = new Dictionary<string, object>();
             }
 
-            bool debugLog = bLogEventsOnDevice;
+            bool debugLog = m_debugLogsOnDevice;
 
 #if UNITY_EDITOR
-            debugLog = bLogEventsInEditor;
+            debugLog = m_debugLogsInEditor;
 #else
-            AppMetrica.ReportEvent(eventName, parameters.toJson());
+            AppMetrica.ReportEvent(a_eventName, a_parameters.toJson());
 #endif
 
-            if (bSendEventsBuffer) {
+            if (a_sendEventsBuffer) {
                 Io.AppMetrica.AppMetrica.SendEventsBuffer();
             }
 
             if (debugLog) {
                 string eventParams = "";
-                foreach (string key in parameters.Keys) {
-                    var paramValue = parameters[key];
+                foreach (string key in a_parameters.Keys) {
+                    var paramValue = a_parameters[key];
                     eventParams = eventParams + "\n" + key + ": " + (paramValue == null ? "null" : paramValue.ToString());
                 }
 
-                Debug.Log($"Event: {eventName} and params: {eventParams}");
+                Debug.Log($"Event: {a_eventName} and params: {eventParams}");
             }
         }
 
 
-        private Dictionary<string, object> GetAdAttributes(AdInfo Info) {
+        private Dictionary<string, object> GetAdAttributes(AdInfo a_adInfo) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
             string adType = "interstitial";
-            if (Info.AdType == AdsManager.EAdType.REWARDED) {
+            if (a_adInfo.AdType == AdsManager.EAdType.REWARDED) {
                 adType = "rewarded";
             }
-            else if (Info.AdType == AdsManager.EAdType.BANNER) {
+            else if (a_adInfo.AdType == AdsManager.EAdType.BANNER) {
                 adType = "banner";
             }
             eventAttributes.Add("ad_type", adType);
-            eventAttributes.Add("placement", Info.Placement);
-            eventAttributes.Add("connection", Info.HasInternet ? 1 : 0);
-            eventAttributes.Add("result", Info.Availability);
+            eventAttributes.Add("placement", a_adInfo.Placement);
+            eventAttributes.Add("connection", a_adInfo.HasInternet ? 1 : 0);
+            eventAttributes.Add("result", a_adInfo.Availability);
 
             return eventAttributes;
         }
-
-        private string GetLatencyRange(long latencyMillis) {
-            if (latencyMillis < 1000) { return "<1"; }
-            if (latencyMillis < 6000) { return "1-5"; }
-            if (latencyMillis < 10000) { return "5-10"; }
-            if (latencyMillis < 15000) { return "10-15"; }
-            if (latencyMillis < 20000) { return "15-20"; }
-            if (latencyMillis < 25000) { return "20-25"; }
-            if (latencyMillis < 30000) { return "25-30"; }
-            if (latencyMillis < 40000) { return "30-40"; }
-            if (latencyMillis < 50000) { return "40-50"; }
-            if (latencyMillis < 60000) { return "50-60"; }
-            if (latencyMillis < 90000) { return "60-90"; }
-            if (latencyMillis < 120000) { return "90-120"; }
-            if (latencyMillis < 180000) { return "120-180"; }
-
-            return ">180";
-        }
-
         #endregion
 
     }

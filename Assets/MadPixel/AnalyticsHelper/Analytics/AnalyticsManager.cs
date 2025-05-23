@@ -114,7 +114,6 @@ namespace MadPixelAnalytics {
 
             m_appMetricaComp = this.GetComponent<AppMetricaComp>();
             if (m_appMetricaComp) {
-                m_appMetricaComp.Init();
                 Debug.Log("[MadPixel] AppMetrica is INITIALIZED!");
             }
             else {
