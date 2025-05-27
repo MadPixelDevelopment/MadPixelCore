@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MAXHelper {
+namespace MadPixel {
     public class AdButton : MonoBehaviour {
         #region Fields
         [SerializeField] private string Placement = "revive_hero";

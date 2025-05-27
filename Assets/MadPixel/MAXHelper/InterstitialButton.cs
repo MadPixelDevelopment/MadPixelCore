@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MAXHelper {
+namespace MadPixel {
     public class InterstitialButton : MonoBehaviour {
         #region Fields
         private Button MyButton;

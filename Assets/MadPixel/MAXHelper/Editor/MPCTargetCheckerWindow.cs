@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 public class MPCTargetCheckerWindow : EditorWindow {
-    public static void ShowWindow(int min, int target) {
+    public static void ShowWindow(int a_min, int a_target) {
         var instance = GetWindow<MPCTargetCheckerWindow>("Target API check", true);
         instance.minSize = new Vector2(400, 200);
         instance.Show();

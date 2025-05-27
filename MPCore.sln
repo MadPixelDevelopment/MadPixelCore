@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxSdk.Scripts", "MaxSdk.Scripts.csproj", "{B98FB25F-EA4C-5FBC-3B39-B8C761DED636}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxSdk.Scripts.IntegrationManager.Editor", "MaxSdk.Scripts.IntegrationManager.Editor.csproj", "{9906893E-8157-764E-9AD3-07FC6FE49CD8}"
 EndProject
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DD603DC-8BF2-E0E2-B736-715FD6BB0FF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{B98FB25F-EA4C-5FBC-3B39-B8C761DED636}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B98FB25F-EA4C-5FBC-3B39-B8C761DED636}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B98FB25F-EA4C-5FBC-3B39-B8C761DED636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CC6BF2-5F5D-4E36-6435-F6DE294400FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9906893E-8157-764E-9AD3-07FC6FE49CD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9906893E-8157-764E-9AD3-07FC6FE49CD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9906893E-8157-764E-9AD3-07FC6FE49CD8}.Release|Any CPU.ActiveCfg = Release|Any CPU

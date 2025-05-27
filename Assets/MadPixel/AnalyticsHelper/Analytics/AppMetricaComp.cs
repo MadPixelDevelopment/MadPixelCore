@@ -2,135 +2,33 @@ using System.Collections.Generic;
 using Io.AppMetrica;
 using Io.AppMetrica.Profile;
 using MadPixel;
-using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.MiniJSON;
 
 namespace MadPixelAnalytics {
     public class AppMetricaComp : MonoBehaviour {
-        [SerializeField] private bool bSendAdRevenue = false;
-        [SerializeField] private bool bSendLatencyEvents = false;
-        [SerializeField] private bool bLogEventsOnDevice = false;
+        [SerializeField] private bool m_debugLogsOnDevice = false;
 #if UNITY_EDITOR
-        [SerializeField] private bool bLogEventsInEditor = true;
+        [SerializeField] private bool m_debugLogsInEditor = true;
 #endif
 
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Activate() {
-            MAXCustomSettings MAXCustomSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            MadPixelCustomSettings madPixelCustomSettings = AdsManager.LoadMadPixelCustomSettings();
 
-            Io.AppMetrica.AppMetrica.Activate(new AppMetricaConfig(MAXCustomSettings.appmetricaKey) {
+            Io.AppMetrica.AppMetrica.Activate(new AppMetricaConfig(madPixelCustomSettings.appmetricaKey) {
                 // copy settings from prefab
                 CrashReporting = true, // prefab field 'Exceptions Reporting'
                 SessionTimeout = 300, // prefab field 'Session Timeout Sec'
                 LocationTracking = false, // prefab field 'Location Tracking'
                 Logs = false, // prefab field 'Logs'
-                FirstActivationAsUpdate = !IsFirstLaunch(), // prefab field 'Handle First Activation As Update'
+                FirstActivationAsUpdate = false, // prefab field 'Handle First Activation As Update'
                 DataSendingEnabled = true, // prefab field 'Statistics Sending'
             });
         }
 
-        private static bool IsFirstLaunch() {
-            // Implement logic to detect whether the app is opening for the first time.
-            // For example, you can check for files (settings, databases, and so on),
-            // which the app creates on its first launch.
-            return true;
-        }
-
-        public void Init() {
-            if (bSendAdRevenue) {
-                MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
-            }
-
-            if (bSendLatencyEvents) {
-                MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += OnInterLoadedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadedEvent += OnRewardedLoadedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerLoadedEvent;
-
-                MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += OnInterLoadFailedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent += OnRewardedLoadFailedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerLoadFailedEvent;
-            }
-        }
-
-
-        #region Banner Load/Fail
-        private void OnBannerLoadFailedEvent(string adUnitID, MaxSdkBase.ErrorInfo errorInfo) {
-            SendCustomEvent("on_ad_load_fail", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(errorInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", errorInfo.WaterfallInfo.TestName},
-                {"ad_type", "banner"},
-            });
-        }
-        private void OnBannerLoadedEvent(string adUnitID, MaxSdkBase.AdInfo adInfo) {
-            SendCustomEvent("on_ad_loaded", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(adInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", adInfo.WaterfallInfo.TestName},
-                {"ad_type", "banner"},
-            });
-        }
-        #endregion
-
-
-
-        #region Rewarded Load/Fail
-        private void OnRewardedLoadedEvent(string adUnitID, MaxSdkBase.AdInfo adInfo) {
-            SendCustomEvent("on_ad_loaded", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(adInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", adInfo.WaterfallInfo.TestName},
-                {"ad_type", "rewarded"},
-            });
-        }
-        private void OnRewardedLoadFailedEvent(string adUnitID, MaxSdkBase.ErrorInfo errorInfo) {
-            SendCustomEvent("on_ad_load_fail", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(errorInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", errorInfo.WaterfallInfo.TestName},
-                {"ad_type", "rewarded"},
-            });
-        }
-        #endregion
-
-
-
-        #region Inter Load/Fail
-        private void OnInterLoadedEvent(string adUnitID, MaxSdkBase.AdInfo adInfo) {
-            SendCustomEvent("on_ad_loaded", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(adInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", adInfo.WaterfallInfo.TestName},
-                {"ad_type", "interstitial"},
-            });
-        }
-        private void OnInterLoadFailedEvent(string adUnitID, MaxSdkBase.ErrorInfo errorInfo) {
-            SendCustomEvent("on_ad_load_fail", new Dictionary<string, object>() {
-                {"latency", GetLatencyRange(errorInfo.WaterfallInfo.LatencyMillis)},
-                {"waterfall_name", errorInfo.WaterfallInfo.TestName},
-                {"ad_type", "interstitial"},
-            });
-        }
-        #endregion
-
-
-
-        private void OnDestroy() {
-            if (bSendAdRevenue) {
-                MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent -= OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent -= OnAdRevenuePaidEvent;
-                MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent -= OnAdRevenuePaidEvent;
-            }
-            if (bSendLatencyEvents) {
-                MaxSdkCallbacks.Interstitial.OnAdLoadedEvent -= OnInterLoadedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadedEvent -= OnRewardedLoadedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadedEvent -= OnBannerLoadedEvent;
-
-                MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent -= OnInterLoadFailedEvent;
-                MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent -= OnRewardedLoadFailedEvent;
-                MaxSdkCallbacks.Banner.OnAdLoadFailedEvent -= OnBannerLoadFailedEvent;
-            }
-        }
 
 
         #region Ads Related
@@ -185,14 +83,14 @@ namespace MadPixelAnalytics {
         #endregion
 
 
-        public void RateUs(int rateResult) {
+        public void RateUs(int a_rateResult) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
-            eventAttributes.Add("rate_result", rateResult);
+            eventAttributes.Add("rate_result", a_rateResult);
             SendCustomEvent("rate_us", eventAttributes);
         }
 
-        public void ABTestInitMetricaAttributes(string value) {
-            UserProfile profile = new UserProfile().Apply(Attribute.CustomString("ab_test_group").WithValue(value));
+        public void ABTestInitMetricaAttributes(string a_value) {
+            UserProfile profile = new UserProfile().Apply(Attribute.CustomString("ab_test_group").WithValue(a_value));
 
             Io.AppMetrica.AppMetrica.ReportUserProfile(profile);
             Io.AppMetrica.AppMetrica.SendEventsBuffer();
@@ -235,69 +133,51 @@ namespace MadPixelAnalytics {
 
         #region Helpers
 
-        public void SendCustomEvent(string eventName, Dictionary<string, object> parameters, bool bSendEventsBuffer = false) {
-            if (parameters == null) {
-                parameters = new Dictionary<string, object>();
+        public void SendCustomEvent(string a_eventName, Dictionary<string, object> a_parameters, bool a_sendEventsBuffer = false) {
+            if (a_parameters == null) {
+                a_parameters = new Dictionary<string, object>();
             }
 
-            bool debugLog = bLogEventsOnDevice;
+            bool debugLog = m_debugLogsOnDevice;
 
 #if UNITY_EDITOR
-            debugLog = bLogEventsInEditor;
+            debugLog = m_debugLogsInEditor;
 #else
-            AppMetrica.ReportEvent(eventName, parameters.toJson());
+            AppMetrica.ReportEvent(a_eventName, a_parameters.toJson());
 #endif
 
-            if (bSendEventsBuffer) {
+            if (a_sendEventsBuffer) {
                 Io.AppMetrica.AppMetrica.SendEventsBuffer();
             }
 
             if (debugLog) {
                 string eventParams = "";
-                foreach (string key in parameters.Keys) {
-                    eventParams = eventParams + "\n" + key + ": " + parameters[key].ToString();
+                foreach (string key in a_parameters.Keys) {
+                    var paramValue = a_parameters[key];
+                    eventParams = eventParams + "\n" + key + ": " + (paramValue == null ? "null" : paramValue.ToString());
                 }
 
-                Debug.Log($"Event: {eventName} and params: {eventParams}");
+                Debug.Log($"Event: {a_eventName} and params: {eventParams}");
             }
         }
 
 
-        private Dictionary<string, object> GetAdAttributes(AdInfo Info) {
+        private Dictionary<string, object> GetAdAttributes(AdInfo a_adInfo) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
             string adType = "interstitial";
-            if (Info.AdType == AdsManager.EAdType.REWARDED) {
+            if (a_adInfo.AdType == AdsManager.EAdType.REWARDED) {
                 adType = "rewarded";
             }
-            else if (Info.AdType == AdsManager.EAdType.BANNER) {
+            else if (a_adInfo.AdType == AdsManager.EAdType.BANNER) {
                 adType = "banner";
             }
             eventAttributes.Add("ad_type", adType);
-            eventAttributes.Add("placement", Info.Placement);
-            eventAttributes.Add("connection", Info.HasInternet ? 1 : 0);
-            eventAttributes.Add("result", Info.Availability);
+            eventAttributes.Add("placement", a_adInfo.Placement);
+            eventAttributes.Add("connection", a_adInfo.HasInternet ? 1 : 0);
+            eventAttributes.Add("result", a_adInfo.Availability);
 
             return eventAttributes;
         }
-
-        private string GetLatencyRange(long latencyMillis) {
-            if (latencyMillis < 1000) { return "<1"; }
-            if (latencyMillis < 6000) { return "1-5"; }
-            if (latencyMillis < 10000) { return "5-10"; }
-            if (latencyMillis < 15000) { return "10-15"; }
-            if (latencyMillis < 20000) { return "15-20"; }
-            if (latencyMillis < 25000) { return "20-25"; }
-            if (latencyMillis < 30000) { return "25-30"; }
-            if (latencyMillis < 40000) { return "30-40"; }
-            if (latencyMillis < 50000) { return "40-50"; }
-            if (latencyMillis < 60000) { return "50-60"; }
-            if (latencyMillis < 90000) { return "60-90"; }
-            if (latencyMillis < 120000) { return "90-120"; }
-            if (latencyMillis < 180000) { return "120-180"; }
-
-            return ">180";
-        }
-
         #endregion
 
     }

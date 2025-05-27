@@ -2,18 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MAXHelper {
+namespace MadPixel {
     public class AdInfo  {
         public string Placement;
         public AdsManager.EAdType AdType;
         public bool HasInternet;
         public string Availability;
 
-        public AdInfo(string Placement, AdsManager.EAdType AdType, bool HasInternet = true, string Availability = "available") {
-            this.HasInternet = HasInternet;
-            this.Placement = Placement;
-            this.AdType = AdType;
-            this.Availability = Availability;
+        public AdInfo(string a_placement, AdsManager.EAdType a_adType, bool a_hasInternet = true, string a_availability = "available") {
+            this.HasInternet = a_hasInternet;
+            this.Placement = a_placement;
+            this.AdType = a_adType;
+            this.Availability = a_availability;
         }
     }
 }

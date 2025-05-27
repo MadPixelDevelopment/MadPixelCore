@@ -1,4 +1,11 @@
-﻿# Version 133 - February 06, 2025
+﻿# Version 134 - March 27, 2025
+* Namespaces changed! Delete MadPixel folder before updating!
+* Applovin updated to 13.3.0
+* Mediations updated
+* Firebase support added
+
+
+# Version 133 - February 06, 2025
 * Applovin updated to 13.1.0
 * Mediations updated
 * HasReceipt method added

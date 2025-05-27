@@ -3,73 +3,74 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 
-
-namespace MAXHelper {
+namespace MadPixel {
     
     [RequireComponent(typeof(AppLovinComp))]
     public class AdsManager : MonoBehaviour {
-        private const string version = "1.2.9";
+        public const string VERSION = "1.3.1";
         public enum EResultCode {OK = 0, NOT_LOADED, ADS_FREE, ON_COOLDOWN, ERROR}
         public enum EAdType {REWARDED, INTER, BANNER}
 
         #region Fields
+        [FormerlySerializedAs("bInitializeOnStart")]
+        [SerializeField] private bool m_initializeOnStart = true;
 
-        [SerializeField] private bool bInitializeOnStart = true;
-        [SerializeField] private int CooldownBetweenInterstitials = 30;
+        [FormerlySerializedAs("CooldownBetweenInterstitials")]
+        [SerializeField] private int m_cooldownBetweenInterstitials = 30;
 
-        private bool bCanShowBanner = true;
-        private bool bIntersOn = true;
-        private bool bHasInternet = true;
+        private bool m_canShowBanner = true;
+        private bool m_intersOn = true;
+        private bool m_hasInternet = true;
+        private bool m_ready = false;
 
-        private MAXCustomSettings madPixelSettings;
-        private AppLovinComp AppLovin;
-        private AdInfo CurrentAdInfo;
-        private float LastInterShown;
-        private GameObject AdsInstigatorObj;
-        private UnityAction<bool> CallbackPending;
+        private MadPixelCustomSettings m_madPixelSettings;
+        private AppLovinComp m_appLovinComp;
+        private AdInfo m_currentAdInfo;
+        private float m_lastInterShown;
+        private GameObject m_adsInstigatorObj;
+        private UnityAction<bool> m_callbackPending;
 
         #endregion
 
         #region Events Declaration (Can be used for Analytics)
 
-        public UnityAction OnAdsManagerInitialized;
+        public UnityAction e_onAdsManagerInitialized;
 
-        public bool bReady { get; private set; }
-
-        public UnityAction OnNewRewardedLoaded;
-        public UnityAction<MaxSdkBase.AdInfo, MaxSdkBase.ErrorInfo, AdInfo> OnAdDisplayError;
-        public UnityAction<AdInfo> OnAdShown;
-        public UnityAction<AdInfo> OnAdAvailable;
-        public UnityAction<AdInfo> OnAdStarted;
+        public UnityAction e_onNewRewardedLoaded;
+        public UnityAction<MaxSdkBase.AdInfo, MaxSdkBase.ErrorInfo, AdInfo> e_onAdDisplayError;
+        public UnityAction<AdInfo> e_onAdShown;
+        public UnityAction<AdInfo> e_onAdAvailable;
+        public UnityAction<AdInfo> e_onAdStarted;
 
         #endregion
 
         #region Static
 
-        protected static AdsManager _instance;
+        protected static AdsManager m_instance;
 
         public static bool Exist {
-            get { return (_instance != null); }
+            get { return (m_instance != null); }
         }
 
         public static AdsManager Instance {
             get {
-                if (_instance == null) {
+                if (m_instance == null) {
                     Debug.LogError("[Mad Pixel] AdsManager wasn't created yet!");
 
                     GameObject go = new GameObject();
                     go.name = "AdsManager";
-                    _instance = go.AddComponent(typeof(AdsManager)) as AdsManager;
+                    m_instance = go.AddComponent(typeof(AdsManager)) as AdsManager;
                 }
 
-                return _instance;
+                return m_instance;
             }
         }
 
         public static bool Ready() {
             if (Exist) {
-                return (Instance.bReady && Instance.AppLovin != null && Instance.AppLovin.bInitialized);
+                return (Instance.m_ready && Instance.m_appLovinComp != null && Instance.m_appLovinComp.IsInitialized);
             }
             return (false);
         }
@@ -77,7 +78,7 @@ namespace MAXHelper {
         public static float CooldownLeft {
             get {
                 if (Exist) {
-                    return Instance.LastInterShown + Instance.CooldownBetweenInterstitials - Time.time;
+                    return Instance.m_lastInterShown + Instance.m_cooldownBetweenInterstitials - Time.time;
                 }
 
                 return -1f;
@@ -85,141 +86,138 @@ namespace MAXHelper {
         }
 
 
-        public static void Destroy(bool immediate = false) {
-            if (_instance != null && _instance.gameObject != null) {
-                if (immediate) {
-                    DestroyImmediate(_instance.gameObject);
+        public static void Destroy(bool a_immediate = false) {
+            if (m_instance != null && m_instance.gameObject != null) {
+                if (a_immediate) {
+                    DestroyImmediate(m_instance.gameObject);
                 }
                 else {
-                    GameObject.Destroy(_instance.gameObject);
+                    GameObject.Destroy(m_instance.gameObject);
                 }
             }
 
-            _instance = null;
+            m_instance = null;
         }
 
-        public static string Version => version;
-
+        public static string SETTINGS_FILE_NAME = "MadPixelCustomSettings";
         #endregion
+
+
 
         #region Init
 
-        public void InitApplovin() {
+        public void StartInitializationFlow() {
             InitApplovinInternal();
         }
         #endregion
 
         #region Event Catchers
-        private void TermsOnEventOnTermsAccepted() {
-            InitApplovinInternal();
-        }
-
-        private void AppLovin_OnAdLoaded(bool IsRewarded) {
-            if (IsRewarded) {
-                OnNewRewardedLoaded?.Invoke();
+        private void AppLovin_OnAdLoaded(bool a_isRewarded) {
+            if (a_isRewarded) {
+                e_onNewRewardedLoaded?.Invoke();
             }
         }
 
-        private void AppLovin_OnFinishAds(bool IsFinished) {
-            if (AdsInstigatorObj != null) {
-                AdsInstigatorObj = null;
-                CallbackPending?.Invoke(IsFinished);
-                CallbackPending = null;
+        private void AppLovin_OnFinishAds(bool a_isFinished) {
+            if (m_adsInstigatorObj != null) {
+                m_adsInstigatorObj = null;
+                m_callbackPending?.Invoke(a_isFinished);
+                m_callbackPending = null;
             }
             else {
                 Debug.LogError("[Mad Pixel] Ads Instigator was destroyed or nulled");
             }
 
-            if (CurrentAdInfo == null) {
+            if (m_currentAdInfo == null) {
                 // some AdDisplayFailed error happened before this was invoked
                 return;
             }
 
-            CurrentAdInfo.Availability = IsFinished ? "watched" : "canceled";
-            OnAdShown?.Invoke(CurrentAdInfo);
+            m_currentAdInfo.Availability = a_isFinished ? "watched" : "canceled";
+            e_onAdShown?.Invoke(m_currentAdInfo);
 
             RestartInterCooldown();
 
-            CurrentAdInfo = null;
+            m_currentAdInfo = null;
             //NOTE: Temporary disable sounds - off
         }
 
         private void AppLovin_OnInterDismissed() {
-            if (AdsInstigatorObj != null) {
-                AdsInstigatorObj = null;
-                CallbackPending?.Invoke(true);
-                CallbackPending = null;
+            if (m_adsInstigatorObj != null) {
+                m_adsInstigatorObj = null;
+                m_callbackPending?.Invoke(true);
+                m_callbackPending = null;
             } else {
                 //Debug.LogError("[Mad Pixel] Ads Instigator was destroyed or nulled");
             }
 
             RestartInterCooldown();
 
-            if (CurrentAdInfo != null) {
-                OnAdShown?.Invoke(CurrentAdInfo);
+            if (m_currentAdInfo != null) {
+                e_onAdShown?.Invoke(m_currentAdInfo);
             }
 
-            CurrentAdInfo = null;
+            m_currentAdInfo = null;
             //NOTE: Temporary disable sounds - off
         }
 
-        private void AppLovin_OnError(MaxSdkBase.AdInfo adInfo, MaxSdkBase.ErrorInfo EInfo, EAdType AdType) {
-            if (CurrentAdInfo != null) {
-                OnAdDisplayError?.Invoke(adInfo, EInfo, CurrentAdInfo);
+        private void AppLovin_OnError(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo, EAdType a_adType) {
+            if (m_currentAdInfo != null) {
+                e_onAdDisplayError?.Invoke(a_adInfo, a_errorInfo, m_currentAdInfo);
             }
             else {
-                OnAdDisplayError?.Invoke(adInfo, EInfo, new AdInfo("unknown", AdType));
+                e_onAdDisplayError?.Invoke(a_adInfo, a_errorInfo, new AdInfo("unknown", a_adType));
             }
 
 
 #if UNITY_ANDROID
-            bool bCancelRetry = EInfo.Code == MaxSdkBase.ErrorCode.DontKeepActivitiesEnabled       // NOTE: User won't see any ads in this session anyway (Droid)
-                              || EInfo.Code == MaxSdkBase.ErrorCode.FullscreenAdAlreadyShowing;    // NOTE: Can't show ad if it's already showing
+            bool cancelRetry = a_errorInfo.Code == MaxSdkBase.ErrorCode.DontKeepActivitiesEnabled       // NOTE: User won't see any ads in this session anyway (Droid)
+                              || a_errorInfo.Code == MaxSdkBase.ErrorCode.FullscreenAdAlreadyShowing;    // NOTE: Can't show ad if it's already showing
 #else
-            bool bCancelRetry = EInfo.Code == MaxSdkBase.ErrorCode.FullscreenAdAlreadyShowing;     // NOTE: Can't show ad if it's already showing
+            bool cancelRetry = a_errorInfo.Code == MaxSdkBase.ErrorCode.FullscreenAdAlreadyShowing;     // NOTE: Can't show ad if it's already showing
 #endif
 
-            if (AdType == EAdType.REWARDED) {
-                ProccessRewardError(!bCancelRetry);
+            if (a_adType == EAdType.REWARDED) {
+                ProccessRewardError(!cancelRetry);
             } else {
-                ProccessInterError(!bCancelRetry);
+                ProccessInterError(!cancelRetry);
             }
         }
 
         
-        private void AppLovin_OnBannerRevenue(string type, MaxSdkBase.AdInfo adInfo) {
-            AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, bHasInternet);
-            OnAdShown?.Invoke(BannerInfo);
+        private void AppLovin_OnBannerRevenue(MaxSdkBase.AdInfo a_adInfo) {
+            AdInfo bannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet);
+            e_onAdShown?.Invoke(bannerInfo);
         }
 
-        private void AppLovin_OnBannerLoaded(string type, MaxSdkBase.AdInfo adInfo, MaxSdkBase.ErrorInfo errInfo) {
-            AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, bHasInternet, errInfo == null ? "available" : "not_available");
-            OnAdAvailable?.Invoke(BannerInfo);
-            if (errInfo == null && bCanShowBanner) {
-                OnAdStarted?.Invoke(BannerInfo);
+        private void AppLovin_OnBannerLoaded(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo) {
+            AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet, a_errorInfo == null ? "available" : "not_available");
+            e_onAdAvailable?.Invoke(BannerInfo);
+            if (a_errorInfo == null && m_canShowBanner) {
+                e_onAdStarted?.Invoke(BannerInfo);
             }
         }
 
 
-        private void ProccessRewardError(bool bRetry) {
-            if (bRetry && AppLovin.IsReady(true) && CurrentAdInfo != null && CallbackPending != null) {
-                CurrentAdInfo.Availability = "waited";
-                OnAdAvailable?.Invoke(CurrentAdInfo);
-                AppLovin.ShowRewarded();
+        private void ProccessRewardError(bool a_retry) {
+            if (a_retry && m_appLovinComp.IsReady(true) && m_currentAdInfo != null && m_callbackPending != null) {
+                m_currentAdInfo.Availability = "waited";
+                e_onAdAvailable?.Invoke(m_currentAdInfo);
+                m_appLovinComp.ShowRewarded();
             }
             else {
-                AppLovin.CancelRewardedAd();
+                m_appLovinComp.CancelRewardedAd();
             }
         }
 
-        private void ProccessInterError(bool bRetry) {
-            if (bRetry && AppLovin.IsReady(false) && CurrentAdInfo != null) {
-                CurrentAdInfo.Availability = "waited";
-                OnAdAvailable?.Invoke(CurrentAdInfo);
-                AppLovin.ShowInterstitial();
+        private void ProccessInterError(bool a_retry) {
+            if (a_retry && m_appLovinComp.IsReady(false) && m_currentAdInfo != null) {
+                m_currentAdInfo.Availability = "waited";
+                e_onAdAvailable?.Invoke(m_currentAdInfo);
+                m_appLovinComp.ShowInterstitial();
             }
             else {
-                AppLovin.CancelInterAd();
+                m_appLovinComp.CancelInterAd();
             }
         }
 
@@ -228,15 +226,11 @@ namespace MAXHelper {
         #region Unity Events
 
         private void Awake() {
-            if (_instance == null) {
-                _instance = this;
+            if (m_instance == null) {
+                m_instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
 
-                AppLovin = GetComponent<AppLovinComp>();
-
-                if (bInitializeOnStart) {
-                    InitApplovin();
-                }
+                m_appLovinComp = GetComponent<AppLovinComp>();
             }
             else {
                 GameObject.Destroy(gameObject);
@@ -244,30 +238,40 @@ namespace MAXHelper {
             }
         }
 
-        private void OnDestroy() {
-            if (AppLovin != null) {
-                AppLovin.onFinishAdsEvent -= AppLovin_OnFinishAds;
-                AppLovin.onInterDismissedEvent -= AppLovin_OnInterDismissed;
-                AppLovin.onAdLoadedEvent -= AppLovin_OnAdLoaded;
-                AppLovin.onErrorEvent -= AppLovin_OnError;
+        private void Start() {
+            if (m_initializeOnStart) {
+                StartInitializationFlow();
+            }
+        }
 
-                AppLovin.onBannerRevenueEvent -= AppLovin_OnBannerRevenue;
-                AppLovin.onBannerLoadedEvent -= AppLovin_OnBannerLoaded;
+        private void OnDestroy() {
+            if (m_appLovinComp != null) {
+                m_appLovinComp.e_onFinishAds -= AppLovin_OnFinishAds;
+                m_appLovinComp.e_onInterDismissed -= AppLovin_OnInterDismissed;
+                m_appLovinComp.e_onAdLoaded -= AppLovin_OnAdLoaded;
+                m_appLovinComp.e_onAdFailedToDisplay -= AppLovin_OnError;
+
+                m_appLovinComp.e_onBannerRevenuePaid -= AppLovin_OnBannerRevenue;
+                m_appLovinComp.e_onBannerLoaded -= AppLovin_OnBannerLoaded;
             }
         }
 
         #endregion
 
         #region Public Static
-        /// <param name="ObjectRef">Instigator gameobject</param>
+        public static MadPixelCustomSettings LoadMadPixelCustomSettings() {
+            return Resources.Load<MadPixelCustomSettings>(SETTINGS_FILE_NAME);
+        }
+
+        /// <param name="a_gameObjectRef">Instigator gameobject</param>
         /// <summary>
         /// Shows a Rewarded As. Returns OK if the ad is starting to show, NOT_LOADED if Applovin has no loaded ad yet.
         /// </summary>
-        public static EResultCode ShowRewarded(GameObject ObjectRef, UnityAction<bool> OnFinishAds, string Placement = "none") {
+        public static EResultCode ShowRewarded(GameObject a_gameObjectRef, UnityAction<bool> a_onFinishAds, string a_placement = "none") {
             if (Exist) {
-                if (Instance.AppLovin.IsReady(true)) {
-                    Instance.SetCallback(OnFinishAds, ObjectRef);
-                    Instance.ShowAdInner(EAdType.REWARDED, Placement);
+                if (Instance.m_appLovinComp.IsReady(true)) {
+                    Instance.SetCallback(a_onFinishAds, a_gameObjectRef);
+                    Instance.ShowAdInner(EAdType.REWARDED, a_placement);
                     return EResultCode.OK;
                 }
                 else {
@@ -282,17 +286,17 @@ namespace MAXHelper {
             return EResultCode.ERROR;
         }
 
-        public static EResultCode ShowInter(string Placement = "none") {
-            return ShowInter(null, null, Placement);
+        public static EResultCode ShowInter(string a_placement = "none") {
+            return ShowInter(null, null, a_placement);
         }
 
-        public static EResultCode ShowInter(GameObject ObjectRef, UnityAction<bool> OnAdDismissed, string Placement = "none") {
+        public static EResultCode ShowInter(GameObject a_gameObjectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
             if (Exist) {
-                if (Instance.bIntersOn) {
+                if (Instance.m_intersOn) {
                     if (Instance.IsCooldownElapsed()) {
-                        if (Instance.AppLovin.IsReady(false)) {
-                            Instance.SetCallback(OnAdDismissed, ObjectRef);
-                            Instance.ShowAdInner(EAdType.INTER, Placement);
+                        if (Instance.m_appLovinComp.IsReady(false)) {
+                            Instance.SetCallback(a_onAdDismissed, a_gameObjectRef);
+                            Instance.ShowAdInner(EAdType.INTER, a_placement);
                             return EResultCode.OK;
                         }
                         else {
@@ -317,11 +321,11 @@ namespace MAXHelper {
         /// <summary>
         /// Ignores ADS FREE and COOLDOWN conditions for interstitials
         /// </summary>
-        public static EResultCode ShowInterForced(GameObject ObjectRef, UnityAction<bool> OnAdDismissed, string Placement = "none") {
+        public static EResultCode ShowInterForced(GameObject a_gameObjectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
             if (Exist) {
-                if (Instance.AppLovin.IsReady(false)) {
-                    Instance.SetCallback(OnAdDismissed, ObjectRef);
-                    Instance.ShowAdInner(EAdType.INTER, Placement);
+                if (Instance.m_appLovinComp.IsReady(false)) {
+                    Instance.SetCallback(a_onAdDismissed, a_gameObjectRef);
+                    Instance.ShowAdInner(EAdType.INTER, a_placement);
                     return EResultCode.OK;
                 } else {
                     return EResultCode.NOT_LOADED;
@@ -333,13 +337,13 @@ namespace MAXHelper {
         /// <summary>
         /// Returns TRUE if Applovin has a loaded ad ready to show
         /// </summary>
-        public static bool HasLoadedAd(EAdType AdType) {
+        public static bool HasLoadedAd(EAdType a_adType) {
             if (Exist) {
-                if (AdType == EAdType.REWARDED) {
-                    return Instance.AppLovin.IsReady(true);
+                if (a_adType == EAdType.REWARDED) {
+                    return Instance.m_appLovinComp.IsReady(true);
                 }
-                else if (AdType == EAdType.INTER) {
-                    return (Instance.bIntersOn && Instance.AppLovin.IsReady(false) && Instance.IsCooldownElapsed());
+                else if (a_adType == EAdType.INTER) {
+                    return (Instance.m_intersOn && Instance.m_appLovinComp.IsReady(false) && Instance.IsCooldownElapsed());
                 }
                 else {
                     Debug.LogError("[Mad Pixel] Can't use this for banners!");
@@ -354,13 +358,13 @@ namespace MAXHelper {
         /// Turns banners and inters off and prevents them from showing (this session only)
         /// Call this on AdsFree bought or on AdsFree checked at game start
         /// </summary>
-        public static void CancelAllAds(bool bDisableInters = true, bool bDisableBanners = true) {
+        public static void CancelAllAds(bool a_disableInters = true, bool a_disableBanners = true) {
             if (Exist) {
-                if (bDisableInters) {
-                    Instance.bIntersOn = false;
+                if (a_disableInters) {
+                    Instance.m_intersOn = false;
                 }
-                if (bDisableBanners) {
-                    Instance.bCanShowBanner = false;
+                if (a_disableBanners) {
+                    Instance.m_canShowBanner = false;
                     ToggleBanner(false);
                 }
             }
@@ -369,13 +373,13 @@ namespace MAXHelper {
             }
         }
 
-        public static void ToggleBanner(bool bShow, MaxSdkBase.BannerPosition NewPosition = MaxSdkBase.BannerPosition.BottomCenter) {
+        public static void ToggleBanner(bool a_show, MaxSdkBase.AdViewPosition a_newPosition = MaxSdkBase.AdViewPosition.BottomCenter) {
             if (Exist) {
-                if (bShow && Instance.bCanShowBanner) {
-                    Instance.AppLovin?.ShowBanner(true, NewPosition);
+                if (a_show && Instance.m_canShowBanner) {
+                    Instance.m_appLovinComp?.ShowBanner(true, a_newPosition);
                 }
                 else {
-                    Instance.AppLovin?.ShowBanner(false);
+                    Instance.m_appLovinComp?.ShowBanner(false);
                 }
             } else {
                 Debug.LogError("[Mad Pixel] Ads Manager doesn't exist!");
@@ -386,16 +390,16 @@ namespace MAXHelper {
         /// <summary>
         /// Tries to show a Rewarded ad; if a Rewarded ad is not loaded, tries to show an Inter ad instead (ignoring COOLDOWN and ADSFREE conditions)
         /// </summary>
-        public static bool ShowRewardedWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
-            if (GO) {
-                EResultCode Result = ShowRewarded(GO, Callback, Placement);
-                if (Result == EResultCode.OK) {
+        public static bool ShowRewardedWithSubstitution(GameObject a_gameObjectRef, UnityAction<bool> a_callback, string a_placement) {
+            if (a_gameObjectRef) {
+                EResultCode result = ShowRewarded(a_gameObjectRef, a_callback, a_placement);
+                if (result == EResultCode.OK) {
                     return (true);
                 }
 
-                if (Result == EResultCode.NOT_LOADED) {
-                    Result = ShowInterForced(GO, Callback, $"{Placement}_i");
-                    if (Result == EResultCode.OK) {
+                if (result == EResultCode.NOT_LOADED) {
+                    result = ShowInterForced(a_gameObjectRef, a_callback, $"{a_placement}_i");
+                    if (result == EResultCode.OK) {
                         return (true);
                     }
                 }
@@ -408,16 +412,16 @@ namespace MAXHelper {
         /// <summary>
         /// Tries to show an Inter ad; if an Inter ad is not loaded by Applovin, tries to show a Rewarded ad instead
         /// </summary>
-        public static bool ShowInterWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
-            if (GO) {
-                EResultCode Result = ShowInter(GO, Callback, Placement);
-                if (Result == EResultCode.OK) {
+        public static bool ShowInterWithSubstitution(GameObject a_gameObjectRef, UnityAction<bool> a_callback, string a_placement) {
+            if (a_gameObjectRef) {
+                EResultCode result = ShowInter(a_gameObjectRef, a_callback, a_placement);
+                if (result == EResultCode.OK) {
                     return (true);
                 }
 
-                if (Result == EResultCode.NOT_LOADED) {
-                    Result = ShowRewarded(GO, Callback, $"{Placement}_r");
-                    if (Result == EResultCode.OK) {
+                if (result == EResultCode.NOT_LOADED) {
+                    result = ShowRewarded(a_gameObjectRef, a_callback, $"{a_placement}_r");
+                    if (result == EResultCode.OK) {
                         return (true);
                     }
                 }
@@ -432,7 +436,7 @@ namespace MAXHelper {
         /// </summary>
         public static int GetCooldownBetweenInters() {
             if (Exist) {
-                return Instance.CooldownBetweenInterstitials;
+                return Instance.m_cooldownBetweenInterstitials;
             }
 
             return 0;
@@ -450,49 +454,49 @@ namespace MAXHelper {
 
         #region Helpers
         private void InitApplovinInternal() {
-            LastInterShown = -CooldownBetweenInterstitials;
-            
-            madPixelSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
-            AppLovin.Init(madPixelSettings);
-            AppLovin.onFinishAdsEvent += AppLovin_OnFinishAds;
-            AppLovin.onAdLoadedEvent += AppLovin_OnAdLoaded;
-            AppLovin.onInterDismissedEvent += AppLovin_OnInterDismissed;
-            AppLovin.onErrorEvent += AppLovin_OnError;
+            m_lastInterShown = -m_cooldownBetweenInterstitials;
 
-            AppLovin.onBannerRevenueEvent += AppLovin_OnBannerRevenue;
-            AppLovin.onBannerLoadedEvent += AppLovin_OnBannerLoaded;
-            
-            bReady = true;
+            m_madPixelSettings = LoadMadPixelCustomSettings();
+            m_appLovinComp.Init(m_madPixelSettings);
 
-            OnAdsManagerInitialized?.Invoke();
+            m_appLovinComp.e_onFinishAds += AppLovin_OnFinishAds;
+            m_appLovinComp.e_onAdLoaded += AppLovin_OnAdLoaded;
+            m_appLovinComp.e_onInterDismissed += AppLovin_OnInterDismissed;
+            m_appLovinComp.e_onAdFailedToDisplay += AppLovin_OnError;
+            m_appLovinComp.e_onBannerRevenuePaid += AppLovin_OnBannerRevenue;
+            m_appLovinComp.e_onBannerLoaded += AppLovin_OnBannerLoaded;
+            
+            m_ready = true;
+
+            e_onAdsManagerInitialized?.Invoke();
         }
 
-        private void SetCallback(UnityAction<bool> Callback, GameObject objectRef) {
-            AdsInstigatorObj = objectRef;
-            CallbackPending = Callback;
+        private void SetCallback(UnityAction<bool> a_callback, GameObject a_gameObjectRef) {
+            m_adsInstigatorObj = a_gameObjectRef;
+            m_callbackPending = a_callback;
         }
 
-        private void ShowAdInner(EAdType AdType, string Placement) {
-            CurrentAdInfo = new AdInfo(Placement, AdType);
-            OnAdAvailable?.Invoke(CurrentAdInfo);
-            OnAdStarted?.Invoke(CurrentAdInfo);
+        private void ShowAdInner(EAdType a_adType, string a_placement) {
+            m_currentAdInfo = new AdInfo(a_placement, a_adType);
+            e_onAdAvailable?.Invoke(m_currentAdInfo);
+            e_onAdStarted?.Invoke(m_currentAdInfo);
             // NOTE: Temporary Disable Sounds
 
-            if (AdType == EAdType.REWARDED) {
-                AppLovin.ShowRewarded();
+            if (a_adType == EAdType.REWARDED) {
+                m_appLovinComp.ShowRewarded();
             }
-            else if (AdType == EAdType.INTER) {
-                AppLovin.ShowInterstitial();
+            else if (a_adType == EAdType.INTER) {
+                m_appLovinComp.ShowInterstitial();
             }
         }
 
         private bool IsCooldownElapsed() {
-            return (Time.time - LastInterShown > CooldownBetweenInterstitials);
+            return (Time.time - m_lastInterShown > m_cooldownBetweenInterstitials);
         }
 
         private void RestartInterCooldown() {
-            if (CooldownBetweenInterstitials > 0) {
-                LastInterShown = Time.time;
+            if (m_cooldownBetweenInterstitials > 0) {
+                m_lastInterShown = Time.time;
             }
         }
 
@@ -511,14 +515,14 @@ namespace MAXHelper {
             OnPingComplete(result);
         }
 
-        private void OnPingComplete(bool bHasInternet) {
-            if (CurrentAdInfo != null) {
-                CurrentAdInfo.Availability = "not_available";
-                CurrentAdInfo.HasInternet = bHasInternet;
-                OnAdAvailable?.Invoke(CurrentAdInfo);
+        private void OnPingComplete(bool a_hasInternet) {
+            if (m_currentAdInfo != null) {
+                m_currentAdInfo.Availability = "not_available";
+                m_currentAdInfo.HasInternet = a_hasInternet;
+                e_onAdAvailable?.Invoke(m_currentAdInfo);
             }
 
-            this.bHasInternet = bHasInternet;
+            this.m_hasInternet = a_hasInternet;
         }
 
         #endregion

@@ -4,33 +4,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using MadPixel;
-using MAXHelper;
 using System.Globalization;
+using AppsFlyerConnector;
 
 namespace MadPixelAnalytics {
     public class AppsFlyerComp : MonoBehaviour {
-        [SerializeField] private bool bIsDebug;
+        #region Fields
+        [SerializeField] private bool m_usePurchaseConnector;
         [SerializeField] private string monetizaionPubKey;
+        [Space]
+        [Header("Turn Debug OFF for production builds")]
+        [SerializeField] private bool m_debugMode;
+        #endregion
+
+        #region Properties
+        public bool UseInappConnector => m_usePurchaseConnector;
+        #endregion
+
 
         #region Init
 
         public void Init() {
-            if (bIsDebug) {
-                AppsFlyer.setIsDebug(true);
-            }
+            AppsFlyer.setIsDebug(m_debugMode);
 
 #if UNITY_ANDROID
-            AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, null, this);
+            AppsFlyer.initSDK(MadPixelCustomSettings.APPSFLYER_SDK_KEY, null, this);
 #else
-            MAXCustomSettings customSettings = Resources.Load<MAXCustomSettings>("MAXCustomSettings");
+            MadPixelCustomSettings customSettings = AdsManager.LoadMadPixelCustomSettings();
             if (customSettings != null && !string.IsNullOrEmpty(customSettings.appsFlyerID_ios)) {
-                AppsFlyer.initSDK(MAXCustomSettings.APPSFLYER_SDK_KEY, customSettings.appsFlyerID_ios, this);
+                AppsFlyer.initSDK(MadPixelCustomSettings.APPSFLYER_SDK_KEY, customSettings.appsFlyerID_ios, this);
             }
             else {
                 Debug.LogError($"Can not find IOS APP ID for appsflyer ios!");
             }
 #endif
             AppsFlyer.enableTCFDataCollection(true);
+
+
+            // Purchase connector implementation 
+            if (m_usePurchaseConnector) {
+                AppsFlyerPurchaseConnector.init(this, AppsFlyerConnector.Store.GOOGLE);
+                AppsFlyerPurchaseConnector.setIsSandbox(false);
+                AppsFlyerPurchaseConnector.setAutoLogPurchaseRevenue(
+                    AppsFlyerAutoLogPurchaseRevenueOptions.AppsFlyerAutoLogPurchaseRevenueOptionsAutoRenewableSubscriptions,
+                    AppsFlyerAutoLogPurchaseRevenueOptions.AppsFlyerAutoLogPurchaseRevenueOptionsInAppPurchases);
+                AppsFlyerPurchaseConnector.build();
+
+                AppsFlyerPurchaseConnector.startObservingTransactions();
+            }
 
             AppsFlyer.startSDK();
 
@@ -83,9 +104,9 @@ namespace MadPixelAnalytics {
 
         #region Events
 
-        public void VerificateAndSendPurchase(MPReceipt receipt) {
-            string currency = receipt.Product.metadata.isoCurrencyCode;
-            float revenue = (float)receipt.Product.metadata.localizedPrice;
+        public void VerificateAndSendPurchase(MPReceipt a_receipt) {
+            string currency = a_receipt.Product.metadata.isoCurrencyCode;
+            float revenue = (float)a_receipt.Product.metadata.localizedPrice;
             string revenueString = revenue.ToString(CultureInfo.InvariantCulture);
 
 #if UNITY_ANDROID
@@ -94,7 +115,7 @@ namespace MadPixelAnalytics {
             }
 
             AppsFlyer.validateAndSendInAppPurchase(monetizaionPubKey,
-                receipt.Signature, receipt.Data, revenueString, currency, null, this);
+                a_receipt.Signature, a_receipt.Data, revenueString, currency, null, this);
 #endif
 
 #if UNITY_IOS
@@ -117,13 +138,13 @@ namespace MadPixelAnalytics {
         }
 
 
-        public void GameEnd(int Place, int Kills) {
+        public void GameEnd(int a_place, int a_kills) {
 #if UNITY_EDITOR
-            Debug.Log($"Combat End {Place} {Kills}");
+            Debug.Log($"Combat End {a_place} {a_kills}");
 #endif
             Dictionary<string, string> Event = new Dictionary<string, string>();
-            Event.Add("Place", Place.ToString());
-            Event.Add("Kills", Kills.ToString());
+            Event.Add("Place", a_place.ToString());
+            Event.Add("Kills", a_kills.ToString());
             AppsFlyer.sendEvent("CombatEnd", Event);
         }
 
@@ -140,12 +161,12 @@ namespace MadPixelAnalytics {
 
         #region AdRevenue
 
-        public static void SetAdRevenue(string adUnit, MaxSdkBase.AdInfo adInfo) {
+        public static void SetAdRevenue(string a_adUnit, MaxSdkBase.AdInfo a_adInfo) {
             Dictionary<string, string> additionalParams = new Dictionary<string, string>();
-            additionalParams.Add("custom_AdUnitIdentifier", adInfo.AdUnitIdentifier);
-            additionalParams.Add(AdRevenueScheme.AD_TYPE, adInfo.AdFormat);
+            additionalParams.Add("custom_AdUnitIdentifier", a_adInfo.AdUnitIdentifier);
+            additionalParams.Add(AdRevenueScheme.AD_TYPE, a_adInfo.AdFormat);
 
-            var logRevenue = new AFAdRevenueData(adInfo.NetworkName, MediationNetwork.ApplovinMax, "USD", adInfo.Revenue);
+            var logRevenue = new AFAdRevenueData(a_adInfo.NetworkName, MediationNetwork.ApplovinMax, "USD", a_adInfo.Revenue);
             AppsFlyer.logAdRevenue(logRevenue, additionalParams);
         }
         #endregion

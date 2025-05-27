@@ -250,35 +250,27 @@ public class MaxSdkiOS : MaxSdkBase
     #region Banners
 
     [DllImport("__Internal")]
-    private static extern void _MaxCreateBanner(string adUnitIdentifier, string bannerPosition);
+    private static extern void _MaxCreateBanner(string adUnitIdentifier, string bannerPosition, bool isAdaptive);
+
+    [DllImport("__Internal")]
+    private static extern void _MaxCreateBannerXY(string adUnitIdentifier, float x, float y, bool isAdaptive);
 
     /// <summary>
     /// Create a new banner.
     /// </summary>
     /// <param name="adUnitIdentifier">Ad unit identifier of the banner to create. Must not be null.</param>
-    /// <param name="bannerPosition">Banner position. Must not be null.</param>
-    public static void CreateBanner(string adUnitIdentifier, BannerPosition bannerPosition)
+    /// <param name="bannerConfiguration">The configuration for the banner</param>
+    public static void CreateBanner(string adUnitIdentifier, AdViewConfiguration bannerConfiguration)
     {
         ValidateAdUnitIdentifier(adUnitIdentifier, "create banner");
-        _MaxCreateBanner(adUnitIdentifier, bannerPosition.ToSnakeCaseString());
-    }
-
-    [DllImport("__Internal")]
-    private static extern void _MaxCreateBannerXY(string adUnitIdentifier, float x, float y);
-
-    /// <summary>
-    /// Create a new banner with a custom position.
-    /// </summary>
-    /// <param name="adUnitIdentifier">Ad unit identifier of the banner to create. Must not be null.</param>
-    /// <param name="x">The X coordinate (horizontal position) of the banner relative to the top left corner of the screen.</param>
-    /// <param name="y">The Y coordinate (vertical position) of the banner relative to the top left corner of the screen.</param>
-    /// <seealso cref="GetBannerLayout">
-    /// The banner is placed within the safe area of the screen. You can use this to get the absolute position of the banner on screen.
-    /// </seealso>
-    public static void CreateBanner(string adUnitIdentifier, float x, float y)
-    {
-        ValidateAdUnitIdentifier(adUnitIdentifier, "create banner");
-        _MaxCreateBannerXY(adUnitIdentifier, x, y);
+        if (bannerConfiguration.UseCoordinates)
+        {
+            _MaxCreateBannerXY(adUnitIdentifier, bannerConfiguration.XCoordinate, bannerConfiguration.YCoordinate, bannerConfiguration.IsAdaptive);
+        }
+        else
+        {
+            _MaxCreateBanner(adUnitIdentifier, bannerConfiguration.Position.ToSnakeCaseString(), bannerConfiguration.IsAdaptive);
+        }
     }
 
     [DllImport("__Internal")]
@@ -344,7 +336,7 @@ public class MaxSdkiOS : MaxSdkBase
     /// </summary>
     /// <param name="adUnitIdentifier">The ad unit identifier of the banner for which to update the position. Must not be null.</param>
     /// <param name="bannerPosition">A new position for the banner. Must not be null.</param>
-    public static void UpdateBannerPosition(string adUnitIdentifier, BannerPosition bannerPosition)
+    public static void UpdateBannerPosition(string adUnitIdentifier, AdViewPosition bannerPosition)
     {
         ValidateAdUnitIdentifier(adUnitIdentifier, "update banner position");
         _MaxUpdateBannerPosition(adUnitIdentifier, bannerPosition.ToSnakeCaseString());
@@ -1198,6 +1190,26 @@ public class MaxSdkiOS : MaxSdkBase
 
     #region Obsolete
 
+    [Obsolete("This API has been deprecated and will be removed in a future release. Please use CreateBanner(string adUnitIdentifier, AdViewConfiguration adViewConfiguration) instead.")]
+    public static void CreateBanner(string adUnitIdentifier, BannerPosition bannerPosition)
+    {
+        // AdViewPosition and BannerPosition share identical enum values, so casting is safe
+        CreateBanner(adUnitIdentifier, new AdViewConfiguration((AdViewPosition) bannerPosition));
+    }
+
+    [Obsolete("This API has been deprecated and will be removed in a future release. Please use CreateBanner(string adUnitIdentifier, AdViewConfiguration adViewConfiguration) instead.")]
+    public static void CreateBanner(string adUnitIdentifier, float x, float y)
+    {
+        CreateBanner(adUnitIdentifier, new AdViewConfiguration(x, y));
+    }
+
+    [Obsolete("This API has been deprecated and will be removed in a future release. Please use UpdateBannerPosition(string adUnitIdentifier, AdViewPosition bannerPosition) instead.")]
+    public static void UpdateBannerPosition(string adUnitIdentifier, BannerPosition bannerPosition)
+    {
+        // AdViewPosition and BannerPosition share identical enum values, so casting is safe
+        UpdateBannerPosition(adUnitIdentifier, (AdViewPosition) bannerPosition);
+    }
+
     [DllImport("__Internal")]
     private static extern void _MaxSetSdkKey(string sdkKey);
 
@@ -1206,35 +1218,6 @@ public class MaxSdkiOS : MaxSdkBase
     {
         _MaxSetSdkKey(sdkKey);
         Debug.LogWarning("MaxSdk.SetSdkKey() has been deprecated and will be removed in a future release. Please set your SDK key in the AppLovin Integration Manager.");
-    }
-
-    [DllImport("__Internal")]
-    private static extern int _MaxConsentDialogState();
-
-    [Obsolete("This method has been deprecated. Please use `GetSdkConfiguration().ConsentDialogState`")]
-    public static ConsentDialogState GetConsentDialogState()
-    {
-        if (!IsInitialized())
-        {
-            MaxSdkLogger.UserWarning(
-                "MAX Ads SDK has not been initialized yet. GetConsentDialogState() may return ConsentDialogState.Unknown");
-        }
-
-        return (ConsentDialogState) _MaxConsentDialogState();
-    }
-
-    [DllImport("__Internal")]
-    private static extern string _MaxGetAdInfo(string adUnitIdentifier);
-
-    [Obsolete("This method has been deprecated. The AdInfo object is returned with ad callbacks.")]
-    public static AdInfo GetAdInfo(string adUnitIdentifier)
-    {
-        var adInfoString = _MaxGetAdInfo(adUnitIdentifier);
-
-        if (string.IsNullOrEmpty(adInfoString)) return null;
-
-        var adInfoDictionary = Json.Deserialize(adInfoString) as Dictionary<string, object>;
-        return new AdInfo(adInfoDictionary);
     }
 
     #endregion

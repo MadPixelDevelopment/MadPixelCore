@@ -8,35 +8,39 @@ using UnityEngine.Events;
 using Unity.Advertisement.IosSupport; // NOTE: Import "com.unity.ads.ios-support" from Package Manager, if it's missing
 #endif
 
-namespace MAXHelper {
+namespace MadPixel {
     public class AppLovinComp : MonoBehaviour {
         #region Fields
-        private MaxSdkBase.AdInfo ShowedInfo;
-        private MAXCustomSettings Settings;
-        private string RewardedID = "empty";
-        private string BannerID = "empty";
-        private string InterstitialID = "empty";
-        public bool bInitialized { get; private set; }
-        [SerializeField] private bool bShowDebug;
+        [SerializeField] private bool m_showDebugLogs;
+
+        private MaxSdkBase.AdInfo m_showedInfo;
+        private MadPixelCustomSettings m_settings;
+        private string m_rewardedID = "empty";
+        private string m_bannerID = "empty";
+        private string m_interstitialID = "empty";
+
+        private bool m_isFirstLoadForInter = true;
+
+        public bool IsInitialized { get; private set; }
         #endregion
 
 
         #region Events Declaration
-        public UnityAction<bool> onFinishAdsEvent;
-        public UnityAction<MaxSdkBase.AdInfo, MaxSdkBase.ErrorInfo, AdsManager.EAdType> onErrorEvent;
-        public UnityAction onInterDismissedEvent;
-        public UnityAction OnBannerInitialized;
-        public UnityAction<bool> onAdLoadedEvent; // true = rewarded 
+        public UnityAction<bool> e_onFinishAds;
+        public UnityAction<MaxSdkBase.AdInfo, MaxSdkBase.ErrorInfo, AdsManager.EAdType> e_onAdFailedToDisplay;
+        public UnityAction e_onInterDismissed;
+        public UnityAction e_onBannerInitialized;
+        public UnityAction<bool> e_onAdLoaded; // true = rewarded 
 
-        public UnityAction<string, MaxSdkBase.AdInfo, MaxSdkBase.ErrorInfo> onBannerLoadedEvent;
-        public UnityAction<string, MaxSdkBase.AdInfo> onBannerRevenueEvent;
+        public UnityAction<MaxSdkBase.AdInfo, MaxSdkBase.ErrorInfo> e_onBannerLoaded;
+        public UnityAction<MaxSdkBase.AdInfo> e_onBannerRevenuePaid;
         #endregion
 
 
         #region Initialization
-        public void Init(MAXCustomSettings CustomSettings) {
-            Settings = CustomSettings;
-            if (string.IsNullOrEmpty(MAXCustomSettings.APPLOVIN_SDK_KEY)) {
+        public void Init(MadPixelCustomSettings a_customSettings) {
+            m_settings = a_customSettings;
+            if (string.IsNullOrEmpty(MadPixelCustomSettings.APPLOVIN_SDK_KEY)) {
                 Debug.LogError("[MadPixel] Cant init SDK with a null SDK key!");
             }
             else {
@@ -47,31 +51,31 @@ namespace MAXHelper {
 
         private void InitSDK() {
             MaxSdk.InitializeSdk();
-            MaxSdk.SetVerboseLogging(bShowDebug);
+            MaxSdk.SetVerboseLogging(m_showDebugLogs);
         }
 
 
-        private void OnAppLovinInitialized(MaxSdkBase.SdkConfiguration sdkConfiguration) {
-            if (Settings.bShowMediationDebugger) {
+        private void OnAppLovinInitialized(MaxSdkBase.SdkConfiguration a_sdkConfiguration) {
+            if (m_settings.bShowMediationDebugger) {
                 MaxSdk.ShowMediationDebugger();
             }
 
-            if (Settings.bUseBanners) {
+            if (m_settings.bUseBanners) {
                 InitializeBannerAds();
             }
 
-            if (Settings.bUseRewardeds) {
+            if (m_settings.bUseRewardeds) {
                 InitializeRewardedAds();
             }
 
-            if (Settings.bUseInters) {
+            if (m_settings.bUseInters) {
                 InitializeInterstitialAds();
             }
 
             Debug.Log("[MadPixel] AppLovin is initialized");
 
             if (MadPixelAnalytics.AnalyticsManager.Exist) {
-                if (MadPixelAnalytics.AnalyticsManager.Instance.bUseAutoInit) {
+                if (MadPixelAnalytics.AnalyticsManager.Instance.useAutoInit) {
                     MadPixelAnalytics.AnalyticsManager.Instance.Init();
                 }
             }
@@ -80,7 +84,7 @@ namespace MAXHelper {
             }
 
 
-            bInitialized = true;
+            IsInitialized = true;
         }
 
         #endregion
@@ -96,54 +100,54 @@ namespace MAXHelper {
             
 
 #if UNITY_ANDROID
-            if (!string.IsNullOrEmpty(Settings.BannerID)) {
-                BannerID = Settings.BannerID;
+            if (!string.IsNullOrEmpty(m_settings.BannerID)) {
+                m_bannerID = m_settings.BannerID;
             } else {
                 Debug.LogError("[MadPixel] Banner ID in Settings is Empty!");
             }
 #else
-            if (!string.IsNullOrEmpty(Settings.BannerID_IOS)) {
-                BannerID = Settings.BannerID_IOS;
+            if (!string.IsNullOrEmpty(m_settings.BannerID_IOS)) {
+                m_bannerID = m_settings.BannerID_IOS;
             } else {
                 Debug.LogError("Banner ID in Settings is Empty!");
             }
 #endif
 
-
-            MaxSdk.CreateBanner(BannerID, MaxSdkBase.BannerPosition.BottomCenter);
-            MaxSdk.SetBannerBackgroundColor(BannerID, Settings.BannerBackground);
-            OnBannerInitialized?.Invoke();
+            var adViewConfiguration = new MaxSdkBase.AdViewConfiguration(MaxSdkBase.AdViewPosition.BottomCenter);
+            MaxSdk.CreateBanner(m_bannerID, adViewConfiguration);
+            MaxSdk.SetBannerBackgroundColor(m_bannerID, m_settings.BannerBackground);
+            e_onBannerInitialized?.Invoke();
         }
 
-        private void OnBannerAdLoadedEvent(string type, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
-                Debug.Log($"OnBannerAdLoadedEvent invoked. {type}, {adInfo}");
+        private void OnBannerAdLoadedEvent(string a_adType, MaxSdkBase.AdInfo a_adInfo) {
+            if (m_showDebugLogs) {
+                Debug.Log($"OnBannerAdLoadedEvent invoked. {a_adType}, {a_adInfo}");
             }
-            onBannerLoadedEvent?.Invoke(type, adInfo, null);
+            e_onBannerLoaded?.Invoke(a_adInfo, null);
         }
 
-        private void OnBannerAdLoadFailedEvent(string type, MaxSdkBase.ErrorInfo errorInfo) {
-            if (bShowDebug) {
-                Debug.Log($"OnBannerAdLoadFailedEvent invoked. {type}, {errorInfo}");
+        private void OnBannerAdLoadFailedEvent(string a_adType, MaxSdkBase.ErrorInfo a_errorInfo) {
+            if (m_showDebugLogs) {
+                Debug.Log($"OnBannerAdLoadFailedEvent invoked. {a_adType}, {a_errorInfo}");
             }
-            onBannerLoadedEvent?.Invoke(type, null, errorInfo);
+            e_onBannerLoaded?.Invoke(null, a_errorInfo);
         }
 
-        private void OnBannerAdRevenuePaidEvent(string type, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
-                Debug.Log($"OnBannerAdRevenuePaidEvent invoked. {type}, {adInfo}");
+        private void OnBannerAdRevenuePaidEvent(string a_adType, MaxSdkBase.AdInfo a_adInfo) {
+            if (m_showDebugLogs) {
+                Debug.Log($"OnBannerAdRevenuePaidEvent invoked. {a_adType}, {a_adInfo}");
             }
-            onBannerRevenueEvent?.Invoke(type, adInfo);
+            e_onBannerRevenuePaid?.Invoke(a_adInfo);
         }
 
-        public void ShowBanner(bool bShow, MaxSdkBase.BannerPosition NewPosition = MaxSdkBase.BannerPosition.BottomCenter) {
-            if (bInitialized) {
-                if (bShow) {
-                    MaxSdk.UpdateBannerPosition(BannerID, NewPosition);
-                    MaxSdk.ShowBanner(BannerID);
+        public void ShowBanner(bool a_show, MaxSdkBase.AdViewPosition a_newPosition = MaxSdkBase.AdViewPosition.BottomCenter) {
+            if (IsInitialized) {
+                if (a_show) {
+                    MaxSdk.UpdateBannerPosition(m_bannerID, a_newPosition);
+                    MaxSdk.ShowBanner(m_bannerID);
                 }
                 else {
-                    MaxSdk.HideBanner(BannerID);
+                    MaxSdk.HideBanner(m_bannerID);
                 }
             }
         }
@@ -162,33 +166,32 @@ namespace MAXHelper {
         }
 
         public void CancelInterAd() {
-            onInterDismissedEvent?.Invoke();
+            e_onInterDismissed?.Invoke();
         }
 
-        private bool isFirstLoad_inter = true;
         private void LoadInterstitial() {
-            if (isFirstLoad_inter) {
-                isFirstLoad_inter = false;
+            if (m_isFirstLoadForInter) {
+                m_isFirstLoadForInter = false;
 #if UNITY_ANDROID
-                if (!string.IsNullOrEmpty(Settings.InterstitialID)) {
-                    InterstitialID = Settings.InterstitialID;
+                if (!string.IsNullOrEmpty(m_settings.InterstitialID)) {
+                    m_interstitialID = m_settings.InterstitialID;
                 }
                 else {
                     Debug.LogError("[MadPixel] Interstitial ID in Settings is Empty!");
                 }
 #else
-                if (!string.IsNullOrEmpty(Settings.InterstitialID_IOS)) {
-                    InterstitialID = Settings.InterstitialID_IOS;
+                if (!string.IsNullOrEmpty(m_settings.InterstitialID_IOS)) {
+                    m_interstitialID = m_settings.InterstitialID_IOS;
                 } else {
                     Debug.LogError("Interstitial ID in Settings is Empty!");
                 }
 #endif
             }
-            MaxSdk.LoadInterstitial(InterstitialID);
+            MaxSdk.LoadInterstitial(m_interstitialID);
         }
 
         private void OnInterstitialLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
-            onAdLoadedEvent?.Invoke(false);
+            e_onAdLoaded?.Invoke(false);
         }
 
         private void OnInterstitialFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo) {
@@ -198,23 +201,23 @@ namespace MAXHelper {
         }
 
         private void OnInterstitialFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnInterstitialFailedToDisplayEvent invoked");
             }
             LoadInterstitial();
 
-            onErrorEvent?.Invoke(adInfo, errorInfo, AdsManager.EAdType.INTER);
+            e_onAdFailedToDisplay?.Invoke(adInfo, errorInfo, AdsManager.EAdType.INTER);
 
             Debug.LogWarning("InterstitialFailedToDisplayEvent");
         }
 
         private void OnInterstitialDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnInterstitialDismissedEvent invoked");
             }
 
             LoadInterstitial();
-            onInterDismissedEvent?.Invoke();
+            e_onInterDismissed?.Invoke();
         }
         #endregion
 
@@ -233,8 +236,8 @@ namespace MAXHelper {
         }
 
         public void CancelRewardedAd() {
-            onFinishAdsEvent?.Invoke(false);
-            ShowedInfo = null;
+            e_onFinishAds?.Invoke(false);
+            m_showedInfo = null;
         }
 
         private bool isFirstLoad_rew = true;
@@ -242,34 +245,34 @@ namespace MAXHelper {
             if (isFirstLoad_rew) {
                 isFirstLoad_rew = false;
 #if UNITY_ANDROID
-                if (!string.IsNullOrEmpty(Settings.RewardedID)) {
-                    RewardedID = Settings.RewardedID;
+                if (!string.IsNullOrEmpty(m_settings.RewardedID)) {
+                    m_rewardedID = m_settings.RewardedID;
                 }
                 else {
                     Debug.LogError("[MadPixel] Rewarded ID in Settings is Empty!");
                 }
 #else
-                if (!string.IsNullOrEmpty(Settings.RewardedID_IOS)) {
-                    RewardedID = Settings.RewardedID_IOS;
+                if (!string.IsNullOrEmpty(m_settings.RewardedID_IOS)) {
+                    m_rewardedID = m_settings.RewardedID_IOS;
                 } else {
                     Debug.LogError("Rewarded ID in Settings is Empty!");
                 }
 #endif
             }
-            MaxSdk.LoadRewardedAd(RewardedID);
+            MaxSdk.LoadRewardedAd(m_rewardedID);
         }
 
         private void OnRewardedAdDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnRewardedAdDisplayedEvent invoked");
             }
-            ShowedInfo = adInfo;
+            m_showedInfo = adInfo;
         }
 
         private void OnRewardedAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
-            onAdLoadedEvent?.Invoke(true);
-            ShowedInfo = adInfo; 
-            if (bShowDebug) {
+            e_onAdLoaded?.Invoke(true);
+            m_showedInfo = adInfo; 
+            if (m_showDebugLogs) {
                 Debug.Log("OnRewardedAdLoadedEvent invoked");
             }
         }
@@ -277,7 +280,7 @@ namespace MAXHelper {
         private void OnRewardedAdLoadFailedEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo) {
             // Rewarded ad failed to load. We recommend re-trying in 3 seconds.
             Invoke("LoadRewardedAd", 3); 
-            if (bShowDebug) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnRewardedAdLoadFailedEvent invoked");
             }
         }
@@ -285,7 +288,7 @@ namespace MAXHelper {
         private void OnRewardedAdFailedToDisplayEvent(string adUnitId, MaxSdkBase.ErrorInfo errorInfo, MaxSdkBase.AdInfo adInfo) {
             // Rewarded ad failed to display. We recommend loading the next ad
 
-            if (bShowDebug) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnRewardedAdFailedToDisplayEvent invoked");
             }
 
@@ -293,31 +296,31 @@ namespace MAXHelper {
             LoadRewardedAd();
         }
 
-        private void OnError(MaxSdkBase.AdInfo adInfo, MaxSdkBase.ErrorInfo EInfo) {
-            onErrorEvent?.Invoke(adInfo, EInfo, AdsManager.EAdType.REWARDED);
-            ShowedInfo = null;
+        private void OnError(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo) {
+            e_onAdFailedToDisplay?.Invoke(a_adInfo, a_errorInfo, AdsManager.EAdType.REWARDED);
+            m_showedInfo = null;
         }
 
-        private void OnRewardedAdDismissedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
+        private void OnRewardedAdDismissedEvent(string a_adUnitId, MaxSdkBase.AdInfo a_adInfo) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnRewardedAdDismissedEvent invoked");
             }
 
-            if (ShowedInfo != null) {
-                onFinishAdsEvent?.Invoke(false);
+            if (m_showedInfo != null) {
+                e_onFinishAds?.Invoke(false);
             }
             
-            ShowedInfo = null;
+            m_showedInfo = null;
             LoadRewardedAd();
         }
 
-        private void OnRewardedAdReceivedRewardEvent(string adUnitId, MaxSdk.Reward reward, MaxSdkBase.AdInfo adInfo) {
-            if (bShowDebug) {
+        private void OnRewardedAdReceivedRewardEvent(string a_adUnitId, MaxSdk.Reward a_maxReward, MaxSdkBase.AdInfo a_adInfo) {
+            if (m_showDebugLogs) {
                 Debug.Log("OnRewardedAdReceivedRewardEvent invoked");
             }
 
-            onFinishAdsEvent?.Invoke(ShowedInfo != null);
-            ShowedInfo = null;
+            e_onFinishAds?.Invoke(m_showedInfo != null);
+            m_showedInfo = null;
         }
 
         #endregion
@@ -325,8 +328,8 @@ namespace MAXHelper {
         #region Show Ads
 
         public bool ShowInterstitial() {
-            if (bInitialized && MaxSdk.IsInterstitialReady(InterstitialID)) {
-                MaxSdk.ShowInterstitial(InterstitialID);
+            if (IsInitialized && MaxSdk.IsInterstitialReady(m_interstitialID)) {
+                MaxSdk.ShowInterstitial(m_interstitialID);
                 return true;
             }
 
@@ -334,18 +337,18 @@ namespace MAXHelper {
         }
 
         public void ShowRewarded() {
-            if (bInitialized && MaxSdk.IsRewardedAdReady(RewardedID)) {
-                MaxSdk.ShowRewardedAd(RewardedID);
+            if (IsInitialized && MaxSdk.IsRewardedAdReady(m_rewardedID)) {
+                MaxSdk.ShowRewardedAd(m_rewardedID);
             }
         }
 
         public bool IsReady(bool bIsRewarded) {
-            if (bInitialized) {
+            if (IsInitialized) {
                 if (bIsRewarded) {
-                    return MaxSdk.IsRewardedAdReady(RewardedID);
+                    return MaxSdk.IsRewardedAdReady(m_rewardedID);
                 }
                 else {
-                    return MaxSdk.IsInterstitialReady(InterstitialID);
+                    return MaxSdk.IsInterstitialReady(m_interstitialID);
                 }
             }
             return false;
@@ -358,7 +361,7 @@ namespace MAXHelper {
             UnsubscribeAll();
         }
         public void UnsubscribeAll() {
-            if (bInitialized) {
+            if (IsInitialized) {
                 MaxSdkCallbacks.Interstitial.OnAdLoadedEvent -= OnInterstitialLoadedEvent;
                 MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent -= OnInterstitialFailedEvent;
                 MaxSdkCallbacks.Interstitial.OnAdHiddenEvent -= OnInterstitialDismissedEvent;

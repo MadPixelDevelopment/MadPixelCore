@@ -1,58 +1,61 @@
 ﻿using System.Collections.Generic;
 using MadPixel;
-using MAXHelper;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Serialization;
 
 namespace MadPixelAnalytics {
 
     public class AnalyticsManager : MonoBehaviour {
         #region Fields
-        public const string VERSION = "1.0.8";
+        public const string VERSION = "1.0.9";
 
-        public bool bUseAutoInit = true;
-        public bool bSubscribeOnStart = true;
-        private AppMetricaComp AppMetricaComp;
-        private AppsFlyerComp AppsFlyerComp;
+        [FormerlySerializedAs("bUseAutoInit")]
+        public bool useAutoInit = true;
+        [FormerlySerializedAs("bSubscribeOnStart")]
+        public bool subscribeToAdsOnStart = true;
 
-        private bool bInitialized = false;
+        private AppMetricaComp m_appMetricaComp;
+        private AppsFlyerComp m_appsFlyerComp;
+
+        private bool m_initialized = false;
 
         #endregion
 
 
         #region Static
 
-        protected static AnalyticsManager _instance;
+        protected static AnalyticsManager m_instance;
 
         public static bool Exist {
-            get { return (_instance != null); }
+            get { return (m_instance != null); }
         }
 
         public static AnalyticsManager Instance {
             get {
-                if (_instance == null) {
+                if (m_instance == null) {
                     Debug.LogError("AnalyticsManager wasn't created yet!");
 
                     GameObject go = new GameObject();
                     go.name = "AnalyticsManager";
-                    _instance = go.AddComponent(typeof(AnalyticsManager)) as AnalyticsManager;
+                    m_instance = go.AddComponent(typeof(AnalyticsManager)) as AnalyticsManager;
                 }
 
-                return _instance;
+                return m_instance;
             }
         }
 
         public static void Destroy(bool immediate = false) {
-            if (_instance != null && _instance.gameObject != null) {
+            if (m_instance != null && m_instance.gameObject != null) {
                 if (immediate) {
-                    DestroyImmediate(_instance.gameObject);
+                    DestroyImmediate(m_instance.gameObject);
                 }
                 else {
-                    GameObject.Destroy(_instance.gameObject);
+                    GameObject.Destroy(m_instance.gameObject);
                 }
             }
 
-            _instance = null;
+            m_instance = null;
         }
 
         #endregion
@@ -61,8 +64,8 @@ namespace MadPixelAnalytics {
         #region UnityEvents
 
         private void Awake() {
-            if (_instance == null) {
-                _instance = this;
+            if (m_instance == null) {
+                m_instance = this;
                 GameObject.DontDestroyOnLoad(this.gameObject);
             }
             else {
@@ -72,17 +75,17 @@ namespace MadPixelAnalytics {
         }
 
         private void Start() {
-            if (bSubscribeOnStart) {
+            if (subscribeToAdsOnStart) {
                 SubscribeToAdsManager();
             }
         }
 
         private void OnDestroy() {
             if (AdsManager.Exist) {
-                AdsManager.Instance.OnAdAvailable -= OnAdAvailable;
-                AdsManager.Instance.OnAdShown -= OnAdWatched;
-                AdsManager.Instance.OnAdDisplayError -= OnAdError;
-                AdsManager.Instance.OnAdStarted -= OnAdStarted;
+                AdsManager.Instance.e_onAdAvailable -= OnAdAvailableEvent;
+                AdsManager.Instance.e_onAdShown -= OnAdWatchedEvent;
+                AdsManager.Instance.e_onAdDisplayError -= OnAdErrorEvent;
+                AdsManager.Instance.e_onAdStarted -= OnAdStartedEvent;
             }
         }
 
@@ -92,41 +95,40 @@ namespace MadPixelAnalytics {
         #region Helpers
 
         public void SubscribeToAdsManager() {
-            AdsManager Ads = FindFirstObjectByType<AdsManager>();
-            if (Ads != null) {
-                Ads.OnAdAvailable += OnAdAvailable;
-                Ads.OnAdShown += OnAdWatched;
-                Ads.OnAdDisplayError += OnAdError;
-                Ads.OnAdStarted += OnAdStarted;
+            AdsManager adsManager = FindFirstObjectByType<AdsManager>();
+            if (adsManager != null) {
+                adsManager.e_onAdAvailable += OnAdAvailableEvent;
+                adsManager.e_onAdShown += OnAdWatchedEvent;
+                adsManager.e_onAdDisplayError += OnAdErrorEvent;
+                adsManager.e_onAdStarted += OnAdStartedEvent;
             }
         }
 
         public void Init() {
-            if (bInitialized) {
+            if (m_initialized) {
                 Debug.LogError($"[MadPixel] Analytics is trying to initialize for the second time. Check if there is a logic error!");
                 return;
             }
 
 
-            AppMetricaComp = this.GetComponent<AppMetricaComp>();
-            if (AppMetricaComp) {
-                AppMetricaComp.Init();
+            m_appMetricaComp = this.GetComponent<AppMetricaComp>();
+            if (m_appMetricaComp) {
                 Debug.Log("[MadPixel] AppMetrica is INITIALIZED!");
             }
             else {
                 Debug.LogError("[MadPixel] AppMetrica is NOT INITIALIZED!");
             }
 
-            AppsFlyerComp = this.GetComponent<AppsFlyerComp>();
-            if (AppsFlyerComp) {
-                AppsFlyerComp.Init();
+            m_appsFlyerComp = this.GetComponent<AppsFlyerComp>();
+            if (m_appsFlyerComp) {
+                m_appsFlyerComp.Init();
                 Debug.Log("[MadPixel] AppsFlyer is INITIALIZED!");
             }
             else {
                 Debug.LogError("[MadPixel] AppsFlyer is NOT INITIALIZED!");
             }
 
-            bInitialized = true;
+            m_initialized = true;
         }
 
         #endregion
@@ -137,10 +139,10 @@ namespace MadPixelAnalytics {
 
         #region Ads Related
 
-        private static void OnAdStarted(AdInfo AdInfo) {
+        private static void OnAdStartedEvent(AdInfo a_adInfo) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.VideoAdStarted(AdInfo);
+                if (Instance.m_appMetricaComp != null) {
+                    Instance.m_appMetricaComp.VideoAdStarted(a_adInfo);
                 }
                 else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
@@ -151,10 +153,10 @@ namespace MadPixelAnalytics {
             }
         }
 
-        private static void OnAdError(MaxSdkBase.AdInfo MAXAdInfo, MaxSdkBase.ErrorInfo ErrorInfo, AdInfo AdInfo) {
+        private static void OnAdErrorEvent(MaxSdkBase.AdInfo a_maxAdInfo, MaxSdkBase.ErrorInfo a_errorInfo, AdInfo a_adInfo) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.VideoAdError(MAXAdInfo, ErrorInfo, AdInfo.Placement);
+                if (Instance.m_appMetricaComp != null) {
+                    Instance.m_appMetricaComp.VideoAdError(a_maxAdInfo, a_errorInfo, a_adInfo.Placement);
                 } else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }
@@ -164,10 +166,10 @@ namespace MadPixelAnalytics {
             }
         }
 
-        private static void OnAdWatched(AdInfo AdInfo) {
+        private static void OnAdWatchedEvent(AdInfo a_adInfo) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.VideoAdWatched(AdInfo);
+                if (Instance.m_appMetricaComp != null) {
+                    Instance.m_appMetricaComp.VideoAdWatched(a_adInfo);
                 } else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }
@@ -177,10 +179,10 @@ namespace MadPixelAnalytics {
             }
         }
 
-        private static void OnAdAvailable(AdInfo AdInfo) {
+        private static void OnAdAvailableEvent(AdInfo a_adInfo) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.VideoAdAvailable(AdInfo);
+                if (Instance.m_appMetricaComp != null) {
+                    Instance.m_appMetricaComp.VideoAdAvailable(a_adInfo);
                 } else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }
@@ -197,27 +199,29 @@ namespace MadPixelAnalytics {
 
         #region Purchase
 
-        public static void PaymentSucceed(Product Product) {
+        public static void PaymentSucceed(Product a_product) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null && Instance.AppsFlyerComp != null) {
-                    MPReceipt Receipt = ExtensionMethods.GetReceipt(Product);
+                if (Instance.m_appMetricaComp != null && Instance.m_appsFlyerComp != null) {
+                    MPReceipt receipt = ExtensionMethods.GetReceipt(a_product);
 
 
-                    if (Instance.AppMetricaComp != null) {
-                        Instance.AppMetricaComp.PurchaseSucceed(Receipt);
+                    if (Instance.m_appMetricaComp != null) {
+                        Instance.m_appMetricaComp.PurchaseSucceed(receipt);
                     }
                     else {
                         Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                     }
 
 
-                    if (Instance.AppsFlyerComp != null) {
+                    if (Instance.m_appsFlyerComp != null) {
                         if (PlayerPrefs.GetInt("FirstPurchaseWas", 0) == 0) {
-                            Instance.AppsFlyerComp.OnFirstInApp();
+                            Instance.m_appsFlyerComp.OnFirstInApp();
                             PlayerPrefs.SetInt("FirstPurchaseWas", 1);
                         }
 
-                        Instance.AppsFlyerComp.VerificateAndSendPurchase(Receipt);
+                        if (!Instance.m_appsFlyerComp.UseInappConnector) {
+                            Instance.m_appsFlyerComp.VerificateAndSendPurchase(receipt);
+                        }
                     }
                     else {
                         Debug.LogError("[Mad Pixel] AppsFlyer was not initialized!");
@@ -240,8 +244,8 @@ namespace MadPixelAnalytics {
         #region Other Events
         public static void RateUs(int rateResult) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.RateUs(rateResult);
+                if (Instance.m_appMetricaComp != null) {
+                    Instance.m_appMetricaComp.RateUs(rateResult);
                 } else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }
@@ -254,8 +258,8 @@ namespace MadPixelAnalytics {
         
         public static void CustomEvent(string eventName, Dictionary<string, object> parameters, bool bSendEventsBuffer = false) {
             if (Exist) {
-                if (Instance.AppMetricaComp != null) {
-                    Instance.AppMetricaComp.SendCustomEvent(eventName, parameters, bSendEventsBuffer);
+                if (Instance.m_appMetricaComp != null) {
+                    Instance.m_appMetricaComp.SendCustomEvent(eventName, parameters, bSendEventsBuffer);
                 } else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }

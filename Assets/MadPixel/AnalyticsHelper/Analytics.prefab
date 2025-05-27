@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8766461110375483084}
   - component: {fileID: 7019281010441104460}
   - component: {fileID: 3194373316483798984}
+  - component: {fileID: 4489179394279667141}
   m_Layer: 0
   m_Name: Analytics
   m_TagString: Untagged
@@ -46,8 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc43b36505567840aedac74979b2df4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bUseAutoInit: 1
-  bSubscribeOnStart: 1
+  useAutoInit: 1
+  subscribeToAdsOnStart: 1
 --- !u!114 &7019281010441104460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,7 +77,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3240abf71d5eee4a82a75c34a4ca861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AppsFlyerDevKey: default_dev_key
-  AppID_IOs: 123456789
   bIsDebug: 0
   monetizaionPubKey: 
+--- !u!114 &4489179394279667141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8766461110375483086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48a4811ed6993684d8ce6dde62e6c4ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

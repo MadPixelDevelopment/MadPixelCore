@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using MAXHelper;
 using UnityEngine;
 
-namespace MAXHelper_Demo {
+namespace MadPixel.Examples {
     public class ShowBannerExample : MonoBehaviour {
         private bool bBannerIsShown;
 
