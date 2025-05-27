@@ -51,14 +51,15 @@ namespace MadPixel {
         private static void ApplyConsentValues(bool a_hasConsent) {
             ConsentStatus statusValue = a_hasConsent ? ConsentStatus.Granted : ConsentStatus.Denied;
             var consentMap = new Dictionary<ConsentType, ConsentStatus> {
-            { ConsentType.AdStorage, statusValue },
-            { ConsentType.AnalyticsStorage, statusValue },
-            { ConsentType.AdPersonalization, statusValue },
-            { ConsentType.AdUserData, statusValue },
-        };
-            // Set the consent status
+                { ConsentType.AdStorage, statusValue },
+                //{ ConsentType.AnalyticsStorage, statusValue },
+                { ConsentType.AdPersonalization, statusValue },
+                { ConsentType.AdUserData, statusValue },
+            };
+
             FirebaseAnalytics.SetConsent(consentMap);
         }
+
         #endregion
 
 

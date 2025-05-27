@@ -37,7 +37,7 @@ namespace MadPixelCore.Editor {
             plistRoot.SetString("NSUserTrackingUsageDescription", k_TrackingDescription);
 
             // Set Google Analytics flags
-            SetDefaultGoogleKey(plistRoot, "GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE", false);
+            SetDefaultGoogleKey(plistRoot, "GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE", true);
             SetDefaultGoogleKey(plistRoot, "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE", false);
             SetDefaultGoogleKey(plistRoot, "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA", false);
             SetDefaultGoogleKey(plistRoot, "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS", false);

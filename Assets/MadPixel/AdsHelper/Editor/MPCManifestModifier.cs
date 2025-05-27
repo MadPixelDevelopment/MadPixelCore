@@ -36,16 +36,16 @@ public class ManifestModifier : IPostGenerateGradleAndroidProject {
                         hasAnalyticsStorage = true;
                     }
                     if (nameAttr.Value == AD_STORAGE_TAG) { 
-                        SetApplicationTag(node); 
+                        SetApplicationTag(node, "false"); 
                         hasAdStorage = true;}
 
                     if (nameAttr.Value == AD_PERSONALIZATION_TAG) {
-                        SetApplicationTag(node); 
+                        SetApplicationTag(node, "false"); 
                         hasAdPersonalization = true;
                     }
 
                     if (nameAttr.Value == AD_USER_DATA_TAG) {
-                        SetApplicationTag(node); 
+                        SetApplicationTag(node, "false"); 
                         hasAdUserData = true;
                     }
                 }
@@ -58,31 +58,31 @@ public class ManifestModifier : IPostGenerateGradleAndroidProject {
         }
 
         if (!hasAdStorage) {
-            AddApplicationTag(doc, applicationNode, AD_STORAGE_TAG);
+            AddApplicationTag(doc, applicationNode, AD_STORAGE_TAG, "false");
         }
 
         if (!hasAdPersonalization) {
-            AddApplicationTag(doc, applicationNode, AD_PERSONALIZATION_TAG);
+            AddApplicationTag(doc, applicationNode, AD_PERSONALIZATION_TAG, "false");
         }
 
         if (!hasAdUserData) {
-            AddApplicationTag(doc, applicationNode, AD_USER_DATA_TAG);
+            AddApplicationTag(doc, applicationNode, AD_USER_DATA_TAG, "false");
         }
 
         doc.Save(manifestPath);
     }
 
-    private void AddApplicationTag(XmlDocument a_doc, XmlNode a_node, string a_tag) {
+    private void AddApplicationTag(XmlDocument a_doc, XmlNode a_node, string a_tag, string a_value = "true") {
         XmlElement analyticsElement = a_doc.CreateElement("meta-data");
         analyticsElement.SetAttribute("name", NAMESPACE_URI, a_tag);
-        analyticsElement.SetAttribute("value", NAMESPACE_URI, "false");
+        analyticsElement.SetAttribute("value", NAMESPACE_URI, a_value);
         a_node.AppendChild(analyticsElement);
     }
 
-    private void SetApplicationTag(XmlNode a_node) {
+    private void SetApplicationTag(XmlNode a_node, string a_value = "true") {
         XmlAttribute valueAttr = a_node.Attributes["value", NAMESPACE_URI];
         if (valueAttr != null) {
-            valueAttr.Value = "false";
+            valueAttr.Value = a_value;
         }
     }
 }
