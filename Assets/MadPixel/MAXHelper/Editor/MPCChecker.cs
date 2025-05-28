@@ -7,7 +7,7 @@ using System.IO;
 namespace MadPixel.Editor {
     [InitializeOnLoad]
     public class MPCChecker {
-
+        private const int TARGET_SDK = 34;
         static MPCChecker() {
 
 
@@ -18,7 +18,7 @@ namespace MadPixel.Editor {
                 target = highestInstalledVersion;
             }
 
-            if (target < 34 || PlayerSettings.Android.minSdkVersion < AndroidSdkVersions.AndroidApiLevel24) {
+            if (target < TARGET_SDK || PlayerSettings.Android.minSdkVersion < AndroidSdkVersions.AndroidApiLevel24) {
                 if (EditorPrefs.HasKey(Key)) {
                     string lastMPCVersionChecked = EditorPrefs.GetString(Key);
                     string currVersion = MPCSetupWindow.GetVersion();
@@ -77,16 +77,20 @@ namespace MadPixel.Editor {
 
         private static int GetHigestInstalledSDK() {
             string s = Path.Combine(GetHighestInstalledAPI(), "platforms");
-            string[] directories = Directory.GetDirectories(s);
-            int maxV = 0;
-            foreach (string directory in directories) {
-                string version = directory.Substring(directory.Length - 2, 2);
-                int.TryParse(version, out int v);
-                if (v > 0) {
-                    maxV = Mathf.Max(v, maxV);
+            if (Directory.Exists(s)) {
+                string[] directories = Directory.GetDirectories(s);
+                int maxV = 0;
+                foreach (string directory in directories) {
+                    string version = directory.Substring(directory.Length - 2, 2);
+                    int.TryParse(version, out int v);
+                    if (v > 0) {
+                        maxV = Mathf.Max(v, maxV);
+                    }
                 }
+                return maxV;
             }
-            return maxV;
+
+            return TARGET_SDK;
         }
 
         private static string GetHighestInstalledAPI() {

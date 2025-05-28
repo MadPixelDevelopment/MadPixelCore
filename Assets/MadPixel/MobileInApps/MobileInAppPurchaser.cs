@@ -246,6 +246,22 @@ namespace MadPixel.InApps {
             return null;
         }
 
+
+        /// <summary>
+        /// Use <c>GetProductPriceString</c> to return a price string.
+        /// </summary>
+        public string GetProductPriceString(string a_sku) {
+            if (!string.IsNullOrEmpty(a_sku)) {
+                if (IsInitialized()) {
+                    var product = m_storeController.products.WithID(a_sku);
+                    if (product != null) {
+                        return product.metadata.localizedPriceString;
+                    }
+                }
+            }
+            return "";
+        }
+
         /// <summary>
         /// Use <c>IsSubscribedTo</c> to check if the subscription is active.
         /// <example>
@@ -431,7 +447,7 @@ namespace MadPixel.InApps {
             try {
                 // On Google Play, result has a single product ID.
                 // On Apple stores, receipts contain multiple products.
-                var result = validator.Validate(E.purchasedProduct.receipt);
+                var result = validator.Validate(a_args.purchasedProduct.receipt);
                 // For informational purposes, we list the receipt(s)
                 Debug.Log("Valid!");
                 foreach (IPurchaseReceipt productReceipt in result) {

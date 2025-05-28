@@ -112,13 +112,13 @@ namespace MadPixel {
         #endregion
 
         #region Event Catchers
-        private void AppLovin_OnAdLoaded(bool a_isRewarded) {
+        private void AppLovin_OnAdLoadedEvent(bool a_isRewarded) {
             if (a_isRewarded) {
                 e_onNewRewardedLoaded?.Invoke();
             }
         }
 
-        private void AppLovin_OnFinishAds(bool a_isFinished) {
+        private void AppLovin_OnFinishAdsEvent(bool a_isFinished) {
             if (m_adsInstigatorObj != null) {
                 m_adsInstigatorObj = null;
                 m_callbackPending?.Invoke(a_isFinished);
@@ -142,7 +142,7 @@ namespace MadPixel {
             //NOTE: Temporary disable sounds - off
         }
 
-        private void AppLovin_OnInterDismissed() {
+        private void AppLovin_OnInterDismissedEvent() {
             if (m_adsInstigatorObj != null) {
                 m_adsInstigatorObj = null;
                 m_callbackPending?.Invoke(true);
@@ -161,7 +161,7 @@ namespace MadPixel {
             //NOTE: Temporary disable sounds - off
         }
 
-        private void AppLovin_OnError(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo, EAdType a_adType) {
+        private void AppLovin_OnAdFailedToDisplayEvent(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo, EAdType a_adType) {
             if (m_currentAdInfo != null) {
                 e_onAdDisplayError?.Invoke(a_adInfo, a_errorInfo, m_currentAdInfo);
             }
@@ -185,12 +185,12 @@ namespace MadPixel {
         }
 
         
-        private void AppLovin_OnBannerRevenue(MaxSdkBase.AdInfo a_adInfo) {
+        private void AppLovin_OnBannerRevenueEvent(MaxSdkBase.AdInfo a_adInfo) {
             AdInfo bannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet);
             e_onAdShown?.Invoke(bannerInfo);
         }
 
-        private void AppLovin_OnBannerLoaded(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo) {
+        private void AppLovin_OnBannerLoadedEvent(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo) {
             AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet, a_errorInfo == null ? "available" : "not_available");
             e_onAdAvailable?.Invoke(BannerInfo);
             if (a_errorInfo == null && m_canShowBanner) {
@@ -246,13 +246,13 @@ namespace MadPixel {
 
         private void OnDestroy() {
             if (m_appLovinComp != null) {
-                m_appLovinComp.e_onFinishAds -= AppLovin_OnFinishAds;
-                m_appLovinComp.e_onInterDismissed -= AppLovin_OnInterDismissed;
-                m_appLovinComp.e_onAdLoaded -= AppLovin_OnAdLoaded;
-                m_appLovinComp.e_onAdFailedToDisplay -= AppLovin_OnError;
+                m_appLovinComp.e_onFinishAds -= AppLovin_OnFinishAdsEvent;
+                m_appLovinComp.e_onInterDismissed -= AppLovin_OnInterDismissedEvent;
+                m_appLovinComp.e_onAdLoaded -= AppLovin_OnAdLoadedEvent;
+                m_appLovinComp.e_onAdFailedToDisplay -= AppLovin_OnAdFailedToDisplayEvent;
 
-                m_appLovinComp.e_onBannerRevenuePaid -= AppLovin_OnBannerRevenue;
-                m_appLovinComp.e_onBannerLoaded -= AppLovin_OnBannerLoaded;
+                m_appLovinComp.e_onBannerRevenuePaid -= AppLovin_OnBannerRevenueEvent;
+                m_appLovinComp.e_onBannerLoaded -= AppLovin_OnBannerLoadedEvent;
             }
         }
 
@@ -459,12 +459,12 @@ namespace MadPixel {
             m_madPixelSettings = LoadMadPixelCustomSettings();
             m_appLovinComp.Init(m_madPixelSettings);
 
-            m_appLovinComp.e_onFinishAds += AppLovin_OnFinishAds;
-            m_appLovinComp.e_onAdLoaded += AppLovin_OnAdLoaded;
-            m_appLovinComp.e_onInterDismissed += AppLovin_OnInterDismissed;
-            m_appLovinComp.e_onAdFailedToDisplay += AppLovin_OnError;
-            m_appLovinComp.e_onBannerRevenuePaid += AppLovin_OnBannerRevenue;
-            m_appLovinComp.e_onBannerLoaded += AppLovin_OnBannerLoaded;
+            m_appLovinComp.e_onFinishAds += AppLovin_OnFinishAdsEvent;
+            m_appLovinComp.e_onAdLoaded += AppLovin_OnAdLoadedEvent;
+            m_appLovinComp.e_onInterDismissed += AppLovin_OnInterDismissedEvent;
+            m_appLovinComp.e_onAdFailedToDisplay += AppLovin_OnAdFailedToDisplayEvent;
+            m_appLovinComp.e_onBannerRevenuePaid += AppLovin_OnBannerRevenueEvent;
+            m_appLovinComp.e_onBannerLoaded += AppLovin_OnBannerLoadedEvent;
             
             m_ready = true;
 
