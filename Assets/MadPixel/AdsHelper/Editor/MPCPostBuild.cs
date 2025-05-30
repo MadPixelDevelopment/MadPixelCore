@@ -5,7 +5,7 @@ using UnityEditor.iOS.Xcode;
 #endif
 using System.IO;
 
-namespace MadPixelCore.Editor {
+namespace MadPixel.Editor {
     
     public class MPCPostBuild  {
 #if UNITY_IOS        

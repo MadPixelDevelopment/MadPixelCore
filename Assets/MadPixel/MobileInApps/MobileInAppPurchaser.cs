@@ -234,6 +234,21 @@ namespace MadPixel.InApps {
         }
 
         /// <summary>
+        /// Use <c>GetProductPriceString</c> to return a price string.
+        /// </summary>
+        public string GetProductPriceString(string a_sku) {
+            if (!string.IsNullOrEmpty(a_sku)) {
+                if (IsInitialized()) {
+                    var product = m_storeController.products.WithID(a_sku);
+                    if (product != null) {
+                        return product.metadata.localizedPriceString;
+                    }
+                }
+            }
+            return "";
+        }
+
+        /// <summary>
         /// Use <c>IsSubscribedTo</c> to check if the subscription is active.
         /// <example>
         /// For example:
@@ -400,9 +415,9 @@ namespace MadPixel.InApps {
         }
 
         // Proccess purchase and use Unity validation to check it for freud
-        public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs E) {
+        public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs a_args) {
             if (m_debugLogsOn) {
-                Debug.LogWarning($"[MobileInAppPurchaser] ProcessPurchase: PASS. Product: '{E.purchasedProduct.definition.id}' Receipt: {E.purchasedProduct.receipt}");
+                Debug.LogWarning($"[MobileInAppPurchaser] ProcessPurchase: PASS. Product: '{a_args.purchasedProduct.definition.id}' Receipt: {a_args.purchasedProduct.receipt}");
             }
 
             // NOTE: UNITY VALIDATION
@@ -421,7 +436,7 @@ namespace MadPixel.InApps {
             try {
                 // On Google Play, result has a single product ID.
                 // On Apple stores, receipts contain multiple products.
-                var result = validator.Validate(E.purchasedProduct.receipt);
+                var result = validator.Validate(a_args.purchasedProduct.receipt);
                 // For informational purposes, we list the receipt(s)
                 Debug.Log("Valid!");
                 foreach (IPurchaseReceipt productReceipt in result) {
@@ -442,7 +457,7 @@ namespace MadPixel.InApps {
             if (ReceitsIDs != null && ReceitsIDs.Count > 0) {
                 foreach (string ProductID in ReceitsIDs) {
                     //Debug.Log($"{E.purchasedProduct.definition.storeSpecificId}, and {ProductID}");
-                    if (E.purchasedProduct.definition.storeSpecificId.Equals(ProductID)) {
+                    if (a_args.purchasedProduct.definition.storeSpecificId.Equals(ProductID)) {
                         bValidID = true;
                         break;
                     }
@@ -456,7 +471,7 @@ namespace MadPixel.InApps {
             // Process a successful purchase after validation
             if (validPurchase && bValidID) {
                 if (IsInitialized()) {
-                    Product Prod = E.purchasedProduct;
+                    Product Prod = a_args.purchasedProduct;
                     OnPurchaseResult?.Invoke(Prod);
 
                     MadPixelAnalytics.AnalyticsManager.PaymentSucceed(Prod);

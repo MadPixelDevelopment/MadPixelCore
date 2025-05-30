@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace MadPixelCore.Editor {
+namespace MadPixel.Editor {
     public class MPCExport : EditorWindow {
         [MenuItem("Mad Pixel/Export MPC as UnityPackage")]
         public static void ExportMadPixelCoreAsPackage() {

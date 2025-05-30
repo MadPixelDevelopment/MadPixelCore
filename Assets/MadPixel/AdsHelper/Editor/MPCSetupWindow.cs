@@ -4,9 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-using MadPixel;
 
-namespace MadPixelCore.Editor {
+namespace MadPixel.Editor {
     public class MPCSetupWindow : EditorWindow {
         #region Fields
         private const string NEW_CONFIGS_PATH = "Assets/Resources/MadPixelCustomSettings.asset";

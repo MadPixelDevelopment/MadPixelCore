@@ -3,9 +3,8 @@ using UnityEditor;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
-using MadPixel;
 
-namespace MadPixelCore.Editor {
+namespace MadPixel.Editor {
     [InitializeOnLoad]
     public class MPCChecker {
         #region Fields
@@ -14,29 +13,29 @@ namespace MadPixelCore.Editor {
         private const string NEW_CONFIGS_RESOURCES_PATH = "Assets/Resources/MadPixelCustomSettings.asset";
 
         private const string APPMETRICA_FOLDER = "Assets/AppMetrica";
-        private const string EDM4U_FOLDER = "Assets/ExternalDependencyManager"; 
+        private const string EDM4U_FOLDER = "Assets/ExternalDependencyManager";
+        private const string APPSFLYER_MAIN_SCRIPT = "Assets/AppsFlyer/AppsFlyer.cs";
         #endregion
 
-        static MPCChecker() {
-            int i = 0;
-            CheckPackagesExistence();
-            CheckNewResourcesFile();
-#if UNITY_ANDROID
-            CheckTargetAPI();
-#endif
-        }
+//        static MPCChecker() {
+//            CheckPackagesExistence();
+//            CheckNewResourcesFile();
+//#if UNITY_ANDROID
+//            CheckTargetAPI();
+//#endif
+//        }
 
         #region Android Target API 
 
 #if UNITY_ANDROID
-        private static string appKey = null;
+        private static string m_appKey = null;
         private static string Key {
             get {
-                if (string.IsNullOrEmpty(appKey)) {
-                    appKey = GetMd5Hash(Application.dataPath) + "MPCv";
+                if (string.IsNullOrEmpty(m_appKey)) {
+                    m_appKey = GetMd5Hash(Application.dataPath) + "MPCv";
                 }
 
-                return appKey;
+                return m_appKey;
             }
         }
 
@@ -62,17 +61,17 @@ namespace MadPixelCore.Editor {
             SaveKey();
         }
 
-        private static void ShowSwitchTargetWindow(int target) {
-            MPCTargetCheckerWindow.ShowWindow(target, (int)PlayerSettings.Android.targetSdkVersion);
+        private static void ShowSwitchTargetWindow(int a_target) {
+            MPCTargetCheckerWindow.ShowWindow(a_target, (int)PlayerSettings.Android.targetSdkVersion);
 
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
             PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
         }
 
 
-        private static string GetMd5Hash(string input) {
+        private static string GetMd5Hash(string a_input) {
             MD5 md5 = MD5.Create();
-            byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+            byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(a_input));
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < data.Length; i++) {
                 sb.Append(data[i].ToString("x2"));
@@ -146,13 +145,14 @@ namespace MadPixelCore.Editor {
             return File.Exists(location) ||
                    Directory.Exists(location) ||
                    (location.EndsWith("/*") && Directory.Exists(Path.GetDirectoryName(location)));
-        } 
+        }
         #endregion
 
         #region Appmetrica and EDM as packages
         private static void CheckPackagesExistence() {
             var packageInfo = UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages();
             bool hasDuplicatedAppmetrica = false;
+            bool hasDuplicatedAppsFlyer = false;
             bool hasDuplicatedEDM = false;
             int amount = 0;
 
@@ -169,14 +169,20 @@ namespace MadPixelCore.Editor {
                         hasDuplicatedAppmetrica = true;
                     }
                 }
+                else if (package.name.Equals("appsflyer-unity-plugin")) {
+                    amount++;
+                    if (CheckExistence(APPSFLYER_MAIN_SCRIPT)) {
+                        hasDuplicatedAppsFlyer = true;
+                    }
+                }
 
-                if (amount >= 2) {
+                if (amount >= 3) {
                     break;
                 }
             }
 
-            if (hasDuplicatedAppmetrica || hasDuplicatedEDM) {
-                MPCDeleteFoldersWindow.ShowWindow(hasDuplicatedAppmetrica, hasDuplicatedEDM);
+            if (hasDuplicatedAppmetrica || hasDuplicatedEDM || hasDuplicatedAppsFlyer) {
+                MPCDeleteFoldersWindow.ShowWindow(hasDuplicatedAppmetrica, hasDuplicatedEDM, hasDuplicatedAppsFlyer);
             }
         }
 

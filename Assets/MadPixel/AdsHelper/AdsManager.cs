@@ -133,11 +133,11 @@ namespace MadPixel {
             }
         }
 
-        private void LevelPlay_OnAdLoaded(EAdType a_type) {
+        private void LevelPlay_OnAdLoadedEvent(EAdType a_type) {
             OnNewAdLoaded?.Invoke(a_type);
         }
 
-        private void LevelPlay_OnFinishAds(bool IsFinished) {
+        private void LevelPlay_OnFinishAdsEvent(bool IsFinished) {
             if (m_adsInstigatorObj != null) {
                 m_adsInstigatorObj = null;
                 m_callbackPending?.Invoke(IsFinished);
@@ -161,7 +161,7 @@ namespace MadPixel {
             //NOTE: Temporary disable sounds - off
         }
 
-        private void LevelPlay_OnInterDismissed() {
+        private void LevelPlay_OnInterDismissedEvent() {
             if (m_adsInstigatorObj != null) {
                 m_adsInstigatorObj = null;
                 m_callbackPending?.Invoke(true);
@@ -181,14 +181,14 @@ namespace MadPixel {
             //NOTE: Temporary disable sounds - off
         }
 
-        private void LevelPlay_OnError(LevelPlayAdDisplayInfoError a_error, EAdType a_adType) {
+        private void LevelPlay_OnErrorEvent(LevelPlayAdDisplayInfoError a_error, EAdType a_adType) {
             if (m_currentAdInfo != null) {
                 OnAdDisplayError?.Invoke(a_error, a_adType, m_currentAdInfo.Placement);
             }
         }
 
 
-        private void LevelPlay_OnBannerAdLoaded(LevelPlayAdInfo a_levelPlayAdInfo) {
+        private void LevelPlay_OnBannerAdLoadedEvent(LevelPlayAdInfo a_levelPlayAdInfo) {
             AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet); 
             OnAdAvailable?.Invoke(BannerInfo);
             if (m_canShowBanner) {
@@ -237,14 +237,14 @@ namespace MadPixel {
             return Resources.Load<MadPixelCustomSettings>(SETTINGS_FILE_NAME);
         }
 
-        /// <param name="a_objectRef">Instigator gameobject</param>
+        /// <param name="a_gameObjectRef">Instigator gameobject</param>
         /// <summary>
         /// Shows a Rewarded Ad. Returns OK if the ad is starting to show, NOT_LOADED if Applovin has no loaded ad yet.
         /// </summary>
-        public static EResultCode ShowRewarded(GameObject a_objectRef, UnityAction<bool> a_onFinishAds, string a_placement = "none") {
+        public static EResultCode ShowRewarded(GameObject a_gameObjectRef, UnityAction<bool> a_onFinishAds, string a_placement = "none") {
             if (Exist) {
                 if (Instance.m_levelPlayComp.IsReady(EAdType.REWARDED)) {
-                    Instance.SetCallback(a_onFinishAds, a_objectRef);
+                    Instance.SetCallback(a_onFinishAds, a_gameObjectRef);
                     Instance.ShowAdInner(EAdType.REWARDED, a_placement);
                     return EResultCode.OK;
                 }
@@ -264,16 +264,12 @@ namespace MadPixel {
             return ShowInter(null, null, a_placement);
         }
 
-        public static EResultCode ShowInter(GameObject a_objectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
-#if UNITY_EDITOR
-            a_onAdDismissed?.Invoke(true);
-            return EResultCode.OK;
-#endif
+        public static EResultCode ShowInter(GameObject a_gameObjectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
             if (Exist) {
                 if (Instance.m_intersOn) {
                     if (Instance.IsCooldownElapsed()) {
                         if (Instance.m_levelPlayComp.IsReady(EAdType.INTER)) {
-                            Instance.SetCallback(a_onAdDismissed, a_objectRef);
+                            Instance.SetCallback(a_onAdDismissed, a_gameObjectRef);
                             Instance.ShowAdInner(EAdType.INTER, a_placement);
                             return EResultCode.OK;
                         }
@@ -299,10 +295,10 @@ namespace MadPixel {
         /// <summary>
         /// Ignores ADS FREE and COOLDOWN conditions for interstitials
         /// </summary>
-        public static EResultCode ShowInterForced(GameObject a_objectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
+        public static EResultCode ShowInterForced(GameObject a_gameObjectRef, UnityAction<bool> a_onAdDismissed, string a_placement = "none") {
             if (Exist) {
                 if (Instance.m_levelPlayComp.IsReady(EAdType.INTER)) {
-                    Instance.SetCallback(a_onAdDismissed, a_objectRef);
+                    Instance.SetCallback(a_onAdDismissed, a_gameObjectRef);
                     Instance.ShowAdInner(EAdType.INTER, a_placement);
                     return EResultCode.OK;
                 }
@@ -367,15 +363,15 @@ namespace MadPixel {
         /// <summary>
         /// Tries to show a Rewarded ad; if a Rewarded ad is not loaded, tries to show an Inter ad instead (ignoring COOLDOWN and ADSFREE conditions)
         /// </summary>
-        public static bool ShowRewardedWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
-            if (GO) {
-                EResultCode Result = ShowRewarded(GO, Callback, Placement);
+        public static bool ShowRewardedWithSubstitution(GameObject a_gameObjectRef, UnityAction<bool> a_callback, string a_placement) {
+            if (a_gameObjectRef) {
+                EResultCode Result = ShowRewarded(a_gameObjectRef, a_callback, a_placement);
                 if (Result == EResultCode.OK) {
                     return (true);
                 }
 
                 if (Result == EResultCode.NOT_LOADED) {
-                    Result = ShowInterForced(GO, Callback, $"{Placement}_i");
+                    Result = ShowInterForced(a_gameObjectRef, a_callback, $"{a_placement}_i");
                     if (Result == EResultCode.OK) {
                         return (true);
                     }
@@ -389,20 +385,15 @@ namespace MadPixel {
         /// <summary>
         /// Tries to show an Inter ad; if an Inter ad is not loaded by Applovin, tries to show a Rewarded ad instead
         /// </summary>
-        public static bool ShowInterWithSubstitution(GameObject GO, UnityAction<bool> Callback, string Placement) {
-#if UNITY_EDITOR
-            Callback?.Invoke(true);
-            Debug.LogWarning($"[Mad Pixel] Editor dummy: INTER was shown here, placement = {Placement}");
-            return true;
-#endif
-            if (GO) {
-                EResultCode Result = ShowInter(GO, Callback, Placement);
+        public static bool ShowInterWithSubstitution(GameObject a_gameObjectRef, UnityAction<bool> a_callback, string a_placement) {
+            if (a_gameObjectRef) {
+                EResultCode Result = ShowInter(a_gameObjectRef, a_callback, a_placement);
                 if (Result == EResultCode.OK) {
                     return (true);
                 }
 
                 if (Result == EResultCode.NOT_LOADED) {
-                    Result = ShowRewarded(GO, Callback, $"{Placement}_r");
+                    Result = ShowRewarded(a_gameObjectRef, a_callback, $"{a_placement}_r");
                     if (Result == EResultCode.OK) {
                         return (true);
                     }
@@ -457,19 +448,19 @@ namespace MadPixel {
             m_madPixelSettings = LoadMadPixelCustomSettings();
             m_levelPlayComp.Init(m_madPixelSettings);
 
-            m_levelPlayComp.e_onFinishAds += LevelPlay_OnFinishAds;
-            m_levelPlayComp.m_onAdLoaded += LevelPlay_OnAdLoaded;
-            m_levelPlayComp.e_onInterDismissed += LevelPlay_OnInterDismissed;
-            m_levelPlayComp.e_onDisplayAdError += LevelPlay_OnError;
-            m_levelPlayComp.m_onBannerAdLoaded += LevelPlay_OnBannerAdLoaded;
+            m_levelPlayComp.e_onFinishAds += LevelPlay_OnFinishAdsEvent;
+            m_levelPlayComp.m_onAdLoaded += LevelPlay_OnAdLoadedEvent;
+            m_levelPlayComp.e_onInterDismissed += LevelPlay_OnInterDismissedEvent;
+            m_levelPlayComp.e_onDisplayAdError += LevelPlay_OnErrorEvent;
+            m_levelPlayComp.m_onBannerAdLoaded += LevelPlay_OnBannerAdLoadedEvent;
 
             m_ready = true;
 
             e_onAdsManagerInitialized?.Invoke();
         }
 
-        private void SetCallback(UnityAction<bool> a_callback, GameObject a_objectRef) {
-            m_adsInstigatorObj = a_objectRef;
+        private void SetCallback(UnityAction<bool> a_callback, GameObject a_gameObjectRef) {
+            m_adsInstigatorObj = a_gameObjectRef;
             m_callbackPending = a_callback;
         }
 
@@ -482,10 +473,10 @@ namespace MadPixel {
 
 #if UNITY_EDITOR
             if (a_adType == EAdType.REWARDED) {
-                LevelPlay_OnFinishAds(true);
+                LevelPlay_OnFinishAdsEvent(true);
             }
             else if (a_adType == EAdType.INTER) {
-                LevelPlay_OnInterDismissed();
+                LevelPlay_OnInterDismissedEvent();
             }
 
             return;
