@@ -48,17 +48,13 @@ namespace MadPixel.Editor {
                 else if (package.name.Equals("appsflyer-unity-plugin")) {
                     amount++;
                     if (CheckExistence(APPSFLYER_MAIN_SCRIPT)) {
-                        hasDuplicatedAppmetrica = true;
+                        hasDuplicatedAppsFlyer = true;
                     }
                 }
 
                 if (amount >= 3) {
                     break;
                 }
-            }
-
-            if (CheckExistence(APPSFLYER_MAIN_SCRIPT)) {
-                hasDuplicatedAppsFlyer = true;
             }
 
             if (hasDuplicatedAppmetrica || hasDuplicatedEDM || hasDuplicatedAppsFlyer) {
