@@ -36,7 +36,7 @@ namespace MadPixel.Editor {
                     assetPaths.Add(AssetDatabase.GUIDToAssetPath(exportGUIDs[i]));
                 }
 
-                assetPaths.Add("Assets/Plugins/Android/GoogleMobileAdsPlugin.aar");
+                assetPaths.Add("Assets/Plugins/Android/GoogleMobileAdsPlugin.androidlib");
                 assetPaths.Add("Assets/Plugins/Android/googlemobileads-unity.aar");
 
                 // Export the package
