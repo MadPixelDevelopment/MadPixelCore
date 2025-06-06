@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -20,7 +21,6 @@ namespace MadPixel.Editor {
             string[] assetGUIDs = AssetDatabase.FindAssets("", foldersToInclude);
             AddGUIDs(ref exportGUIDs, assetGUIDs);
 
-
             string defaultPackageName = $"MPC_levelPlay_{MPCSetupWindow.GetMPCLevelPlayVersion().TrimEnd()}.unitypackage";
             string exportPath = EditorUtility.SaveFilePanel(
                 "Export MPC_levelPlay Folder as UnityPackage",
@@ -39,11 +39,11 @@ namespace MadPixel.Editor {
                 assetPaths.Add("Assets/Plugins/Android/GoogleMobileAdsPlugin.androidlib");
                 assetPaths.Add("Assets/Plugins/Android/googlemobileads-unity.aar");
 
+
                 // Export the package
                 AssetDatabase.ExportPackage(
                     assetPaths.ToArray(),
                     exportPath,
-                    ExportPackageOptions.Recurse |
                     ExportPackageOptions.Interactive);
 
                 EditorUtility.RevealInFinder(exportPath);
