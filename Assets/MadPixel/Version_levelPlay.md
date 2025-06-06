@@ -1,5 +1,12 @@
-﻿# Version 32 - May 22, 2025
+﻿# Version 33 - June 06, 2025
+* GetProductPriceString() added to Mobile InaAppsPurchaser
+* Use urchase connector field is hiding monetization key field
+* Firebase 12.9.0
+* Refactoring
+
+# Version 32 - May 22, 2025
 * MAX name is removed, only MadPixel now in namespaces and files
+* Firebase 12.8.0
 
 # Version 31 - May 15, 2025
 * New TermsAndPrivacyPanelFlow

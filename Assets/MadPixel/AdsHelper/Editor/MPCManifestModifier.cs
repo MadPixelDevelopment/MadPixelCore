@@ -1,6 +1,7 @@
 #if UNITY_ANDROID
 using UnityEditor.Android;
 using System.Xml;
+using UnityEngine;
 
 namespace MadPixel.Editor {
     public class ManifestModifier : IPostGenerateGradleAndroidProject {
@@ -72,6 +73,10 @@ namespace MadPixel.Editor {
             }
 
             doc.Save(manifestPath);
+
+            foreach (var childNode in applicationNode.ChildNodes) {
+                Debug.Log($"[MadPixel] manifestnode: {childNode.ToString()}" );
+            }
         }
 
         private void AddApplicationTag(XmlDocument a_doc, XmlNode a_node, string a_tag, string a_value = "true") {

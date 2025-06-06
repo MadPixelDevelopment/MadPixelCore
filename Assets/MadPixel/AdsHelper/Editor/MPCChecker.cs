@@ -17,13 +17,13 @@ namespace MadPixel.Editor {
         private const string APPSFLYER_MAIN_SCRIPT = "Assets/AppsFlyer/AppsFlyer.cs";
         #endregion
 
-//        static MPCChecker() {
-//            CheckPackagesExistence();
-//            CheckNewResourcesFile();
-//#if UNITY_ANDROID
-//            CheckTargetAPI();
-//#endif
-//        }
+        static MPCChecker() {
+            CheckPackagesExistence();
+            CheckNewResourcesFile();
+#if UNITY_ANDROID
+            CheckTargetAPI();
+#endif
+        }
 
         #region Android Target API 
 
@@ -125,14 +125,17 @@ namespace MadPixel.Editor {
                 EditorUtility.SetDirty(newCustomSettings);
                 AssetDatabase.SaveAssets();
 
-                Debug.Log("MadPixelCustomSettings migrated");
+                Debug.Log("[MadPixel] MadPixelCustomSettings migrated");
             }
             else {
                 oldConfig = AssetDatabase.LoadAssetAtPath(OLD_MAX_RESOURCES_CONFIGS_PATH, typeof(MadPixelCustomSettings));
                 if (oldConfig != null) {
                     string result = AssetDatabase.RenameAsset(OLD_MAX_RESOURCES_CONFIGS_PATH, $"{AdsManager.SETTINGS_FILE_NAME}.asset");
                     if (!string.IsNullOrEmpty(result)) {
-                        Debug.Log($"[Mad Pixel] {result}");
+                        Debug.Log($"[MadPixel] {result}");
+                    }
+                    else {
+                        Debug.Log("[MadPixel] Custom settings was renamed");
                     }
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

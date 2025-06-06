@@ -137,10 +137,10 @@ namespace MadPixel {
             OnNewAdLoaded?.Invoke(a_type);
         }
 
-        private void LevelPlay_OnFinishAdsEvent(bool IsFinished) {
+        private void LevelPlay_OnFinishAdsEvent(bool a_isFinished) {
             if (m_adsInstigatorObj != null) {
                 m_adsInstigatorObj = null;
-                m_callbackPending?.Invoke(IsFinished);
+                m_callbackPending?.Invoke(a_isFinished);
                 m_callbackPending = null;
             }
             else {
@@ -152,7 +152,7 @@ namespace MadPixel {
                 return;
             }
 
-            m_currentAdInfo.Availability = IsFinished ? "watched" : "canceled";
+            m_currentAdInfo.Availability = a_isFinished ? "watched" : "canceled";
             OnAdShown?.Invoke(m_currentAdInfo);
 
             RestartInterCooldown();

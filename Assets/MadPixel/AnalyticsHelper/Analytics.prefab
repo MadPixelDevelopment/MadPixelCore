@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc43b36505567840aedac74979b2df4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bUseAutoInit: 1
-  bSubscribeOnStart: 1
+  m_useAutoInit: 1
+  m_subscribeToAdsOnStart: 1
 --- !u!114 &7019281010441104460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,10 +61,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ffceae1c3dc36b4082e2d36754acdc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bSendAdRevenue: 0
-  bSendLatencyEvents: 0
-  bLogEventsOnDevice: 0
-  bLogEventsInEditor: 1
+  m_debugLogsOnDevice: 0
+  m_debugLogsInEditor: 1
 --- !u!114 &3194373316483798984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,9 +75,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3240abf71d5eee4a82a75c34a4ca861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bIsDebug: 0
-  bUsePurchaseConnector: 0
-  monetizaionPubKey: 
+  m_usePurchaseConnector: 0
+  m_monetizationPublicKey: 
+  m_debugMode: 0
 --- !u!114 &5361185114078576216
 MonoBehaviour:
   m_ObjectHideFlags: 0

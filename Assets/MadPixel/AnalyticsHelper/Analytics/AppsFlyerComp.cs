@@ -12,10 +12,11 @@ namespace MadPixelAnalytics {
         #region Fields
         [FormerlySerializedAs("bUsePurchaseConnector")]
         [SerializeField] private bool m_usePurchaseConnector;
-        [SerializeField] private string monetizaionPubKey;
+        [FormerlySerializedAs("monetizaionPubKey")]
+        [SerializeField, HideInInspector] private string m_monetizationPublicKey;
         [Space]
         [Header("Turn Debug OFF for production builds")]
-        [SerializeField] private bool DebugMode;
+        [SerializeField] private bool m_debugMode;
 
 
         public bool UseInappConnector => m_usePurchaseConnector; 
@@ -26,7 +27,7 @@ namespace MadPixelAnalytics {
         #region Init
 
         public void Init() {
-            AppsFlyer.setIsDebug(DebugMode);
+            AppsFlyer.setIsDebug(m_debugMode);
 
 #if UNITY_ANDROID
             AppsFlyer.initSDK(MadPixelCustomSettings.APPSFLYER_SDK_KEY, null, this);
@@ -99,16 +100,20 @@ namespace MadPixelAnalytics {
         #region Events
 
         public void VerificateAndSendPurchase(MPReceipt receipt) {
+            if (m_usePurchaseConnector) {
+                return;
+            }
+
             string currency = receipt.Product.metadata.isoCurrencyCode;
             float revenue = (float)receipt.Product.metadata.localizedPrice;
             string revenueString = revenue.ToString(CultureInfo.InvariantCulture);
 
 #if UNITY_ANDROID
-            if (string.IsNullOrEmpty(monetizaionPubKey)) {
+            if (string.IsNullOrEmpty(m_monetizationPublicKey)) {
                 return;
             }
 
-            AppsFlyer.validateAndSendInAppPurchase(monetizaionPubKey,
+            AppsFlyer.validateAndSendInAppPurchase(m_monetizationPublicKey,
                 receipt.Signature, receipt.Data, revenueString, currency, null, this);
 #endif
 
