@@ -4,59 +4,59 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MadPixel {
+namespace MadPixel.Demo {
     public class InterstitialButton : MonoBehaviour {
         #region Fields
-        private Button MyButton;
+        private Button m_myButton;
         #endregion
 
         #region Unity Events
 
         private void Start() {
-            MyButton = GetComponent<Button>();
-            if (MyButton != null) {
-                MyButton.onClick.AddListener(OnAdClick);
+            m_myButton = GetComponent<Button>();
+            if (m_myButton != null) {
+                m_myButton.onClick.AddListener(OnAdClick);
             }
             else {
-                Debug.LogError("[Mad Pixel] Please add a Button component!");
+                Debug.LogError("[MadPixel] Please add a Button component!");
             }
         }
 
         #endregion
 
         public void OnAdClick() {
-            MyButton.enabled = false;
+            m_myButton.enabled = false;
 
             // NOTE: Switch is implemented to show you how to work with Result codes.
-            AdsManager.EResultCode Result = AdsManager.ShowInter(this.gameObject, OnInterDismissed, "inter_placement");
-            switch (Result) {
+            AdsManager.EResultCode result = AdsManager.ShowInter(this.gameObject, OnInterDismissed, "inter_placement");
+            switch (result) {
                 case AdsManager.EResultCode.ADS_FREE:
-                    Debug.Log("[Mad Pixel] User bought adsfree and has no inters");
-                    MyButton.enabled = true;
+                    Debug.Log("[MadPixel] User bought adsfree and has no inters");
+                    m_myButton.enabled = true;
                     break;
 
                 case AdsManager.EResultCode.NOT_LOADED:
-                    Debug.Log("[Mad Pixel] Ad has not been loaded yet");
-                    MyButton.enabled = true;
+                    Debug.Log("[MadPixel] Ad has not been loaded yet");
+                    m_myButton.enabled = true;
                     break;
 
                 case AdsManager.EResultCode.ON_COOLDOWN:
-                    float Seconds = AdsManager.CooldownLeft;
-                    Debug.Log($"[Mad Pixel] Cooldown for ad has not finished! Can show inter in {Seconds} seconds"); 
-                    MyButton.enabled = true;
+                    float seconds = AdsManager.CooldownLeft;
+                    Debug.Log($"[MadPixel] Cooldown for ad has not finished! Can show inter in {seconds} seconds"); 
+                    m_myButton.enabled = true;
                     break;
 
                 case AdsManager.EResultCode.OK:
-                    Debug.Log("[Mad Pixel] Inter was shown");
+                    Debug.Log("[MadPixel] Inter was shown");
                     break;
             }
         }
 
 
         private void OnInterDismissed(bool bSuccess) {
-            Debug.Log($"[Mad Pixel] User dismissed the interstitial ad");
+            Debug.Log($"[MadPixel] User dismissed the interstitial ad");
 
-            MyButton.enabled = true;
+            m_myButton.enabled = true;
         }
 
     }

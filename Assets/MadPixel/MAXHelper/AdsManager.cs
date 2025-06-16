@@ -234,7 +234,7 @@ namespace MadPixel {
             }
             else {
                 GameObject.Destroy(gameObject);
-                Debug.LogError($"[Mad Pixel] Two AdsManagers at the same time!");
+                Debug.LogError($"[MadPixel] Two AdsManagers at the same time!");
             }
         }
 

@@ -522,7 +522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c28a8c0ef1f9dc4ba9e39b52332ad8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Placement: revive_hero
+  m_placement: revive_hero
 --- !u!114 &476303652
 MonoBehaviour:
   m_ObjectHideFlags: 0

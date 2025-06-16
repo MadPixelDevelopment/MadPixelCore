@@ -4,21 +4,21 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MadPixel {
+namespace MadPixel.Demo {
     public class AdButton : MonoBehaviour {
         #region Fields
-        [SerializeField] private string Placement = "revive_hero";
-        private Button MyButton;
-        private UnityAction<bool> Callback;
+        [SerializeField] private string m_placement = "revive_hero";
+        private Button m_myButton;
+        private UnityAction<bool> m_callback;
         #endregion
 
         #region Unity Events
         private void Start() {
-            MyButton = GetComponent<Button>();
-            if (MyButton != null) {
-                MyButton.onClick.AddListener(OnAdClick);
+            m_myButton = GetComponent<Button>();
+            if (m_myButton != null) {
+                m_myButton.onClick.AddListener(OnAdClick);
             } else {
-                Debug.LogError("[Mad Pixel] Please add a Button component!");
+                Debug.LogError("[MadPixel] Please add a Button component!");
             }
         }
         #endregion
@@ -26,26 +26,26 @@ namespace MadPixel {
 
         #region Public
         public void OnAdClick() {
-            MyButton.enabled = false; 
+            m_myButton.enabled = false; 
             
-            AdsManager.EResultCode Result = AdsManager.ShowRewarded(this.gameObject, OnFinishAds, Placement);
-            if (Result != AdsManager.EResultCode.OK) {
-                Debug.Log("[Mad Pixel] Ad has not been loaded yet");
-                MyButton.enabled = true;
+            AdsManager.EResultCode result = AdsManager.ShowRewarded(this.gameObject, OnFinishAds, m_placement);
+            if (result != AdsManager.EResultCode.OK) {
+                Debug.Log("[MadPixel] Ad has not been loaded yet");
+                m_myButton.enabled = true;
             }
         }
         
         #endregion
 
         #region Helpers
-        private void OnFinishAds(bool Success) {
-            if (Success) {
-                Debug.Log($"[Mad Pixel] Give reward to user!");
+        private void OnFinishAds(bool a_success) {
+            if (a_success) {
+                Debug.Log($"[MadPixel] Give reward to user!");
                 
             } else {
-                Debug.Log($"[Mad Pixel] User closed rewarded ad before it was finished");
+                Debug.Log($"[MadPixel] User closed rewarded ad before it was finished");
             }
-            MyButton.enabled = true;
+            m_myButton.enabled = true;
         }
         #endregion
     }
