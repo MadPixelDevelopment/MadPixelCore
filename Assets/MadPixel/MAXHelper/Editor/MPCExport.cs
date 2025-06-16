@@ -39,7 +39,6 @@ namespace MadPixel.Editor {
                 AssetDatabase.ExportPackage(
                     assetPaths.ToArray(),
                     exportPath,
-                    ExportPackageOptions.Recurse |
                     ExportPackageOptions.Interactive);
 
                 EditorUtility.RevealInFinder(exportPath);
@@ -50,12 +49,15 @@ namespace MadPixel.Editor {
         private static void AddGUIDs(ref List<string> o_exportGUIDs, string[] a_assetGUIDs) {
             foreach (string guid in a_assetGUIDs) {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (!path.EndsWith("AppLovinSettings.asset", System.StringComparison.OrdinalIgnoreCase)) {
-                    o_exportGUIDs.Add(guid);
+
+                if (path.EndsWith("AppLovinSettings.asset", System.StringComparison.OrdinalIgnoreCase)) {
+                    continue;
                 }
-                else if (!path.EndsWith("MPCExport.cs", System.StringComparison.OrdinalIgnoreCase)) {
-                    o_exportGUIDs.Add(guid);
+                if (path.EndsWith("MPCExport.cs", System.StringComparison.OrdinalIgnoreCase)) {
+                    continue;
                 }
+
+                o_exportGUIDs.Add(guid);
             }
         }
     }
