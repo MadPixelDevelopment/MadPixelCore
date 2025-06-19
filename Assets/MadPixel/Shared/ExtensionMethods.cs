@@ -7,36 +7,36 @@ using UnityEngine.Purchasing;
 
 namespace MadPixel {
     public static class ExtensionMethods {
-        public static MPReceipt GetReceipt(Product product) {
+        public static MPReceipt GetReceipt(Product a_product) {
             MPReceipt receipt = new MPReceipt();
-            receipt.SKU = product.definition.id;
-            receipt.Product = product;
+            receipt.sku = a_product.definition.id;
+            receipt.product = a_product;
 
-            StoreNamePurcahseInfoSignature(product, out string D, out string S);
+            StoreNamePurcahseInfoSignature(a_product, out string o_data, out string o_signature);
 
-            receipt.Data = D;
-            receipt.Signature = S;
+            receipt.data = o_data;
+            receipt.signature = o_signature;
 
             return receipt;
         }
 
 
-        private static void StoreNamePurcahseInfoSignature(Product product, out string purchaseInfo, out string signature) {
-            SimpleJSON.JSONNode jsNode = SimpleJSON.JSON.Parse(product.receipt);
+        private static void StoreNamePurcahseInfoSignature(Product a_product, out string o_purchaseInfo, out string o_signature) {
+            SimpleJSON.JSONNode jsNode = SimpleJSON.JSON.Parse(a_product.receipt);
 
-            signature = "empty";
-            purchaseInfo = "empty";
+            o_signature = "empty";
+            o_purchaseInfo = "empty";
 
 #if UNITY_IOS
-            purchaseInfo = jsNode["Payload"];
+            o_purchaseInfo = jsNode["Payload"];
 #elif UNITY_ANDROID
             SimpleJSON.JSONNode payloadNode = SimpleJSON.JSON.Parse(jsNode["Payload"]);
-            signature = payloadNode["signature"];
-            purchaseInfo = payloadNode["json"];
+            o_signature = payloadNode["signature"];
+            o_purchaseInfo = payloadNode["json"];
 #endif
 
-            if (signature != "empty") { signature = RemoveQuotes(signature); }
-            if (purchaseInfo != "empty") { purchaseInfo = RemoveQuotes(purchaseInfo); }
+            if (o_signature != "empty") { o_signature = RemoveQuotes(o_signature); }
+            if (o_purchaseInfo != "empty") { o_purchaseInfo = RemoveQuotes(o_purchaseInfo); }
         }
 
         private static string RemoveQuotes(string str) {
@@ -54,38 +54,38 @@ namespace MadPixel {
             return newStr;
         }
 
-        public static string RemoveAllWhitespacesAndNewLines(string InString) {
-            if (!string.IsNullOrEmpty(InString)) {
-                return (InString.Replace("\n", string.Empty).Replace("\r", string.Empty).Replace(" ", string.Empty));
+        public static string RemoveAllWhitespacesAndNewLines(string a_string) {
+            if (!string.IsNullOrEmpty(a_string)) {
+                return (a_string.Replace("\n", string.Empty).Replace("\r", string.Empty).Replace(" ", string.Empty));
             }
-            return (InString);
+            return (a_string);
         }
     }
 
     public class MPReceipt {
-        public string SKU;
-        public Product Product;
-        public string Signature;
-        public string Data;
+        public string sku;
+        public Product product;
+        public string signature;
+        public string data;
     }
 
     public class XOREncryption {
-        public static string Encrypt(string value, string key) {
-            return Convert.ToBase64String(XOREncryption.Encode(Encoding.UTF8.GetBytes(value), Encoding.UTF8.GetBytes(key)));
+        public static string Encrypt(string a_value, string a_key) {
+            return Convert.ToBase64String(XOREncryption.Encode(Encoding.UTF8.GetBytes(a_value), Encoding.UTF8.GetBytes(a_key)));
         }
 
-        public static string Decrypt(string value, string key) {
-            return Encoding.UTF8.GetString(XOREncryption.Encode(Convert.FromBase64String(value), Encoding.UTF8.GetBytes(key)));
+        public static string Decrypt(string a_value, string a_key) {
+            return Encoding.UTF8.GetString(XOREncryption.Encode(Convert.FromBase64String(a_value), Encoding.UTF8.GetBytes(a_key)));
         }
 
-        private static byte[] Encode(byte[] bytes, byte[] key) {
+        private static byte[] Encode(byte[] a_bytes, byte[] a_key) {
             int index1 = 0;
-            for (int index2 = 0; index2 < bytes.Length; ++index2) {
-                bytes[index2] ^= key[index1];
-                if (++index1 == key.Length)
+            for (int index2 = 0; index2 < a_bytes.Length; ++index2) {
+                a_bytes[index2] ^= a_key[index1];
+                if (++index1 == a_key.Length)
                     index1 = 0;
             }
-            return bytes;
+            return a_bytes;
         }
     }
 }

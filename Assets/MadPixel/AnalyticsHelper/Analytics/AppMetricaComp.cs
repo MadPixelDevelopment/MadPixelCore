@@ -37,46 +37,46 @@ namespace MadPixelAnalytics {
             Io.AppMetrica.AppMetrica.ReportAdRevenue(adRevenue);
         }
 
-        public void VideoAdWatched(AdInfo AdInfo) {
-            SendCustomEvent("video_ads_watch", GetAdAttributes(AdInfo));
+        public void VideoAdWatched(AdInfo a_adInfo) {
+            SendCustomEvent("video_ads_watch", GetAdAttributes(a_adInfo));
         }
 
-        public void VideoAdAvailable(AdInfo AdInfo) {
-            SendCustomEvent("video_ads_available", GetAdAttributes(AdInfo));
+        public void VideoAdAvailable(AdInfo a_adInfo) {
+            SendCustomEvent("video_ads_available", GetAdAttributes(a_adInfo));
         }
 
-        public void VideoAdStarted(AdInfo AdInfo) {
-            SendCustomEvent("video_ads_started", GetAdAttributes(AdInfo));
+        public void VideoAdStarted(AdInfo a_adInfo) {
+            SendCustomEvent("video_ads_started", GetAdAttributes(a_adInfo));
         }
 
 
-        public void VideoAdError(MaxSdkBase.AdInfo adInfo, MaxSdkBase.ErrorInfo EInfo, string placement) {
+        public void VideoAdError(MaxSdkBase.AdInfo a_maxAdInfo, MaxSdkBase.ErrorInfo a_errorInfo, string a_placement) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
 
             string NetworkName = "unknown";
-            if (adInfo != null && !string.IsNullOrEmpty(adInfo.NetworkName)) {
-                NetworkName = adInfo.NetworkName;
+            if (a_maxAdInfo != null && !string.IsNullOrEmpty(a_maxAdInfo.NetworkName)) {
+                NetworkName = a_maxAdInfo.NetworkName;
             }
 
             string AdLoadFailureInfo = "NULL";
             string Message = "NULL";
             string Code = "NULL";
-            if (EInfo != null) {
-                if (!string.IsNullOrEmpty(EInfo.Message)) {
-                    Message = EInfo.Message;
+            if (a_errorInfo != null) {
+                if (!string.IsNullOrEmpty(a_errorInfo.Message)) {
+                    Message = a_errorInfo.Message;
                 }
-                if (!string.IsNullOrEmpty(EInfo.AdLoadFailureInfo)) {
-                    AdLoadFailureInfo = EInfo.AdLoadFailureInfo;
+                if (!string.IsNullOrEmpty(a_errorInfo.AdLoadFailureInfo)) {
+                    AdLoadFailureInfo = a_errorInfo.AdLoadFailureInfo;
                 }
 
-                Code = EInfo.Code.ToString();
+                Code = a_errorInfo.Code.ToString();
             }
 
             eventAttributes.Add("network", NetworkName);
             eventAttributes.Add("error_message", Message);
             eventAttributes.Add("error_code", Code);
             eventAttributes.Add("ad_load_failure_info", AdLoadFailureInfo);
-            eventAttributes.Add("placement", placement);
+            eventAttributes.Add("placement", a_placement);
             SendCustomEvent("ad_display_error", eventAttributes);
         }
 
@@ -99,14 +99,14 @@ namespace MadPixelAnalytics {
 
 
         #region Purchases
-        public void PurchaseSucceed(MPReceipt Receipt) {
+        public void PurchaseSucceed(MPReceipt a_receipt) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
-            eventAttributes.Add("inapp_id", Receipt.Product.definition.storeSpecificId);
-            eventAttributes.Add("currency", Receipt.Product.metadata.isoCurrencyCode);
-            eventAttributes.Add("price", (float)Receipt.Product.metadata.localizedPrice);
+            eventAttributes.Add("inapp_id", a_receipt.product.definition.storeSpecificId);
+            eventAttributes.Add("currency", a_receipt.product.metadata.isoCurrencyCode);
+            eventAttributes.Add("price", (float)a_receipt.product.metadata.localizedPrice);
             SendCustomEvent("payment_succeed", eventAttributes);
 
-            HandlePurchase(Receipt.Product, Receipt.Data, Receipt.Signature);
+            HandlePurchase(a_receipt.product, a_receipt.data, a_receipt.signature);
         }
 
         public void HandlePurchase(Product Product, string data, string signature) {
@@ -165,16 +165,16 @@ namespace MadPixelAnalytics {
         private Dictionary<string, object> GetAdAttributes(AdInfo a_adInfo) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
             string adType = "interstitial";
-            if (a_adInfo.AdType == AdsManager.EAdType.REWARDED) {
+            if (a_adInfo.adType == AdsManager.EAdType.REWARDED) {
                 adType = "rewarded";
             }
-            else if (a_adInfo.AdType == AdsManager.EAdType.BANNER) {
+            else if (a_adInfo.adType == AdsManager.EAdType.BANNER) {
                 adType = "banner";
             }
             eventAttributes.Add("ad_type", adType);
-            eventAttributes.Add("placement", a_adInfo.Placement);
-            eventAttributes.Add("connection", a_adInfo.HasInternet ? 1 : 0);
-            eventAttributes.Add("result", a_adInfo.Availability);
+            eventAttributes.Add("placement", a_adInfo.placement);
+            eventAttributes.Add("connection", a_adInfo.hasInternet ? 1 : 0);
+            eventAttributes.Add("result", a_adInfo.availability);
 
             return eventAttributes;
         }

@@ -34,7 +34,7 @@ namespace MadPixel {
 
         #endregion
 
-        #region Events Declaration (Can be used for Analytics)
+        #region Events Declaration
 
         public UnityAction e_onAdsManagerInitialized;
 
@@ -133,7 +133,7 @@ namespace MadPixel {
                 return;
             }
 
-            m_currentAdInfo.Availability = a_isFinished ? "watched" : "canceled";
+            m_currentAdInfo.availability = a_isFinished ? "watched" : "canceled";
             e_onAdShown?.Invoke(m_currentAdInfo);
 
             RestartInterCooldown();
@@ -191,17 +191,17 @@ namespace MadPixel {
         }
 
         private void AppLovin_OnBannerLoadedEvent(MaxSdkBase.AdInfo a_adInfo, MaxSdkBase.ErrorInfo a_errorInfo) {
-            AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet, a_errorInfo == null ? "available" : "not_available");
-            e_onAdAvailable?.Invoke(BannerInfo);
+            AdInfo bannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet, a_errorInfo == null ? "available" : "not_available");
+            e_onAdAvailable?.Invoke(bannerInfo);
             if (a_errorInfo == null && m_canShowBanner) {
-                e_onAdStarted?.Invoke(BannerInfo);
+                e_onAdStarted?.Invoke(bannerInfo);
             }
         }
 
 
         private void ProccessRewardError(bool a_retry) {
             if (a_retry && m_appLovinComp.IsReady(true) && m_currentAdInfo != null && m_callbackPending != null) {
-                m_currentAdInfo.Availability = "waited";
+                m_currentAdInfo.availability = "waited";
                 e_onAdAvailable?.Invoke(m_currentAdInfo);
                 m_appLovinComp.ShowRewarded();
             }
@@ -212,7 +212,7 @@ namespace MadPixel {
 
         private void ProccessInterError(bool a_retry) {
             if (a_retry && m_appLovinComp.IsReady(false) && m_currentAdInfo != null) {
-                m_currentAdInfo.Availability = "waited";
+                m_currentAdInfo.availability = "waited";
                 e_onAdAvailable?.Invoke(m_currentAdInfo);
                 m_appLovinComp.ShowInterstitial();
             }
@@ -517,8 +517,8 @@ namespace MadPixel {
 
         private void OnPingComplete(bool a_hasInternet) {
             if (m_currentAdInfo != null) {
-                m_currentAdInfo.Availability = "not_available";
-                m_currentAdInfo.HasInternet = a_hasInternet;
+                m_currentAdInfo.availability = "not_available";
+                m_currentAdInfo.hasInternet = a_hasInternet;
                 e_onAdAvailable?.Invoke(m_currentAdInfo);
             }
 

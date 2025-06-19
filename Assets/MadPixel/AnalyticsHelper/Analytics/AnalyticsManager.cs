@@ -156,7 +156,7 @@ namespace MadPixelAnalytics {
         private static void OnAdErrorEvent(MaxSdkBase.AdInfo a_maxAdInfo, MaxSdkBase.ErrorInfo a_errorInfo, AdInfo a_adInfo) {
             if (Exist) {
                 if (Instance.m_appMetricaComp != null) {
-                    Instance.m_appMetricaComp.VideoAdError(a_maxAdInfo, a_errorInfo, a_adInfo.Placement);
+                    Instance.m_appMetricaComp.VideoAdError(a_maxAdInfo, a_errorInfo, a_adInfo.placement);
                 } else {
                     Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
                 }

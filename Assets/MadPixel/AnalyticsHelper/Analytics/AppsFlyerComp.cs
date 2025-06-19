@@ -105,8 +105,8 @@ namespace MadPixelAnalytics {
         #region Events
 
         public void VerificateAndSendPurchase(MPReceipt a_receipt) {
-            string currency = a_receipt.Product.metadata.isoCurrencyCode;
-            float revenue = (float)a_receipt.Product.metadata.localizedPrice;
+            string currency = a_receipt.product.metadata.isoCurrencyCode;
+            float revenue = (float)a_receipt.product.metadata.localizedPrice;
             string revenueString = revenue.ToString(CultureInfo.InvariantCulture);
 
 #if UNITY_ANDROID
@@ -115,7 +115,7 @@ namespace MadPixelAnalytics {
             }
 
             AppsFlyer.validateAndSendInAppPurchase(monetizaionPubKey,
-                a_receipt.Signature, a_receipt.Data, revenueString, currency, null, this);
+                a_receipt.signature, a_receipt.data, revenueString, currency, null, this);
 #endif
 
 #if UNITY_IOS
@@ -136,25 +136,6 @@ namespace MadPixelAnalytics {
         public void OnInterShown() {
             AppsFlyer.sendEvent("IT_finish", null);
         }
-
-
-        public void GameEnd(int a_place, int a_kills) {
-#if UNITY_EDITOR
-            Debug.Log($"Combat End {a_place} {a_kills}");
-#endif
-            Dictionary<string, string> Event = new Dictionary<string, string>();
-            Event.Add("Place", a_place.ToString());
-            Event.Add("Kills", a_kills.ToString());
-            AppsFlyer.sendEvent("CombatEnd", Event);
-        }
-
-        public void GameStart() {
-#if UNITY_EDITOR
-            Debug.Log("Combat Start");
-#endif
-            AppsFlyer.sendEvent("CombatStart", null);
-        }
-
         #endregion
 
 
