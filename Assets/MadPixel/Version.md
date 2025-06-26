@@ -1,5 +1,6 @@
-﻿# Version 135 - June 16, 2025
+﻿# Version 135 - June 26, 2025
 * Firebase 12.10.0
+* Cleanup Smaato and VK mediations
 
 # Version 134 - March 27, 2025
 * Namespaces changed! Delete MadPixel folder before updating!
