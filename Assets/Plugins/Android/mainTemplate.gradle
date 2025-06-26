@@ -37,9 +37,6 @@ allprojects {
         maven {
             url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" // Assets/MaxSdk/Mediation/Mintegral/Editor/Dependencies.xml:8
         }
-        maven {
-            url "https://s3.amazonaws.com/smaato-sdk-releases/" // Assets/MaxSdk/Mediation/Smaato/Editor/Dependencies.xml:8
-        }
         mavenLocal()
         mavenCentral()
     }
@@ -64,8 +61,6 @@ dependencies {
     implementation 'com.applovin.mediation:inmobi-adapter:10.8.3.1' // Assets/MaxSdk/Mediation/InMobi/Editor/Dependencies.xml:4
     implementation 'com.applovin.mediation:ironsource-adapter:8.9.1.0.0' // Assets/MaxSdk/Mediation/IronSource/Editor/Dependencies.xml:4
     implementation 'com.applovin.mediation:mintegral-adapter:16.9.71.0' // Assets/MaxSdk/Mediation/Mintegral/Editor/Dependencies.xml:8
-    implementation 'com.applovin.mediation:mytarget-adapter:5.27.1.2' // Assets/MaxSdk/Mediation/MyTarget/Editor/Dependencies.xml:4
-    implementation 'com.applovin.mediation:smaato-adapter:22.7.2.1' // Assets/MaxSdk/Mediation/Smaato/Editor/Dependencies.xml:8
     implementation 'com.applovin.mediation:unityads-adapter:4.15.0.1' // Assets/MaxSdk/Mediation/UnityAds/Editor/Dependencies.xml:4
     implementation 'com.applovin.mediation:vungle-adapter:7.5.0.3' // Assets/MaxSdk/Mediation/Vungle/Editor/Dependencies.xml:4
     implementation 'com.applovin:applovin-sdk:13.3.1' // Assets/MaxSdk/AppLovin/Editor/Dependencies.xml:4

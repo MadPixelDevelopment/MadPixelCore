@@ -12,8 +12,6 @@
     <package>com.applovin.mediation:inmobi-adapter:10.8.3.1</package>
     <package>com.applovin.mediation:ironsource-adapter:8.9.1.0.0</package>
     <package>com.applovin.mediation:mintegral-adapter:16.9.71.0</package>
-    <package>com.applovin.mediation:mytarget-adapter:5.27.1.2</package>
-    <package>com.applovin.mediation:smaato-adapter:22.7.2.1</package>
     <package>com.applovin.mediation:unityads-adapter:4.15.0.1</package>
     <package>com.applovin.mediation:vungle-adapter:7.5.0.3</package>
     <package>com.applovin:applovin-sdk:13.3.1</package>

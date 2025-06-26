@@ -113,16 +113,16 @@ namespace MadPixelAnalytics {
             string revenueString = revenue.ToString(CultureInfo.InvariantCulture);
 
 #if UNITY_ANDROID
-            if (string.IsNullOrEmpty(monetizaionPubKey)) {
+            if (string.IsNullOrEmpty(m_monetizationPublicKey)) {
                 return;
             }
 
-            AppsFlyer.validateAndSendInAppPurchase(monetizaionPubKey,
+            AppsFlyer.validateAndSendInAppPurchase(m_monetizationPublicKey,
                 a_receipt.signature, a_receipt.data, revenueString, currency, null, this);
 #endif
 
 #if UNITY_IOS
-            AppsFlyer.validateAndSendInAppPurchase(receipt.SKU, revenueString,  currency,  receipt.Product.transactionID,  null,  this);
+            AppsFlyer.validateAndSendInAppPurchase(a_receipt.SKU, revenueString,  currency,  receipt.Product.transactionID,  null,  this);
 #endif
         }
 

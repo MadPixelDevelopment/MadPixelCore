@@ -10,16 +10,14 @@ namespace MadPixel.Editor {
     public class MPCSetupWindow : EditorWindow {
         #region Fields
         private const string NEW_CONFIGS_PATH = "Assets/Resources/MadPixelCustomSettings.asset";
-        private const string MAXPACK_PACKAGE_PATH = "Assets/MadPixel/MAXHelper/Configs/MaximumPack.unitypackage";
         private const string MEDIATIONS_PATH = "Assets/MAXSdk/Mediation/";
 
         private const string MPC_FOLDER = "https://github.com/MadPixelDevelopment/MadPixelCore/releases";
-        private const string MAX_PACK_INDEPENDENT = "https://github.com/MadPixelDevelopment/MadPixelCore/raw/main/Assets/MadPixel/MAXHelper/Configs/MaximumPack.unitypackage";
 
         private const string ADS_DOC =
             "https://docs.google.com/document/d/1lx9wWCD4s8v4aXH1pb0oQENz01UszdalHtnznmQv2vc/edit#heading=h.y039lv8byi2i";
 
-        private List<string> MAX_VARIANT_PACKAGES = new List<string>() { "ByteDance", "Fyber", "Google", "InMobi", "Mintegral", "MyTarget", "Vungle"};
+        private List<string> MAX_VARIANT_PACKAGES = new List<string>() { "ByteDance", "Fyber", "Google", "InMobi", "Mintegral", "Vungle"};
 
         private Vector2 m_scrollPosition;
         private static readonly Vector2 m_windowMinSize = new Vector2(450, 250);
@@ -32,7 +30,6 @@ namespace MadPixel.Editor {
 
         private static GUILayoutOption m_sdkKeyLabelFieldWidthOption = GUILayout.Width(120);
         private static GUILayoutOption m_sdkKeyTextFieldWidthOption = GUILayout.Width(650);
-        private static GUILayoutOption m_buttonFieldWidth = GUILayout.Width(160);
         private static GUILayoutOption m_adUnitLabelWidthOption = GUILayout.Width(140);
         private static GUILayoutOption m_adUnitTextWidthOption = GUILayout.Width(150);
         private static GUILayoutOption m_adMobLabelFieldWidthOption = GUILayout.Width(100);
@@ -233,62 +230,35 @@ namespace MadPixel.Editor {
                 m_customSettings.bShowMediationDebugger = GUILayout.Toggle(m_customSettings.bShowMediationDebugger, "Show Mediation Debugger", m_adUnitToggleOption);
                 GUILayout.EndHorizontal();
             }
+
+
+            CheckMaxVersion();
+            if (!m_isMaxVariantInstalled) {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(10);
+                EditorGUILayout.LabelField("Some mediations might be missing. Please check installed mediations", m_warningLabelStyle);
+                GUILayout.EndHorizontal();
+            }
+
         }
         
 
         private void DrawInstallButtons() {
             GUILayout.Space(16);
-            EditorGUILayout.LabelField("4. Install our full mediations", m_titleLabelStyle);
+            EditorGUILayout.LabelField("4. Fill AdMob ID", m_titleLabelStyle);
+
             using (new EditorGUILayout.VerticalScope("box")) {
+                GUILayout.Space(10);
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
 
-                if (!MackPackUnitypackageExists()) {
-                    EditorGUILayout.LabelField("You dont have MaximunPack.unitypackage in your project. Probably your git added it to gitignore", m_sdkKeyTextFieldWidthOption);
-                    
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
+                AppLovinSettings.Instance.AdMobAndroidAppId = DrawTextField("AndroidAdMobID",
+                    AppLovinSettings.Instance.AdMobAndroidAppId, m_adMobLabelFieldWidthOption, m_adMobUnitTextWidthOption);
+                AppLovinSettings.Instance.AdMobIosAppId = DrawTextField("IOSAdMobID",
+                    AppLovinSettings.Instance.AdMobIosAppId, m_adMobLabelFieldWidthOption, m_adMobUnitTextWidthOption);
 
-                    if (GUILayout.Button(new GUIContent("Download latest Maximum mediations package"), m_adMobUnitTextWidthOption)) {
-                        Application.OpenURL(MAX_PACK_INDEPENDENT);
-                    }
-
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(10);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-                }
-
-                GUI.enabled = MackPackUnitypackageExists();
-                if (m_isMaxVariantInstalled) {
-                    EditorGUILayout.LabelField("You have installed default Maximum pack of mediations", m_sdkKeyTextFieldWidthOption);
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-                }
-                if (GUILayout.Button(new GUIContent(m_isMaxVariantInstalled ? "Reimport maximum pack" : "Install maximum pack"), m_buttonFieldWidth)) {
-                    AssetDatabase.ImportPackage(MAXPACK_PACKAGE_PATH, true);
-                    CheckMaxVersion();
-                }
-
-                GUI.enabled = true;
+                GUILayout.Space(5);
                 GUILayout.EndHorizontal();
-
-                //if (bMaxVariantInstalled) {
-
-                    GUILayout.Space(10);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-
-                    AppLovinSettings.Instance.AdMobAndroidAppId = DrawTextField("AndroidAdMobID",
-                        AppLovinSettings.Instance.AdMobAndroidAppId, m_adMobLabelFieldWidthOption, m_adMobUnitTextWidthOption);
-                    AppLovinSettings.Instance.AdMobIosAppId = DrawTextField("IOSAdMobID",
-                        AppLovinSettings.Instance.AdMobIosAppId, m_adMobLabelFieldWidthOption, m_adMobUnitTextWidthOption);
-
-                    GUILayout.Space(5);
-                    GUILayout.EndHorizontal();
-                //}
             }
         }
 
@@ -402,10 +372,6 @@ namespace MadPixel.Editor {
             AssetDatabase.importPackageFailed += (packageName, errorMessage) => {
                 Debug.Log($"Package {packageName} failed");
             };
-        }
-
-        private bool MackPackUnitypackageExists() {
-            return File.Exists(MAXPACK_PACKAGE_PATH);
         }
 
         #endregion
