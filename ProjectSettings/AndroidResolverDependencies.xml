@@ -1,12 +1,22 @@
 <dependencies>
   <packages>
     <package>androidx.annotation:annotation:1.7.1</package>
+    <package>androidx.recyclerview:recyclerview:1.2.1</package>
     <package>com.android.installreferrer:installreferrer:2.1</package>
+    <package>com.android.support:customtabs:28.+</package>
+    <package>com.android.support:recyclerview-v7:28.+</package>
+    <package>com.applovin.mediation:bytedance-adapter:7.2.0.6.0</package>
     <package>com.applovin.mediation:facebook-adapter:[6.20.0.0]</package>
-    <package>com.applovin.mediation:google-adapter:[24.3.0.1]</package>
-    <package>com.applovin.mediation:ironsource-adapter:8.9.0.0.0</package>
+    <package>com.applovin.mediation:fyber-adapter:8.3.7.0</package>
+    <package>com.applovin.mediation:google-adapter:[24.4.0.0]</package>
+    <package>com.applovin.mediation:inmobi-adapter:10.8.3.1</package>
+    <package>com.applovin.mediation:ironsource-adapter:8.9.1.0.0</package>
+    <package>com.applovin.mediation:mintegral-adapter:16.9.71.0</package>
+    <package>com.applovin.mediation:mytarget-adapter:5.27.1.2</package>
+    <package>com.applovin.mediation:smaato-adapter:22.7.2.1</package>
     <package>com.applovin.mediation:unityads-adapter:4.15.0.1</package>
-    <package>com.applovin:applovin-sdk:13.3.0</package>
+    <package>com.applovin.mediation:vungle-adapter:7.5.0.3</package>
+    <package>com.applovin:applovin-sdk:13.3.1</package>
     <package>com.appsflyer:af-android-sdk:6.15.0</package>
     <package>com.appsflyer:af-purchaseconnector-unity:2.1.0</package>
     <package>com.appsflyer:purchase-connector:2.1.0</package>
@@ -16,6 +26,7 @@
     <package>com.google.firebase:firebase-analytics-unity:12.10.0</package>
     <package>com.google.firebase:firebase-app-unity:12.10.0</package>
     <package>com.google.firebase:firebase-common:21.0.0</package>
+    <package>com.squareup.picasso:picasso:2.71828</package>
     <package>io.appmetrica.analytics:analytics:7.2.0</package>
   </packages>
   <files>

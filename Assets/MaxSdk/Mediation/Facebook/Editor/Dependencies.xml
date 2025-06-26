@@ -8,6 +8,6 @@
         <androidPackage spec="com.applovin.mediation:facebook-adapter:[6.20.0.0]" />
     </androidPackages>
     <iosPods>
-        <iosPod name="AppLovinMediationFacebookAdapter" version="6.17.1.0" />
+        <iosPod name="AppLovinMediationFacebookAdapter" version="6.20.0.0" />
     </iosPods>
 </dependencies>

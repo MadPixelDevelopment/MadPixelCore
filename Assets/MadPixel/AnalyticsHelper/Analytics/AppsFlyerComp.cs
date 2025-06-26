@@ -6,12 +6,15 @@ using UnityEngine.Purchasing;
 using MadPixel;
 using System.Globalization;
 using AppsFlyerConnector;
+using UnityEngine.Serialization;
 
 namespace MadPixelAnalytics {
     public class AppsFlyerComp : MonoBehaviour {
         #region Fields
         [SerializeField] private bool m_usePurchaseConnector;
-        [SerializeField] private string monetizaionPubKey;
+
+        [FormerlySerializedAs("monetizaionPubKey")]
+        [SerializeField] private string m_monetizationPublicKey;
         [Space]
         [Header("Turn Debug OFF for production builds")]
         [SerializeField] private bool m_debugMode;
