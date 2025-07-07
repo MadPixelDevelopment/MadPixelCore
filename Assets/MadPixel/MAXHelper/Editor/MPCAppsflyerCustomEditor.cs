@@ -16,6 +16,9 @@ namespace MadPixel.Editor {
                 EditorGUILayout.PropertyField(monetizationKeyField);
             }
 
+            SerializedProperty debugToggle = serializedObject.FindProperty("m_debugMode");
+            EditorGUILayout.PropertyField(debugToggle);
+
             serializedObject.ApplyModifiedProperties();
         }
     }
