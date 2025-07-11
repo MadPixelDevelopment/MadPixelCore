@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Firebase;
 using Firebase.Analytics;
 using Firebase.Extensions;
+using Unity.Services.LevelPlay;
 #if UNITY_IOS
 using Unity.Advertisement.IosSupport; 
 #endif
@@ -11,6 +12,7 @@ using UnityEngine;
 namespace MadPixel {
     public class FirebaseComp : MonoBehaviour {
         #region Fields
+        [SerializeField] private bool m_debugLogsOn;
         private static bool m_initialized = false;
         #endregion
 
@@ -41,7 +43,7 @@ namespace MadPixel {
                 }
             }
             else {
-                Debug.LogError($"Trying to set consent status but Firebase isn't initialized! Please fix it!");
+                Debug.LogError($"[Mad Pixel] Trying to set consent status but Firebase isn't initialized! Please fix it!");
             }
         }
 
@@ -72,14 +74,12 @@ namespace MadPixel {
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
                 var dependencyStatus = task.Result;
                 if (dependencyStatus == Firebase.DependencyStatus.Available) {
-                    // Create and hold a reference to your FirebaseApp,
-                    // where app is a Firebase.FirebaseApp property of your application class.
                     FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
-
                     FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
                     InnerInit();
-
-                    // Set a flag here to indicate whether Firebase is ready to use by your app.
+                    if (m_debugLogsOn) {
+                        Debug.Log("[Mad Pixel] Firebase init successful. Don't forget to check DebugView");
+                    }
                 }
                 else {
                     Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
@@ -89,7 +89,7 @@ namespace MadPixel {
         }
 
         private void OnDestroy() {
-            IronSourceEvents.onImpressionDataReadyEvent -= LogAdPurchase;
+            LevelPlay.OnImpressionDataReady -= LogAdPurchase;
         }
         #endregion
 
@@ -98,28 +98,32 @@ namespace MadPixel {
         #region Helpers
         private void InnerInit() {
             m_initialized = true;
-            IronSourceEvents.onImpressionDataReadyEvent += LogAdPurchase;
+            LevelPlay.OnImpressionDataReady += LogAdPurchase;
         }
 
-        private void LogAdPurchase(IronSourceImpressionData a_impressionData) {
-            if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
+        private void LogAdPurchase(LevelPlayImpressionData a_impressionData) {
+            if (a_impressionData == null || a_impressionData.Revenue == null || a_impressionData.Revenue.Value <= 0) {
+                return;
+            }
 
-            double revenue = a_impressionData.revenue.Value;
+            double revenue = a_impressionData.Revenue.Value;
             if (revenue > 0) {
                 var impressionParameters = new[] {
-                new Firebase.Analytics.Parameter("ad_platform", "IronSource"),
-                new Firebase.Analytics.Parameter("ad_source", a_impressionData.adNetwork),
-                new Firebase.Analytics.Parameter("ad_unit_name", a_impressionData.mediationAdUnitName),
-                new Firebase.Analytics.Parameter("ad_format", a_impressionData.adFormat),
-                new Firebase.Analytics.Parameter("value", revenue),
-                new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
-            };
-
+                    new Firebase.Analytics.Parameter("ad_platform", "IronSource"),
+                    new Firebase.Analytics.Parameter("ad_source", a_impressionData.AdNetwork),
+                    new Firebase.Analytics.Parameter("ad_unit_name", a_impressionData.MediationAdUnitName),
+                    new Firebase.Analytics.Parameter("ad_format", a_impressionData.AdFormat),
+                    new Firebase.Analytics.Parameter("value", revenue),
+                    new Firebase.Analytics.Parameter("currency", "USD"), // All AppLovin revenue is sent in USD
+                };
                 Firebase.Analytics.FirebaseAnalytics.LogEvent("ad_impression", impressionParameters);
 
-                //Debug.Log($"[MadPixel] Firebase Revenue logged {revenue}");
+                if (m_debugLogsOn) {
+                    Debug.Log($"[Mad Pixel] Firebase Revenue logged {revenue}");
+                }
             }
         }
+
         #endregion
     } 
 }

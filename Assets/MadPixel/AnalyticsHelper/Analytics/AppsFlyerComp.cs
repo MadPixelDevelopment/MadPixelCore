@@ -5,6 +5,7 @@ using UnityEngine;
 using AppsFlyerConnector;
 using MadPixel;
 using System.Globalization;
+using Unity.Services.LevelPlay;
 using UnityEngine.Serialization;
 
 namespace MadPixelAnalytics {
@@ -56,11 +57,11 @@ namespace MadPixelAnalytics {
 
             AppsFlyer.startSDK();
 
-            IronSourceEvents.onImpressionDataReadyEvent += LogAdPurchase;
+            LevelPlay.OnImpressionDataReady += LogAdPurchase;
         }
 
         private void OnDestroy() {
-            IronSourceEvents.onImpressionDataReadyEvent -= LogAdPurchase;
+            LevelPlay.OnImpressionDataReady -= LogAdPurchase;
         }
 
         #endregion
@@ -160,15 +161,15 @@ namespace MadPixelAnalytics {
 
         #region AdRevenue
 
-        public static void LogAdPurchase(IronSourceImpressionData a_impressionData) {
-            if (a_impressionData == null || a_impressionData.revenue == null || a_impressionData.revenue.Value <= 0) { return; }
+        public static void LogAdPurchase(LevelPlayImpressionData a_impressionData) {
+            if (a_impressionData == null || a_impressionData.Revenue == null || a_impressionData.Revenue.Value <= 0) { return; }
 
             Dictionary<string, string> additionalParams = new Dictionary<string, string>();
-            additionalParams.Add("custom_AdUnitIdentifier", a_impressionData.mediationAdUnitId);
-            additionalParams.Add(AdRevenueScheme.AD_TYPE, a_impressionData.adFormat);
+            additionalParams.Add("custom_AdUnitIdentifier", a_impressionData.MediationAdUnitId);
+            additionalParams.Add(AdRevenueScheme.AD_TYPE, a_impressionData.AdFormat);
 
-            AFAdRevenueData logRevenue = new AFAdRevenueData(a_impressionData.adNetwork, MediationNetwork.IronSource, 
-                "USD", a_impressionData.revenue.Value);
+            AFAdRevenueData logRevenue = new AFAdRevenueData(a_impressionData.AdNetwork, MediationNetwork.IronSource, 
+                "USD", a_impressionData.Revenue.Value);
             AppsFlyer.logAdRevenue(logRevenue, additionalParams);
         }
         #endregion

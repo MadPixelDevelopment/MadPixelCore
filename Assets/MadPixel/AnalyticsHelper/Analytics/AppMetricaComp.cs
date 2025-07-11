@@ -73,14 +73,14 @@ namespace MadPixelAnalytics {
         #endregion
 
 
-        public void RateUs(int rateResult) {
+        public void RateUs(int a_rateResult) {
             Dictionary<string, object> eventAttributes = new Dictionary<string, object>();
-            eventAttributes.Add("rate_result", rateResult);
+            eventAttributes.Add("rate_result", a_rateResult);
             SendCustomEvent("rate_us", eventAttributes);
         }
 
-        public void ABTestInitMetricaAttributes(string value) {
-            UserProfile profile = new UserProfile().Apply(Attribute.CustomString("ab_test_group").WithValue(value));
+        public void ABTestInitMetricaAttributes(string a_value) {
+            UserProfile profile = new UserProfile().Apply(Attribute.CustomString("ab_test_group").WithValue(a_value));
 
             Io.AppMetrica.AppMetrica.ReportUserProfile(profile);
             Io.AppMetrica.AppMetrica.SendEventsBuffer();
