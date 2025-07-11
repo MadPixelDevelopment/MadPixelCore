@@ -1,4 +1,4 @@
-namespace AppsFlyerConnector
+namespace AppsFlyerSDK
 {
     public interface IAppsFlyerPurchaseValidation
     {

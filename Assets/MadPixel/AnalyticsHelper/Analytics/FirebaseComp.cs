@@ -97,6 +97,8 @@ namespace MadPixel {
 
         #region Helpers
         private void InnerInit() {
+            if (m_initialized) return;
+
             m_initialized = true;
             LevelPlay.OnImpressionDataReady += LogAdPurchase;
         }

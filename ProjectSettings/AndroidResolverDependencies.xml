@@ -6,10 +6,9 @@
     <package>androidx.recyclerview:recyclerview:1.2.1</package>
     <package>com.android.installreferrer:installreferrer:2.1</package>
     <package>com.applovin:applovin-sdk:13.3.1</package>
-    <package>com.appsflyer:af-android-sdk:6.15.0</package>
-    <package>com.appsflyer:af-purchaseconnector-unity:2.1.0</package>
+    <package>com.appsflyer:af-android-sdk:6.17.0</package>
     <package>com.appsflyer:purchase-connector:2.1.0</package>
-    <package>com.appsflyer:unity-wrapper:6.15.2</package>
+    <package>com.appsflyer:unity-wrapper:6.17.0</package>
     <package>com.facebook.android:audience-network-sdk:6.20.0</package>
     <package>com.fyber:marketplace-sdk:8.3.7</package>
     <package>com.google.android.gms:play-services-ads:24.2.0</package>
@@ -37,7 +36,7 @@
     <package>com.unity3d.ads-mediation:unityads-adapter:4.3.57</package>
     <package>com.unity3d.ads-mediation:vungle-adapter:4.3.30</package>
     <package>com.vungle:vungle-ads:7.5.0</package>
-    <package>io.appmetrica.analytics:analytics:7.2.0</package>
+    <package>io.appmetrica.analytics:analytics:7.9.0</package>
   </packages>
   <files>
     <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.10.1/firebase-analytics-unity-12.10.1.aar</file>

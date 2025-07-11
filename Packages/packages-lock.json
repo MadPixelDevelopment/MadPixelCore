@@ -1,14 +1,7 @@
 {
   "dependencies": {
-    "appsflyer-unity-plugin": {
-      "version": "https://github.com/AppsFlyerSDK/appsflyer-unity-plugin.git#upm",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "804e7131595335e87bd59b88099b190e5bcac787"
-    },
     "com.google.external-dependency-manager": {
-      "version": "1.2.185",
+      "version": "1.2.186",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -118,7 +111,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ai.navigation": {
-      "version": "2.0.7",
+      "version": "2.0.8",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -137,7 +130,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collab-proxy": {
-      "version": "2.7.1",
+      "version": "2.8.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -177,7 +170,7 @@
       }
     },
     "com.unity.ide.rider": {
-      "version": "3.0.35",
+      "version": "3.0.36",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -202,7 +195,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.mobile.android-logcat": {
-      "version": "1.4.4",
+      "version": "1.4.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -231,7 +224,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.purchasing": {
-      "version": "4.12.2",
+      "version": "4.13.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -296,7 +289,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.9.6",
+      "version": "1.9.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -306,13 +299,13 @@
       "url": "https://packages.unity.com"
     },
     "io.appmetrica.analytics": {
-      "version": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.3.0",
+      "version": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.5.2",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.google.external-dependency-manager": "1.2.177"
+        "com.google.external-dependency-manager": "1.2.183"
       },
-      "hash": "bac19a45816e919f9cac22a5ad73a5460c30b5d3"
+      "hash": "49ca6c4c338c0913b067e3e8aa0ee45a54412a4a"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

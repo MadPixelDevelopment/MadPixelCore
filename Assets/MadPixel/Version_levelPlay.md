@@ -1,6 +1,7 @@
 ﻿# Version 34 - July 12, 2025
 * LevelPlay 8.10.0
 * Firebase 12.10.1
+* AppsFlyer 6.17.1 (with af purchase connector)
 * Refactoring
 
 # Version 33 - June 06, 2025

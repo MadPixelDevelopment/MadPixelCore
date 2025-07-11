@@ -2,7 +2,6 @@ using AppsFlyerSDK;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using AppsFlyerConnector;
 using MadPixel;
 using System.Globalization;
 using Unity.Services.LevelPlay;
@@ -10,7 +9,7 @@ using UnityEngine.Serialization;
 
 namespace MadPixelAnalytics {
     public class AppsFlyerComp : MonoBehaviour {
-        #region Fields
+    #region Fields
         [FormerlySerializedAs("bUsePurchaseConnector")]
         [SerializeField] private bool m_usePurchaseConnector;
         [FormerlySerializedAs("monetizaionPubKey")]
@@ -28,7 +27,6 @@ namespace MadPixelAnalytics {
         #region Init
 
         public void Init() {
-            AppsFlyer.setIsDebug(m_debugMode);
 
 #if UNITY_ANDROID
             AppsFlyer.initSDK(MadPixelCustomSettings.APPSFLYER_SDK_KEY, null, this);
@@ -41,11 +39,12 @@ namespace MadPixelAnalytics {
                 Debug.LogError($"Can not find IOS APP ID for appsflyer ios!");
             }
 #endif
+            AppsFlyer.setIsDebug(m_debugMode);
             AppsFlyer.enableTCFDataCollection(true);
 
             // Purchase connector implementation 
             if (m_usePurchaseConnector) {
-                AppsFlyerPurchaseConnector.init(this, AppsFlyerConnector.Store.GOOGLE);
+                AppsFlyerPurchaseConnector.init(this, Store.GOOGLE);
                 AppsFlyerPurchaseConnector.setIsSandbox(false);
                 AppsFlyerPurchaseConnector.setAutoLogPurchaseRevenue(
                     AppsFlyerAutoLogPurchaseRevenueOptions.AppsFlyerAutoLogPurchaseRevenueOptionsAutoRenewableSubscriptions,
