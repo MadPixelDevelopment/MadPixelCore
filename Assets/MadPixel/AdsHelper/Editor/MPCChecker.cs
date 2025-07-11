@@ -42,7 +42,7 @@ namespace MadPixel.Editor {
         private static void CheckTargetAPI() {
             int target = (int)PlayerSettings.Android.targetSdkVersion;
             if (target == 0) {
-                int highestInstalledVersion = GetHigestInstalledSDK();
+                int highestInstalledVersion = GetHighestInstalledSDK();
                 target = highestInstalledVersion;
             }
 
@@ -65,7 +65,7 @@ namespace MadPixel.Editor {
             MPCTargetCheckerWindow.ShowWindow(a_target, (int)PlayerSettings.Android.targetSdkVersion);
 
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
-            PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
+            PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)35;
         }
 
 
@@ -84,7 +84,7 @@ namespace MadPixel.Editor {
             EditorPrefs.SetString(Key, MPCSetupWindow.GetVersion());
         }
 
-        private static int GetHigestInstalledSDK() {
+        private static int GetHighestInstalledSDK() {
             string s = Path.Combine(GetHighestInstalledAPI(), "platforms");
             string[] directories = Directory.GetDirectories(s);
             int maxV = 0;

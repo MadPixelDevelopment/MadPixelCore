@@ -1,4 +1,9 @@
-﻿# Version 33 - June 06, 2025
+﻿# Version 34 - July 12, 2025
+* LevelPlay 8.10.0
+* Firebase 12.10.1
+* Refactoring
+
+# Version 33 - June 06, 2025
 * GetProductPriceString() added to Mobile InaAppsPurchaser
 * Use urchase connector field is hiding monetization key field
 * Firebase 12.9.0
