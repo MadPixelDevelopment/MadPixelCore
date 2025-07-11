@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 
+[Obsolete("This interface will be made private in version 9.0.0.")]
 /// <summary>
 /// LevelPlay's API Access point
 /// </summary>
@@ -203,7 +204,7 @@ public interface IronSourceIAgent
     bool isInterstitialPlacementCapped(string placementName);
 
     //******************* Banner API *******************//
-    [Obsolete("This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.LoadAd() method instead.")]
+    [Obsolete("Please use the LevelPlayBannerAd.LoadAd() method instead.")]
     /// <summary>
     /// Load a banner.
     /// </summary>
@@ -211,7 +212,7 @@ public interface IronSourceIAgent
     /// <param name="position">Anchored position of the banner</param>
     void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position);
 
-    [Obsolete("This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.LoadAd() method instead.")]
+    [Obsolete("Please use the LevelPlayBannerAd.LoadAd() method instead.")]
     /// <summary>
     /// Load and show a banner for a specific placement.
     /// </summary>
@@ -220,19 +221,19 @@ public interface IronSourceIAgent
     /// <param name="placementName">Name of the placement</param>
     void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position, string placementName);
 
-    [Obsolete("This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.DestroyAd() method instead.")]
+    [Obsolete("Use the LevelPlayBannerAd.DestroyAd() method instead.")]
     /// <summary>
     /// Destroy a banner.
     /// </summary>
     void destroyBanner();
 
-    [Obsolete("This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.ShowAd() method instead.")]
+    [Obsolete("Use the LevelPlayBannerAd.ShowAd() method instead.")]
     /// <summary>
     /// Show a banner.
     /// </summary>
     void displayBanner();
 
-    [Obsolete("This method will be removed in version 9.0.0. Please use the LevelPlayBannerAd.HideAd() method instead.")]
+    [Obsolete("Use the LevelPlayBannerAd.HideAd() method instead.")]
     /// <summary>
     /// Hide a banner.
     /// </summary>
@@ -316,6 +317,7 @@ public static class dataSource
 /// <summary>
 /// Contains the available Ad Unit identifiers
 /// </summary>
+[Obsolete("This class will be made private in version 9.0.0.")]
 public static class IronSourceAdUnits
 {
     /// <summary>
@@ -333,14 +335,14 @@ public static class IronSourceAdUnits
     /// </summary>
     public static string OFFERWALL { get { return "offerwall"; } }
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdFormat.BANNER instead.")]
+    [Obsolete("Use LevelPlayAdFormat.BANNER instead.")]
     /// <summary>
     /// Banner Ad Unit
     /// </summary>
     public static string BANNER { get { return "banner"; } }
 }
 
-[Obsolete("This class will be removed in version 9.0.0. Please use LevelPlayAdSize instead.")]
+[Obsolete("Use LevelPlayAdSize instead.")]
 /// <summary>
 /// Defines a banner's size informations
 /// </summary>
@@ -353,19 +355,19 @@ public class IronSourceBannerSize
     private ISContainerParams isContainerParams = new ISContainerParams();
     private bool respectAndroidCutouts;
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdSize.BANNER instead.")]
+    [Obsolete("Use LevelPlayAdSize.BANNER instead.")]
     /// <summary>
     /// Standard banner size
     /// </summary>
     public static IronSourceBannerSize BANNER = new IronSourceBannerSize("BANNER");
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdSize.LARGE instead.")]
+    [Obsolete("Use LevelPlayAdSize.LARGE instead.")]
     /// <summary>
     /// Standard large size
     /// </summary>
     public static IronSourceBannerSize LARGE = new IronSourceBannerSize("LARGE");
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdSize.MEDIUM_RECTANGLE instead.")]
+    [Obsolete("Use LevelPlayAdSize.MEDIUM_RECTANGLE instead.")]
     /// <summary>
     /// Standard rectangle size
     /// </summary>
@@ -381,7 +383,7 @@ public class IronSourceBannerSize
     {
     }
 
-    [Obsolete("This method will be removed in version 9.0.0. Please use LevelPlayAdSize.CreateCustomBannerSize() instead.")]
+    [Obsolete("Use LevelPlayAdSize.CreateCustomBannerSize() instead.")]
     /// <summary>
     /// Constructor for a custom banner size
     /// </summary>
@@ -406,7 +408,7 @@ public class IronSourceBannerSize
         this.height = 0;
     }
 
-    [Obsolete("This method will be removed in version 9.0.0. Please use LevelPlayBannerSize.CreateAdaptiveAdSize() instead.")]
+    [Obsolete("Use LevelPlayBannerSize.CreateAdaptiveAdSize() instead.")]
     /// <summary>
     /// Set the banner to adaptive
     /// </summary>
@@ -450,7 +452,7 @@ public class IronSourceBannerSize
         return this.isContainerParams;
     }
 
-    [Obsolete("This method will be removed in version 9.0.0. Please refer to the LevelPlayBannerAd class documentation to handle Android display cutouts (Respect Safe Area).")]
+    [Obsolete("Refer to the LevelPlayBannerAd class documentation to handle Android display cutouts (Respect Safe Area).")]
     /// <summary>
     ///  Set Respect for Android Cutouts. https://developer.android.com/develop/ui/views/layout/display-cutout
     /// </summary>
@@ -466,34 +468,34 @@ public class IronSourceBannerSize
         return this.respectAndroidCutouts;
     }
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdSize.Description instead.")]
+    [Obsolete("Use LevelPlayAdSize.Description instead.")]
     /// <summary>
     /// Description for the banner
     /// </summary>
     public string Description { get { return description; } }
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdSize.Width instead.")]
+    [Obsolete("Use LevelPlayAdSize.Width instead.")]
     /// <summary>
     /// Width of the banner
     /// </summary>
     public int Width { get { return width; } }
 
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayAdSize.Height instead.")]
+    [Obsolete("Use LevelPlayAdSize.Height instead.")]
     /// <summary>
     /// Height of the banner
     /// </summary>
     public int Height { get { return height; } }
 }
 
-[Obsolete("This class will be removed in version 9.0.0., please use LevelPlayBannerPosition instead.")]
+[Obsolete("Use LevelPlayBannerPosition instead.")]
 /// <summary>
 /// Banner position anchor options
 /// </summary>
 public enum IronSourceBannerPosition
 {
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayBannerPosition.TopCenter instead.")]
+    [Obsolete("Use LevelPlayBannerPosition.TopCenter instead.")]
     TOP = 1,
-    [Obsolete("This value will be removed in version 9.0.0. Please use LevelPlayBannerPosition.BottomCenter instead.")]
+    [Obsolete("Use LevelPlayBannerPosition.BottomCenter instead.")]
     BOTTOM = 2
 };
 

@@ -96,7 +96,7 @@ void LPMRewardedAdDelegateDestroy(void *delegateRef) {
     const char *rewardName = [reward.name UTF8String];
     int rewardAmount = (int)reward.amount;
     if (self.rewarded) {
-        self.rewarded(self.rewardedAd, adInfoString, rewardName, &rewardAmount);
+        self.rewarded(self.rewardedAd, adInfoString, rewardName, rewardAmount);
     }
 }
 

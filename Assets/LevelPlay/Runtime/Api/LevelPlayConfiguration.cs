@@ -6,7 +6,8 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Represents the configuration settings for the LevelPlay mediation platform.
     /// </summary>
-    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayConfiguration under the new namespace Unity.Services.LevelPlay.")]
+    [Obsolete(
+        "The namespace com.unity3d.mediation is deprecated. Use LevelPlayConfiguration under the new namespace Unity.Services.LevelPlay.")]
     public class LevelPlayConfiguration : Unity.Services.LevelPlay.LevelPlayConfiguration
     {
         internal LevelPlayConfiguration(string json) : base(json) {}
@@ -21,6 +22,7 @@ namespace Unity.Services.LevelPlay
     public class LevelPlayConfiguration
     {
         const string k_IsAdQualityEnabled = "isAdQualityEnabled";
+
         /// <summary>
         /// Indicates whether ad quality control is enabled.
         /// </summary>
@@ -32,6 +34,7 @@ namespace Unity.Services.LevelPlay
             {
                 return;
             }
+
             try
             {
                 object obj;

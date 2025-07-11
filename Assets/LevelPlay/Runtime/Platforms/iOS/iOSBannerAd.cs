@@ -3,9 +3,10 @@ using System;
 using System.Runtime.InteropServices;
 using com.unity3d.mediation;
 
+#pragma warning disable 0618
 namespace com.unity3d.mediation
 {
-    [Obsolete("This class will be deprecated in version 9.0.0. Please use ILevelPlayBannerAd instead.")]
+    [Obsolete("This class will be made private in version 9.0.0.")]
     public class iOSBannerAd : Unity.Services.LevelPlay.iOSBannerAd
     {
         public iOSBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition bannerPosition, string placementName, bool displayOnLoad) : base(adUnitId, size, bannerPosition, placementName, displayOnLoad) {}
@@ -14,7 +15,7 @@ namespace com.unity3d.mediation
 
 namespace Unity.Services.LevelPlay
 {
-    [Obsolete("This class will be deprecated in version 9.0.0. Please use ILevelPlayBannerAd instead.")]
+    [Obsolete("This class will be made private in version 9.0.0.")]
     public class iOSBannerAd : IosNativeObject, IPlatformBannerAd
     {
         public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
@@ -32,11 +33,11 @@ namespace Unity.Services.LevelPlay
         public com.unity3d.mediation.LevelPlayBannerPosition Position { get; }
         private bool DisplayOnLoad { get; }
 
-        public string AdId { get {return GetAdId();} }
+        public string AdId => GetAdId();
 
         IosBannerAdListener _mBannerAdListener;
 
-        public iOSBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition bannerPosition, string placementName, bool displayOnLoad) : base(true)
+        public iOSBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size,  com.unity3d.mediation.LevelPlayBannerPosition bannerPosition, string placementName,  bool displayOnLoad) : base(true)
         {
             AdUnitId = adUnitId;
             AdSize = size;
@@ -44,13 +45,31 @@ namespace Unity.Services.LevelPlay
             PlacementName = placementName;
             DisplayOnLoad = displayOnLoad;
 
-            IosLevelPlayAdSize iosAdSize = (IosLevelPlayAdSize) AdSize.GetPlatformLevelPlayAdSize();
-
+            IosLevelPlayAdSize iosAdSize = (IosLevelPlayAdSize)AdSize.GetPlatformLevelPlayAdSize();
             NativePtr = BannerAdCreate(adUnitId, placementName, iosAdSize.NativePtr);
             if (_mBannerAdListener == null)
             {
                 _mBannerAdListener = new IosBannerAdListener(this);
             }
+
+            BannerAdSetDelegate(NativePtr, _mBannerAdListener.NativePtr);
+        }
+
+        internal iOSBannerAd(string adUnitId, Config config) : base(true)
+        {
+            AdUnitId = adUnitId;
+            AdSize = config.AdSize;
+            Position = config.Position;
+            PlacementName = config.PlacementName;
+            DisplayOnLoad = config.DisplayOnLoad;
+
+            IosLevelPlayAdSize iosAdSize = (IosLevelPlayAdSize)AdSize.GetPlatformLevelPlayAdSize();
+            NativePtr = BannerAdCreate(adUnitId, config.IosConfig, iosAdSize.NativePtr);
+            if (_mBannerAdListener == null)
+            {
+                _mBannerAdListener = new IosBannerAdListener(this);
+            }
+
             BannerAdSetDelegate(NativePtr, _mBannerAdListener.NativePtr);
         }
 
@@ -88,6 +107,7 @@ namespace Unity.Services.LevelPlay
                 BannerAdDestroy(NativePtr);
                 NativePtr = IntPtr.Zero;
             }
+
             base.Dispose();
         }
 
@@ -130,7 +150,8 @@ namespace Unity.Services.LevelPlay
 
         internal void InvokeFailedDisplayEvent(com.unity3d.mediation.LevelPlayAdInfo adInfo, LevelPlayAdError error)
         {
-            com.unity3d.mediation.LevelPlayAdDisplayInfoError errorInfo = new com.unity3d.mediation.LevelPlayAdDisplayInfoError(adInfo, error);
+            com.unity3d.mediation.LevelPlayAdDisplayInfoError errorInfo =
+                new com.unity3d.mediation.LevelPlayAdDisplayInfoError(adInfo, error);
             ThreadUtil.Post(state => OnAdDisplayFailed?.Invoke(this, errorInfo));
         }
 
@@ -158,6 +179,9 @@ namespace Unity.Services.LevelPlay
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewCreate")]
         static extern IntPtr BannerAdCreate(string adUnitId, string placementName, IntPtr adSize);
 
+        [DllImport("__Internal", EntryPoint = "LPMBannerAdViewCreateWithConfig")]
+        static extern IntPtr BannerAdCreate(string adUnitId, IntPtr config, IntPtr adSize);
+
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewSetDelegate")]
         static extern void BannerAdSetDelegate(IntPtr bannerAdView, IntPtr bannerAdListener);
 
@@ -176,7 +200,6 @@ namespace Unity.Services.LevelPlay
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewHide")]
         private static extern void BannerAdViewHide(IntPtr bannerAdView);
 
-
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewPauseAutoRefresh")]
         static extern void BannerAdPauseAutoRefresh(IntPtr bannerAdView);
 
@@ -185,6 +208,93 @@ namespace Unity.Services.LevelPlay
 
         [DllImport("__Internal", EntryPoint = "LPMBannerAdViewAdId")]
         static extern string BannerAdId(IntPtr bannerAdView);
+
+        internal class Config : IPlatformBannerAd.IConfig
+        {
+            internal com.unity3d.mediation.LevelPlayAdSize AdSize { get; }
+            internal com.unity3d.mediation.LevelPlayBannerPosition Position { get; }
+            internal string PlacementName { get; }
+            internal bool DisplayOnLoad { get; }
+            internal IntPtr IosConfig { get; }
+
+            private Config(
+                com.unity3d.mediation.LevelPlayAdSize adSize,
+                com.unity3d.mediation.LevelPlayBannerPosition position,
+                string placementName,
+                bool displayOnLoad,
+                IntPtr iosConfig)
+            {
+                AdSize = adSize;
+                Position = position;
+                PlacementName = placementName;
+                DisplayOnLoad = displayOnLoad;
+                IosConfig = iosConfig;
+            }
+
+            internal class Builder : IPlatformBannerAd.IConfigBuilder
+            {
+                private com.unity3d.mediation.LevelPlayAdSize _adSize;
+                private com.unity3d.mediation.LevelPlayBannerPosition _position;
+                private string _placementName;
+                private bool _displayOnLoad;
+                private readonly IntPtr m_Builder = BannerAdCreateConfigBuilder();
+
+                public void SetBidFloor(double bidFloor)
+                {
+                    BannerAdConfigBuilderSetBidFloor(m_Builder, bidFloor);
+                }
+
+                public void SetSize(com.unity3d.mediation.LevelPlayAdSize size)
+                {
+                    _adSize = size;
+                    IosLevelPlayAdSize iosAdSize = (IosLevelPlayAdSize)size.GetPlatformLevelPlayAdSize();
+                    BannerAdConfigBuilderSetSize(m_Builder, iosAdSize.NativePtr);
+                }
+
+                public void SetPosition(com.unity3d.mediation.LevelPlayBannerPosition position)
+                {
+                    _position = position;
+                }
+
+                public void SetPlacementName(string placementName)
+                {
+                    _placementName = placementName;
+                    BannerAdConfigBuilderSetPlacementName(m_Builder, placementName);
+                }
+
+                public void SetDisplayOnLoad(bool displayOnLoad)
+                {
+                    _displayOnLoad = displayOnLoad;
+                }
+
+                public void SetRespectSafeArea(bool respectSafeArea)
+                {
+                    // unused
+                }
+
+                public IPlatformBannerAd.IConfig Build()
+                {
+                    var iosConfig = BannerAdConfigBuilderBuild(m_Builder);
+                    return new Config(_adSize, _position, _placementName, _displayOnLoad, iosConfig);
+                }
+
+                [DllImport("__Internal", EntryPoint = "LPMBannerAdAdCreateConfigBuilder")]
+                static extern IntPtr BannerAdCreateConfigBuilder();
+
+                [DllImport("__Internal", EntryPoint = "LPMBannerAdAdConfigBuilderSetBidFloor")]
+                static extern IntPtr BannerAdConfigBuilderSetBidFloor(IntPtr builder, double bidFloor);
+
+                [DllImport("__Internal", EntryPoint = "LPMBannerAdConfigBuilderSetSize")]
+                static extern IntPtr BannerAdConfigBuilderSetSize(IntPtr builder, IntPtr size);
+
+                [DllImport("__Internal", EntryPoint = "LPMBannerAdConfigBuilderSetPlacementName")]
+                static extern IntPtr BannerAdConfigBuilderSetPlacementName(IntPtr builder, string placementName);
+
+                [DllImport("__Internal", EntryPoint = "LPMBannerAdAdConfigBuilderBuild")]
+                static extern IntPtr BannerAdConfigBuilderBuild(IntPtr builder);
+            }
+        }
     }
 }
+#pragma warning restore 0618
 #endif

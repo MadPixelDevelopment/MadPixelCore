@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Services.LevelPlay;
 
-[Obsolete("Please use IronSource.Agent", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class UnsupportedPlatformAgent : IronSourceIAgent
 {
     public UnsupportedPlatformAgent()

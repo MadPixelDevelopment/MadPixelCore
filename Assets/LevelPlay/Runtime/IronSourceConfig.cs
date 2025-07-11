@@ -9,6 +9,7 @@ using Unity.Services.LevelPlay;
 /// <summary>
 /// Access point to setup LevelPlay's configuration
 /// </summary>
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceConfig
 {
     private const string unsupportedPlatformStr = "Unsupported Platform";
@@ -137,7 +138,7 @@ public class IronSourceConfig
     /// Enable or disable the client side callbacks
     /// </summary>
     /// <param name="status">Should the callbacks be enabled</param>
-    [Obsolete("This function will be removed in a future version.", false)]
+    [Obsolete("This method is deprecated and will be removed in version 9.0.0.")]
     public void setClientSideCallbacks(bool status)
     {
         LevelPlayLogger.Log(unsupportedPlatformStr);

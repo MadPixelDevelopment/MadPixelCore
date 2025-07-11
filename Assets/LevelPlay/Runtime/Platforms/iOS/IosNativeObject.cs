@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace com.unity3d.mediation
 {
-    [Obsolete("IosNativeObject will be deprecated.")]
+    [Obsolete("This class will be made private in version 9.0.0.")]
     public abstract class IosNativeObject : IDisposable
     {
         static ConcurrentDictionary<IntPtr, IosNativeObject> s_Objects = new ConcurrentDictionary<IntPtr, IosNativeObject>();

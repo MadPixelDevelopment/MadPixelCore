@@ -19,7 +19,12 @@ class LevelPlayRewardedVideoWrapper implements LevelPlayRewardedVideoListener, L
     }
 
     public void setIronSourceManualLoadListener(boolean isOn) {
-        IronSource.setLevelPlayRewardedVideoManualListener((isOn) ? this : null);
+        if(isOn) {
+            IronSource.setLevelPlayRewardedVideoManualListener(this);
+        } else {
+            IronSource.setLevelPlayRewardedVideoManualListener(null);
+            IronSource.setLevelPlayRewardedVideoListener(this);
+        }
     }
     // region Set level play rewarded video listeners
 

@@ -459,10 +459,20 @@ public class IronSourceDependenciesManager : EditorWindow, IObserver<bool>
 
     async Task DownloadSdkAction()
     {
+        var currentSdkVersion = m_LevelPlayNetworkManager.InstalledSdkVersion()?.Version;
         var sdkVersions = m_LevelPlayNetworkManager.CompatibleIronSourceSdkVersions();
         var sdkVersionToInstall = sdkVersions.First();
         if (sdkVersionToInstall != null)
         {
+            if (currentSdkVersion == null)
+            {
+                m_EditorAnalyticsService.SendInstallLPSDKEvent(sdkVersionToInstall.Version);
+            }
+            else
+            {
+                m_EditorAnalyticsService.SendUpdateLPSDKEvent(sdkVersionToInstall.Version, currentSdkVersion);
+            }
+
             await m_LevelPlayNetworkManager.Install(sdkVersionToInstall);
             AssetDatabase.Refresh();
         }

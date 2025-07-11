@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 
+[Obsolete("Use LevelPlaySegment instead.")]
 /// <summary>
 /// Representation of a user segment
 /// </summary>

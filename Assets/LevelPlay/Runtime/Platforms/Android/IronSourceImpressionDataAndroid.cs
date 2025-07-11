@@ -3,7 +3,7 @@ using System;
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
-[Obsolete("Please use IronSourceEvents", false)]
+[Obsolete("This class will be removed in version 9.0.0. Please use Unity.Services.LevelPlay.LeveLPlayImpressionDataAndroid instead.")]
 public class IronSourceImpressionDataAndroid : AndroidJavaProxy, IUnityImpressionData
 {
     public event Action<IronSourceImpressionData> OnImpressionSuccess = delegate {};

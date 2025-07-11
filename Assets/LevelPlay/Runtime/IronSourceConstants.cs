@@ -1,6 +1,6 @@
 using System;
 
-[Obsolete("This class will be made private in a future version.", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public static class IronSourceConstants
 {
     //General

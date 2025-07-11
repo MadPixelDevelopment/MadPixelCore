@@ -2,7 +2,7 @@ using System;
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
-[Obsolete("Please use IronSourceEvents", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceSegmentAndroid : AndroidJavaProxy, IUnitySegment
 {
     public event Action<string> OnSegmentRecieved = delegate {};

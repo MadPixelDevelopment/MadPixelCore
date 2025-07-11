@@ -9,7 +9,7 @@ namespace Unity.Services.LevelPlay.Editor
     static class MobileDependencyResolverInstaller
     {
         const string k_UnityMediationPackage = "com.unity.services.mediation";
-        const string k_PackageUrl   = @"https://s3.amazonaws.com/ssa.public/MDR/mobile-dependency-resolver.unitypackage";
+        const string k_PackageUrl = @"https://s3.amazonaws.com/ssa.public/MDR/1.2.185/mobile-dependency-resolver.unitypackage";
         const string k_DownloadPath = @"Temp/MDR.unitypackage";
 
         const string k_DoNotAskAgain = "Unity.Mediation.MobileDependencyResolver.DoNotAskAgain";
@@ -63,13 +63,18 @@ namespace Unity.Services.LevelPlay.Editor
             var response = EditorUtility.DisplayDialogComplex(k_DialogTitle, k_DialogText,
                 k_ButtonImport, k_ButtonCancel, k_ButtonDontAskAgain);
 
+            SendMdrEvent(EditorAnalyticsService.LevelPlayAction.MDRWindowDisplayed);
+
             switch (response)
             {
                 case 0:
+                    SendMdrEvent(EditorAnalyticsService.LevelPlayAction.MDRImport);
                     return true;
                 case 1:
+                    SendMdrEvent(EditorAnalyticsService.LevelPlayAction.MDRCancel);
                     return false;
                 case 2:
+                    SendMdrEvent(EditorAnalyticsService.LevelPlayAction.MDRIgnore);
                     EditorPrefs.SetBool(k_DoNotAskAgain, true);
                     return false;
                 default:
@@ -115,6 +120,11 @@ namespace Unity.Services.LevelPlay.Editor
                 AssetDatabase.ImportPackage(absolutePath, false);
                 File.Delete(absolutePath);
             }
+        }
+
+        static void SendMdrEvent(string action)
+        {
+            EditorServices.Instance.EditorAnalyticsService.SendMdrEvent(action);
         }
     }
 }

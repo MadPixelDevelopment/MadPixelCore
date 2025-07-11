@@ -32,19 +32,13 @@ allprojects {
             url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Assets/Firebase/Editor/AnalyticsDependencies.xml:18, Assets/Firebase/Editor/AppDependencies.xml:22
         }
         maven {
-            url "https://maven.google.com/" // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:8, Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:12, Assets/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7, Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:12, Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:12, Assets/LevelPlay/Editor/ISFacebookAdapterDependencies.xml:8, Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:16, Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:15, Assets/LevelPlay/Editor/ISMyTargetAdapterDependencies.xml:12, Assets/LevelPlay/Editor/ISMyTargetAdapterDependencies.xml:24, Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:12
-        }
-        maven {
-            url "https://repo.maven.apache.org/maven2/" // Assets/LevelPlay/Editor/ISFyberAdapterDependencies.xml:8
+            url "https://maven.google.com/" // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7, Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:12, Assets/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7, Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:12, Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:8, Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:12, Assets/LevelPlay/Editor/ISFacebookAdapterDependencies.xml:8, Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:16, Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:15, Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:12
         }
         maven {
             url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea/" // Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:8
         }
         maven {
             url "https://artifact.bytedance.com/repository/pangle/" // Assets/LevelPlay/Editor/ISPangleAdapterDependencies.xml:12
-        }
-        maven {
-            url "https://s3.amazonaws.com/smaato-sdk-releases/" // Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:8, Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:13, Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:18, Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:23
         }
         mavenLocal()
         mavenCentral()
@@ -64,15 +58,15 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0' // Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:16
     implementation 'androidx.recyclerview:recyclerview:1.2.1' // Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:15
     implementation 'com.android.installreferrer:installreferrer:2.1' // Packages/appsflyer-unity-plugin/Editor/AppsFlyerDependencies.xml:10
-    implementation 'com.applovin:applovin-sdk:13.2.0' // Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:12
+    implementation 'com.applovin:applovin-sdk:13.3.1' // Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:12
     implementation 'com.appsflyer:af-android-sdk:6.15.0' // Packages/appsflyer-unity-plugin/Editor/AppsFlyerDependencies.xml:6
     implementation 'com.appsflyer:af-purchaseconnector-unity:2.1.0' // Assets/AppsFlyer/Editor/AppsFlyerPurchaseConnectorDependencies.xml:5
     implementation 'com.appsflyer:purchase-connector:2.1.0' // Assets/AppsFlyer/Editor/AppsFlyerPurchaseConnectorDependencies.xml:6
     implementation 'com.appsflyer:unity-wrapper:6.15.2' // Packages/appsflyer-unity-plugin/Editor/AppsFlyerDependencies.xml:8
     implementation 'com.facebook.android:audience-network-sdk:6.20.0' // Assets/LevelPlay/Editor/ISFacebookAdapterDependencies.xml:8
-    implementation 'com.fyber:marketplace-sdk:8.3.7' // Assets/LevelPlay/Editor/ISFyberAdapterDependencies.xml:8
-    implementation 'com.google.android.exoplayer:exoplayer:2.19.1' // Assets/LevelPlay/Editor/ISMyTargetAdapterDependencies.xml:24
-    implementation 'com.google.android.gms:play-services-ads:24.2.0' // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:8
+    implementation 'com.fyber:marketplace-sdk:8.3.7' // Assets/LevelPlay/Editor/ISFyberAdapterDependencies.xml:5
+    // implementation 'com.google.android.gms:play-services-ads:24.2.0' // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7
+    implementation 'com.google.android.gms:play-services-ads:24.4.0' // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:8
     implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0' // Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:12
     implementation 'com.google.android.gms:play-services-base:18.6.0' // Assets/Firebase/Editor/AppDependencies.xml:17
     implementation 'com.google.android.ump:user-messaging-platform:3.2.0' // Assets/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7
@@ -82,25 +76,18 @@ dependencies {
     implementation 'com.google.firebase:firebase-common:21.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
     implementation 'com.inmobi.monetization:inmobi-ads-kotlin:10.8.3' // Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:9
     implementation 'com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.71' // Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:8
-    implementation 'com.my.target:mytarget-sdk:5.27.1' // Assets/LevelPlay/Editor/ISMyTargetAdapterDependencies.xml:12
-    implementation 'com.pangle.global:pag-sdk:7.1.0.8' // Assets/LevelPlay/Editor/ISPangleAdapterDependencies.xml:12
-    implementation 'com.smaato.android.sdk:smaato-sdk-banner:22.7.2' // Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:8
-    implementation 'com.smaato.android.sdk:smaato-sdk-in-app-bidding:22.7.2' // Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:23
-    implementation 'com.smaato.android.sdk:smaato-sdk-interstitial:22.7.2' // Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:13
-    implementation 'com.smaato.android.sdk:smaato-sdk-rewarded-ads:22.7.2' // Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:18
-    implementation 'com.unity3d.ads:unity-ads:4.14.2' // Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:12
-    implementation 'com.unity3d.ads-mediation:admob-adapter:4.3.50' // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:12
+    implementation 'com.pangle.global:pag-sdk:7.3.0.3' // Assets/LevelPlay/Editor/ISPangleAdapterDependencies.xml:12
+    implementation 'com.unity3d.ads:unity-ads:4.15.1' // Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:12
+    implementation 'com.unity3d.ads-mediation:admob-adapter:4.3.52' // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:12
     implementation 'com.unity3d.ads-mediation:adquality-sdk:7.24.3' // Assets/LevelPlay/Editor/IronSourceAdQualityDependencies.xml:4
-    implementation 'com.unity3d.ads-mediation:applovin-adapter:4.3.53' // Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:5
+    implementation 'com.unity3d.ads-mediation:applovin-adapter:4.3.54' // Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:5
     implementation 'com.unity3d.ads-mediation:facebook-adapter:4.3.50' // Assets/LevelPlay/Editor/ISFacebookAdapterDependencies.xml:12
-    implementation 'com.unity3d.ads-mediation:fyber-adapter:4.3.38' // Assets/LevelPlay/Editor/ISFyberAdapterDependencies.xml:12
+    implementation 'com.unity3d.ads-mediation:fyber-adapter:4.3.38' // Assets/LevelPlay/Editor/ISFyberAdapterDependencies.xml:9
     implementation 'com.unity3d.ads-mediation:inmobi-adapter:4.3.30' // Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:5
-    implementation 'com.unity3d.ads-mediation:mediation-sdk:8.8.0' // Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:5
-    implementation 'com.unity3d.ads-mediation:mintegral-adapter:4.3.40' // Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:19
-    implementation 'com.unity3d.ads-mediation:mytarget-adapter:4.3.0' // Assets/LevelPlay/Editor/ISMyTargetAdapterDependencies.xml:5
-    implementation 'com.unity3d.ads-mediation:pangle-adapter:4.3.41' // Assets/LevelPlay/Editor/ISPangleAdapterDependencies.xml:5
-    implementation 'com.unity3d.ads-mediation:smaato-adapter:4.3.14' // Assets/LevelPlay/Editor/ISSmaatoAdapterDependencies.xml:25
-    implementation 'com.unity3d.ads-mediation:unityads-adapter:4.3.54' // Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:5
+    implementation 'com.unity3d.ads-mediation:mediation-sdk:8.10.0' // Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:5
+    implementation 'com.unity3d.ads-mediation:mintegral-adapter:4.3.43' // Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:19
+    implementation 'com.unity3d.ads-mediation:pangle-adapter:4.3.46' // Assets/LevelPlay/Editor/ISPangleAdapterDependencies.xml:5
+    implementation 'com.unity3d.ads-mediation:unityads-adapter:4.3.57' // Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:5
     implementation 'com.unity3d.ads-mediation:vungle-adapter:4.3.30' // Assets/LevelPlay/Editor/ISVungleAdapterDependencies.xml:9
     implementation 'com.vungle:vungle-ads:7.5.0' // Assets/LevelPlay/Editor/ISVungleAdapterDependencies.xml:5
     implementation 'io.appmetrica.analytics:analytics:7.2.0' // Packages/io.appmetrica.analytics/Editor/AppMetricaDependencies.xml:4

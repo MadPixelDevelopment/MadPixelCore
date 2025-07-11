@@ -6,6 +6,7 @@ using System.Linq;
 
 #pragma warning disable 0618
 
+[Obsolete("Use Unity.Services.LevelPlay.LevelPlayRewardedAd instead.")]
 /// <summary>
 /// Access point to LevelPlay's rewarded video events
 /// </summary>
@@ -13,46 +14,56 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 {
 #if UNITY_ANDROID
     #pragma warning disable CS0067
+    [Obsolete("Use LevelPlayRewardedAd.OnAdDisplayFailed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad failed to show
     /// </summary>
     public static event Action<IronSourceError, IronSourceAdInfo> onAdShowFailedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdDisplayed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad opens
     /// </summary>
     public static event Action<IronSourceAdInfo> onAdOpenedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdClosed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad is closed
     /// </summary>
     public static event Action<IronSourceAdInfo> onAdClosedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdRewarded instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad is rewarded
     /// </summary>
     public static event Action<IronSourcePlacement, IronSourceAdInfo> onAdRewardedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdClicked instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad is clicked
     /// </summary>
     public static event Action<IronSourcePlacement, IronSourceAdInfo> onAdClickedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoaded instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad becomes available
     /// </summary>
     public static event Action<IronSourceAdInfo> onAdAvailableEvent;
 
+
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoadFailed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad becomes unavailable
     /// </summary>
     public static event Action onAdUnavailableEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoadFailed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad failed to load
     /// </summary>
     public static event Action<IronSourceError> onAdLoadFailedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoaded instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad becomes ready
     /// </summary>
@@ -193,6 +204,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
     // ******************************* Rewarded Video Events *******************************
     private static event Action<IronSourceError, IronSourceAdInfo> _onAdShowFailedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdDisplayFailed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad failed to show
     /// </summary>
@@ -229,6 +241,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdOpenedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdDisplayed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad opens
     /// </summary>
@@ -263,6 +276,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdClosedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdClosed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad is closed
     /// </summary>
@@ -297,6 +311,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourcePlacement, IronSourceAdInfo> _onAdRewardedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdRewarded instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad is rewarded
     /// </summary>
@@ -333,6 +348,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourcePlacement, IronSourceAdInfo> _onAdClickedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdClicked instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad is clicked
     /// </summary>
@@ -369,6 +385,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdAvailableEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoaded instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad becomes available
     /// </summary>
@@ -403,6 +420,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action _onAdUnavailableEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoadFailed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad becomes unavailable
     /// </summary>
@@ -438,6 +456,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourceError> _onAdLoadFailedEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoadFailed instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad failed to load
     /// </summary>
@@ -472,6 +491,7 @@ public class IronSourceRewardedVideoEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdReadyEvent;
 
+    [Obsolete("Use LevelPlayRewardedAd.OnAdLoaded instead.")]
     /// <summary>
     /// Event triggered when a rewarded ad becomes ready
     /// </summary>

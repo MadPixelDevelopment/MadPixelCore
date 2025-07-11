@@ -5,7 +5,7 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Represents detailed error information about an issue that occurred during the display of a LevelPlay advertisement.
     /// </summary>
-    [Obsolete("The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event to use LevelPlayAdInfo and LevelPlayAdError instead.")]
+    [Obsolete("The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event handler to use LevelPlayAdInfo and LevelPlayAdError once this change is introduced in 9.0.0.")]
     public class LevelPlayAdDisplayInfoError : Unity.Services.LevelPlay.LevelPlayAdDisplayInfoError
     {
         [Obsolete("The constructor of LevelPlayAdDisplayInfoError will be removed in version 9.0.0.")]
@@ -18,7 +18,7 @@ namespace Unity.Services.LevelPlay
     /// <summary>
     /// Represents detailed error information about an issue that occurred during the display of a LevelPlay advertisement.
     /// </summary>
-    [Obsolete("The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event to use LevelPlayAdInfo and LevelPlayAdError instead.")]
+    [Obsolete("The class LevelPlayAdDisplayInfoError will be removed in version 9.0.0. Please update OnAdDisplayFailed event handler to use LevelPlayAdInfo and LevelPlayAdError once this change is introduced in 9.0.0.")]
     public class LevelPlayAdDisplayInfoError
     {
         public LevelPlayAdInfo DisplayLevelPlayAdInfo { get; private set; }

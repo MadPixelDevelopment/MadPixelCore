@@ -18,10 +18,11 @@ namespace Unity.Services.LevelPlay.Editor
 
         public void Initialize()
         {
-            LevelPlayPackmanQuerier.instance.CheckIfPackageIsInstalledWithUpm(k_ServicesCorePackageName, coreIsInstalled =>
-            {
-                SetServicesCoreIsReady(coreIsInstalled);
-            });
+            LevelPlayPackmanQuerier.instance.CheckIfPackageIsInstalledWithUpm(k_ServicesCorePackageName,
+                coreIsInstalled =>
+                {
+                    SetServicesCoreIsReady(coreIsInstalled);
+                });
         }
 
         internal void SetServicesCoreIsReady(bool isReady)
@@ -104,13 +105,49 @@ namespace Unity.Services.LevelPlay.Editor
                 });
         }
 
+        public void SendInstallLPSDKEvent(string newVersion)
+        {
+            SendEvent(k_EventName,
+                new EventBody
+                {
+                    component = LevelPlayComponent.LevelPlayNetworkManager,
+                    action = LevelPlayAction.Install + "_Ironsource_" + newVersion,
+                    package = Constants.PackageAnalyticsIdentifier,
+                    package_ver = m_PackageVersion,
+                });
+        }
+
+        public void SendUpdateLPSDKEvent(string newVersion, string currentVersion)
+        {
+            SendEvent(k_EventName,
+                new EventBody
+                {
+                    component = LevelPlayComponent.LevelPlayNetworkManager,
+                    action = LevelPlayAction.Update + "_Ironsource_" + newVersion,
+                    package = Constants.PackageAnalyticsIdentifier,
+                    package_ver = m_PackageVersion,
+                });
+        }
+
+        public void SendMdrEvent(string action)
+        {
+            SendEvent(k_EventName,
+                new EventBody
+                {
+                    action = action,
+                    component = LevelPlayComponent.MDR,
+                    package = Constants.PackageAnalyticsIdentifier,
+                    package_ver = m_PackageVersion
+                });
+        }
+
         public void SendInteractWithSkanIdCheckBox(bool action)
         {
             SendEvent(k_EventName,
                 new EventBody
                 {
                     component = LevelPlayComponent.LevelPlayNetworkManager,
-                    action = action? LevelPlayAction.EnableSkAdNetworkId : LevelPlayAction.DisableSkAdNetworkId,
+                    action = action ? LevelPlayAction.EnableSkAdNetworkId : LevelPlayAction.DisableSkAdNetworkId,
                     package = Constants.PackageAnalyticsIdentifier,
                     package_ver = m_PackageVersion
                 });
@@ -128,11 +165,23 @@ namespace Unity.Services.LevelPlay.Editor
                 });
         }
 
+        public void SendInstantiateGameObject(string adFormat)
+        {
+            SendEvent(k_EventName,
+                new EventBody
+                {
+                    component = LevelPlayComponent.GameObject,
+                    action = $"{LevelPlayAction.Instantiate}_{adFormat}",
+                    package = Constants.PackageAnalyticsIdentifier,
+                    package_ver = m_PackageVersion
+                });
+        }
+
         private void SendEvent(string eventName, EventBody body)
         {
             if (!m_ServicesCoreIsReady)
             {
-                m_EventsQueue.Enqueue(new QueuedEvent { Name = eventName, Body = body, });
+                m_EventsQueue.Enqueue(new QueuedEvent {Name = eventName, Body = body, });
             }
             else
             {
@@ -151,10 +200,14 @@ namespace Unity.Services.LevelPlay.Editor
             public const string TopMenuDeveloperSettings = "TopMenu_DeveloperSettings";
             public const string LevelPlayNetworkManager = "LevelPlay_Network_Manager";
 
+            public const string MDR = "MDR";
+
             public const string UpmPackage = "upm";
             public const string UnityPackage = ".unitypackage";
 
             public const string PostBuild = "Post_Build";
+
+            public const string GameObject = "GameObject";
         }
 
         internal static class LevelPlayAction
@@ -176,6 +229,14 @@ namespace Unity.Services.LevelPlay.Editor
             public const string DisableSkAdNetworkId = "Disable_SkAdNetworkId";
 
             public const string FailedToAddSkanId = "FailedToAddSkanId";
+
+            public const string DragAndDrop = "DragAndDrop";
+            public const string Instantiate = "Instantiate";
+
+            public const string MDRWindowDisplayed = "Display_Import_Window";
+            public const string MDRImport = "Click_Import";
+            public const string MDRIgnore = "Click_Ignore";
+            public const string MDRCancel = "Click_Cancel";
         }
     }
 
@@ -233,7 +294,8 @@ namespace Unity.Services.LevelPlay.Editor
 
         public int GetHashCode(EventBody eventBody)
         {
-            return eventBody.action.GetHashCode() ^ eventBody.component.GetHashCode() ^ eventBody.package.GetHashCode() ^ eventBody.package_ver.GetHashCode();
+            return eventBody.action.GetHashCode() ^ eventBody.component.GetHashCode() ^
+                eventBody.package.GetHashCode() ^ eventBody.package_ver.GetHashCode();
         }
     }
 }

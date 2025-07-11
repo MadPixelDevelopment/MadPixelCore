@@ -3,6 +3,7 @@ using System;
 /// <summary>
 /// Interface to access initialization events
 /// </summary>
+[Obsolete("This class will be removed in version 9.0.0.")]
 public interface IUnityInitialization
 {
     /// <summary>

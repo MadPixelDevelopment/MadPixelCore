@@ -10,6 +10,8 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Access point to LevelPlay's events
 /// </summary>
+
+[Obsolete("Use LevelPlay instead.")]
 public class IronSourceEvents : MonoBehaviour
 {
 #if UNITY_IPHONE || UNITY_IOS
@@ -21,11 +23,13 @@ public class IronSourceEvents : MonoBehaviour
 
 #if UNITY_ANDROID
     #pragma warning disable CS0067
+    [Obsolete("Use LevelPlay.OnInitSuccess instead.")]
     /// <summary>
     /// Event triggered when the SDK initialization completes successfully
     /// </summary>
     public static event Action onSdkInitializationCompletedEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when a segment has been received
     /// </summary>
@@ -37,8 +41,10 @@ public class IronSourceEvents : MonoBehaviour
     private const string ERROR_DESCRIPTION = "error_description";
 
 #pragma warning disable CS0067
+    [Obsolete("use LevelPlay.OnImpressionDataReadyEvent instead.")]
     /// <summary>
-    /// Event triggered when an impression event occurs
+    /// Event triggered when an impression event occurs.
+    /// This event is triggered on a background thread, not the Unity main thread.
     /// </summary>
     public static event Action<IronSourceImpressionData> onImpressionDataReadyEvent;
 
@@ -83,6 +89,7 @@ public class IronSourceEvents : MonoBehaviour
             }
         };
     }
+
     //subscribe to IronSourceSegmentAndroid onSegmentRecieved event and notify to subscribed event inside the app
     private void registerSegmentEvents()
     {
@@ -109,6 +116,7 @@ public class IronSourceEvents : MonoBehaviour
             }
         };
     }
+
 #endif
 
 #if !UNITY_ANDROID
@@ -130,7 +138,7 @@ public class IronSourceEvents : MonoBehaviour
     // ******************************* Init Event *******************************
 
     private static event Action _onSdkInitializationCompletedEvent;
-
+    [Obsolete("Use LevelPlay.OnInitSuccess instead.")]
     /// <summary>
     /// Event triggered when the SDK initialization completes successfully
     /// </summary>
@@ -163,7 +171,7 @@ public class IronSourceEvents : MonoBehaviour
     }
 
     private static event Action<string> _onSegmentReceivedEvent;
-
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when a segment has been received
     /// </summary>
@@ -200,6 +208,7 @@ public class IronSourceEvents : MonoBehaviour
     //iOS callbacks only - in order to prevent using macro for iOS it's not only iOS
     private static event Action<string, IronSourceError> _onConsentViewDidFailToLoadWithErrorEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when the consent view fails to load
     /// </summary>
@@ -222,7 +231,7 @@ public class IronSourceEvents : MonoBehaviour
         }
     }
 
-    [Obsolete("This function will be made private in a future version. Please avoid triggering events manually.", false)]
+    [Obsolete("This method is deprecated and will be removed in version 9.0.0.")]
     public void onConsentViewDidFailToLoadWithError(string args)
     {
         if (_onConsentViewDidFailToLoadWithErrorEvent != null && !String.IsNullOrEmpty(args))
@@ -236,6 +245,7 @@ public class IronSourceEvents : MonoBehaviour
 
     private static event Action<string, IronSourceError> _onConsentViewDidFailToShowWithErrorEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when the consent view fails to show
     /// </summary>
@@ -258,7 +268,7 @@ public class IronSourceEvents : MonoBehaviour
         }
     }
 
-    [Obsolete("This function will be made private in a future version. Please avoid triggering events manually.", false)]
+    [Obsolete("This method is deprecated and will be removed in version 9.0.0.")]
     public void onConsentViewDidFailToShowWithError(string args)
     {
         if (_onConsentViewDidFailToShowWithErrorEvent != null && !String.IsNullOrEmpty(args))
@@ -272,6 +282,7 @@ public class IronSourceEvents : MonoBehaviour
 
     private static event Action<string> _onConsentViewDidAcceptEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when the consent view was accepted
     /// </summary>
@@ -294,7 +305,7 @@ public class IronSourceEvents : MonoBehaviour
         }
     }
 
-    [Obsolete("This function will be made private in a future version. Please avoid triggering events manually.", false)]
+    [Obsolete("This method is deprecated and will be removed in version 9.0.0.")]
     public void onConsentViewDidAccept(string consentViewType)
     {
         if (_onConsentViewDidAcceptEvent != null)
@@ -305,6 +316,7 @@ public class IronSourceEvents : MonoBehaviour
 
     private static event Action<string> _onConsentViewDidDismissEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when the consent view is dismissed
     /// </summary>
@@ -327,7 +339,7 @@ public class IronSourceEvents : MonoBehaviour
         }
     }
 
-    [Obsolete("This function will be made private in a future version. Please avoid triggering events manually.", false)]
+    [Obsolete("This method is deprecated and will be removed in version 9.0.0.")]
     public void onConsentViewDidDismiss(string consentViewType)
     {
         if (_onConsentViewDidDismissEvent != null)
@@ -338,6 +350,7 @@ public class IronSourceEvents : MonoBehaviour
 
     private static event Action<string> _onConsentViewDidLoadSuccessEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when the consent view loads successfully
     /// </summary>
@@ -360,7 +373,7 @@ public class IronSourceEvents : MonoBehaviour
         }
     }
 
-    [Obsolete("This function will be made private in a future version. Please avoid triggering events manually.", false)]
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     public void onConsentViewDidLoadSuccess(string consentViewType)
     {
         if (_onConsentViewDidLoadSuccessEvent != null)
@@ -371,6 +384,7 @@ public class IronSourceEvents : MonoBehaviour
 
     private static event Action<string> _onConsentViewDidShowSuccessEvent;
 
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     /// <summary>
     /// Event triggered when the consent view shows successfully
     /// </summary>
@@ -393,7 +407,7 @@ public class IronSourceEvents : MonoBehaviour
         }
     }
 
-    [Obsolete("This function will be made private in a future version. Please avoid triggering events manually.", false)]
+    [Obsolete("This event is deprecated and will be removed in version 9.0.0.")]
     public void onConsentViewDidShowSuccess(string consentViewType)
     {
         if (_onConsentViewDidShowSuccessEvent != null)

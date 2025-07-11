@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-[Obsolete("This class will be made private in a future version.", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceUtils
-    {
+{
     private const string ERROR_CODE = "error_code";
     private const string ERROR_DESCRIPTION = "error_description";
     private const string INSTANCE_ID_KEY = "instanceId";

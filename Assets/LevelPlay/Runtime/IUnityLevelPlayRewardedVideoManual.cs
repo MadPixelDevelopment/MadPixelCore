@@ -3,6 +3,7 @@ using System;
 /// <summary>
 /// Interface representing LevelPlay's manual rewarded video events
 /// </summary>
+[Obsolete("This class will be removed in version 9.0.0.")]
 public interface IUnityLevelPlayRewardedVideoManual
 {
     /// <summary>

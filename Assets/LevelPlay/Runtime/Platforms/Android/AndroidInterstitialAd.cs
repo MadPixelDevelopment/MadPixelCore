@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Unity.Services.LevelPlay
@@ -33,7 +34,7 @@ namespace Unity.Services.LevelPlay
 
         public string AdUnitId { get; }
 
-        public string AdId { get {return m_InterstitialJavaObject.Call<string>(k_FuncGetAdId);} }
+        public string AdId => m_InterstitialJavaObject.Call<string>(k_FuncGetAdId);
 
         internal AndroidInterstitialAd(string adUnitId)
         {
@@ -48,6 +49,28 @@ namespace Unity.Services.LevelPlay
                     }
                     m_InterstitialJavaObject =
                         new AndroidJavaObject(k_AndroidInterstitialClass, adUnitId, m_InterstitialListener);
+                }
+                catch (Exception e)
+                {
+                    LevelPlayLogger.LogException(e);
+                }
+            });
+        }
+
+        internal AndroidInterstitialAd(string adUnitId, Config config)
+        {
+            AdUnitId = adUnitId;
+            ThreadUtil.Send(state =>
+            {
+                try
+                {
+                    if (m_InterstitialListener == null)
+                    {
+                        m_InterstitialListener = new UnityInterstitialAdListener(this);
+                    }
+
+                    m_InterstitialJavaObject =
+                        new AndroidJavaObject(k_AndroidInterstitialClass, adUnitId, config.ConfigJavaObject, m_InterstitialListener);
                 }
                 catch (Exception e)
                 {
@@ -200,6 +223,38 @@ namespace Unity.Services.LevelPlay
                 LevelPlayLogger.LogError(k_ErrorDisposed);
             }
             return m_Disposed;
+        }
+
+        internal class Config : IPlatformInterstitialAd.IConfig
+        {
+            internal AndroidJavaObject ConfigJavaObject { get; }
+
+            private Config(AndroidJavaObject config)
+            {
+                ConfigJavaObject = config;
+            }
+
+            internal class Builder : IPlatformInterstitialAd.IConfigBuilder
+            {
+                private const string KBuilderClass = "com.ironsource.unity.androidbridge.InterstitialAd$ConfigBuilder";
+                private readonly AndroidJavaObject m_BuilderJavaObject;
+
+                internal Builder()
+                {
+                    m_BuilderJavaObject = new AndroidJavaObject(KBuilderClass);
+                }
+
+                public void SetBidFloor(double bidFloor)
+                {
+                    m_BuilderJavaObject.Call("setBidFloor", bidFloor);
+                }
+
+                public IPlatformInterstitialAd.IConfig Build()
+                {
+                    var androidConfig = m_BuilderJavaObject.Call<AndroidJavaObject>("build");
+                    return new Config(androidConfig);
+                }
+            }
         }
     }
 }

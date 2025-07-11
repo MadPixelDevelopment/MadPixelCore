@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
-[Obsolete("This class will be made private in a future version.", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceEventsDispatcher : MonoBehaviour
 {
     private static IronSourceEventsDispatcher instance = null;

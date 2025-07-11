@@ -133,6 +133,7 @@ char *const IRONSOURCE_BANNER_EVENTS = "IronSourceBannerEvents";
     }
     else {
         [IronSource setLevelPlayRewardedVideoManualDelegate:nil];
+        [IronSource setLevelPlayRewardedVideoDelegate:self.rewardedVideoLevelPlayDelegate];
     }
 }
 

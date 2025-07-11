@@ -38,5 +38,18 @@ namespace Unity.Services.LevelPlay
         {
             return false;
         }
+
+        internal class Config : IPlatformRewardedAd.IConfig
+        {
+            internal class Builder : IPlatformRewardedAd.IConfigBuilder
+            {
+                public void SetBidFloor(double bidFloor) {}
+
+                public IPlatformRewardedAd.IConfig Build()
+                {
+                    return new Config();
+                }
+            }
+        }
     }
 }

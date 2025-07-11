@@ -10,7 +10,7 @@ using System.Text;
 
 namespace IronSourceJSON
 {
-    [Obsolete("This class will be made private in a future version.", false)]
+    [Obsolete("This class will be made private in version 9.0.0.")]
     public static class Json
     {
         public static object Deserialize(string json)

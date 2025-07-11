@@ -1,58 +1,54 @@
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
-// Example for IronSource Unity.
+// This sample demonstrates how to use the LevelPlay SDK to load and show ads in a Unity game.
 public class LevelPlaySample : MonoBehaviour
 {
+    [SerializeField]
+    private Texture2D lpLogo;
+
     private LevelPlayBannerAd bannerAd;
     private LevelPlayInterstitialAd interstitialAd;
+    private LevelPlayRewardedAd rewardedVideoAd;
 
-#if UNITY_ANDROID
-    string appKey = "85460dcd";
-    string bannerAdUnitId = "thnfvcsog13bhn08";
-    string interstitialAdUnitId = "aeyqi3vqlv6o8sh9";
-#elif UNITY_IPHONE
-    string appKey = "8545d445";
-    string bannerAdUnitId = "iep3rxsyp9na3rw8";
-    string interstitialAdUnitId = "wmgt0712uuux8ju4";
-#else
-    string appKey = "unexpected_platform";
-    string bannerAdUnitId = "unexpected_platform";
-    string interstitialAdUnitId = "unexpected_platform";
-#endif
-
-
+    bool isAdsEnabled = false;
 
     public void Start()
     {
-        Debug.Log("unity-script: IronSource.Agent.validateIntegration");
-        IronSource.Agent.validateIntegration();
+        Debug.Log("[LevelPlaySample] LevelPlay.ValidateIntegration");
+        LevelPlay.ValidateIntegration();
 
-        Debug.Log("unity-script: unity version" + IronSource.unityVersion());
+        Debug.Log($"[LevelPlaySample] Unity version {LevelPlay.UnityVersion}");
 
-        // SDK init
-        Debug.Log("unity-script: LevelPlay SDK initialization");
-        LevelPlay.Init(appKey,adFormats:new []{com.unity3d.mediation.LevelPlayAdFormat.REWARDED});
-
+        Debug.Log("[LevelPlaySample] Register initialization callbacks");
         LevelPlay.OnInitSuccess += SdkInitializationCompletedEvent;
         LevelPlay.OnInitFailed += SdkInitializationFailedEvent;
+
+        // SDK init
+        Debug.Log("[LevelPlaySample] LevelPlay SDK initialization");
+        LevelPlay.Init(AdConfig.AppKey);
     }
 
     void EnableAds()
     {
-        //Add ImpressionSuccess Event
-        IronSourceEvents.onImpressionDataReadyEvent += ImpressionDataReadyEvent;
+        // Register to ImpressionDataReadyEvent
+        LevelPlay.OnImpressionDataReady += ImpressionDataReadyEvent;
 
-        //Add AdInfo Rewarded Video Events
-        IronSourceRewardedVideoEvents.onAdOpenedEvent += RewardedVideoOnAdOpenedEvent;
-        IronSourceRewardedVideoEvents.onAdClosedEvent += RewardedVideoOnAdClosedEvent;
-        IronSourceRewardedVideoEvents.onAdAvailableEvent += RewardedVideoOnAdAvailable;
-        IronSourceRewardedVideoEvents.onAdUnavailableEvent += RewardedVideoOnAdUnavailable;
-        IronSourceRewardedVideoEvents.onAdShowFailedEvent += RewardedVideoOnAdShowFailedEvent;
-        IronSourceRewardedVideoEvents.onAdRewardedEvent += RewardedVideoOnAdRewardedEvent;
-        IronSourceRewardedVideoEvents.onAdClickedEvent += RewardedVideoOnAdClickedEvent;
+        // Create Rewarded Video object
+        rewardedVideoAd = new LevelPlayRewardedAd(AdConfig.RewardedVideoAdUnitId);
 
-        bannerAd = new LevelPlayBannerAd(bannerAdUnitId);
+        // Register to Rewarded Video events
+        rewardedVideoAd.OnAdLoaded += RewardedVideoOnLoadedEvent;
+        rewardedVideoAd.OnAdLoadFailed += RewardedVideoOnAdLoadFailedEvent;
+        rewardedVideoAd.OnAdDisplayed += RewardedVideoOnAdDisplayedEvent;
+        rewardedVideoAd.OnAdDisplayFailed += RewardedVideoOnAdDisplayedFailedEvent;
+        rewardedVideoAd.OnAdRewarded += RewardedVideoOnAdRewardedEvent;
+        rewardedVideoAd.OnAdClicked += RewardedVideoOnAdClickedEvent;
+        rewardedVideoAd.OnAdClosed += RewardedVideoOnAdClosedEvent;
+        rewardedVideoAd.OnAdInfoChanged += RewardedVideoOnAdInfoChangedEvent;
+
+        // Create Banner object
+        bannerAd = new LevelPlayBannerAd(AdConfig.BannerAdUnitId);
 
         // Register to Banner events
         bannerAd.OnAdLoaded += BannerOnAdLoadedEvent;
@@ -65,7 +61,7 @@ public class LevelPlaySample : MonoBehaviour
         bannerAd.OnAdExpanded += BannerOnAdExpandedEvent;
 
         // Create Interstitial object
-        interstitialAd = new LevelPlayInterstitialAd(interstitialAdUnitId);
+        interstitialAd = new LevelPlayInterstitialAd(AdConfig.InterstitalAdUnitId);
 
         // Register to Interstitial events
         interstitialAd.OnAdLoaded += InterstitialOnAdLoadedEvent;
@@ -77,117 +73,152 @@ public class LevelPlaySample : MonoBehaviour
         interstitialAd.OnAdInfoChanged += InterstitialOnAdInfoChangedEvent;
     }
 
-    void OnApplicationPause(bool isPaused)
-    {
-        Debug.Log("unity-script: OnApplicationPause = " + isPaused);
-        IronSource.Agent.onApplicationPause(isPaused);
-    }
-
     public void OnGUI()
     {
+        GUI.enabled = isAdsEnabled;
+
+        var safeArea = new Rect(
+            Screen.safeArea.x,
+            Screen.height - Screen.safeArea.yMax,
+            Screen.safeArea.width,
+            Screen.safeArea.height
+        );
+
+        var buttonXLeft = 0.05f * safeArea.width;
+        var buttonXRight = 0.55f * safeArea.width;
+        var buttonWidth = 0.4f * safeArea.width;
+        var buttonHeight = 0.08f * safeArea.height;
+
         GUI.backgroundColor = Color.blue;
-        GUI.skin.button.fontSize = (int)(0.035f * Screen.width);
+        GUI.skin.button.fontSize = 40;
 
+        GUI.BeginGroup(safeArea);
 
-        Rect showRewardedVideoButton = new Rect(0.10f * Screen.width, 0.15f * Screen.height, 0.80f * Screen.width, 0.08f * Screen.height);
+        if (lpLogo != null)
+        {
+            const float lpLogoWidth = 500;
+            const float lpLogoHeight = 100;
+            var displayRect = new Rect((safeArea.width - lpLogoWidth) / 2.0f, 20, lpLogoWidth, lpLogoHeight);
+            GUI.DrawTexture(displayRect, lpLogo, ScaleMode.ScaleToFit);
+        }
+
+        var loadRewardedVideoButton = new Rect(buttonXLeft, 0.15f * safeArea.height, buttonWidth, buttonHeight);
+        if (GUI.Button(loadRewardedVideoButton, "Load Rewarded Video"))
+        {
+            Debug.Log("[LevelPlaySample] LoadRewardedVideoButtonClicked");
+            rewardedVideoAd.LoadAd();
+        }
+
+        var showRewardedVideoButton = new Rect(buttonXRight, 0.15f * safeArea.height, buttonWidth, buttonHeight);
         if (GUI.Button(showRewardedVideoButton, "Show Rewarded Video"))
         {
-            Debug.Log("unity-script: ShowRewardedVideoButtonClicked");
-            if (IronSource.Agent.isRewardedVideoAvailable())
+            Debug.Log("[LevelPlaySample] ShowRewardedVideoButtonClicked");
+            if (rewardedVideoAd.IsAdReady())
             {
-                IronSource.Agent.showRewardedVideo();
+                Debug.Log("[LevelPlaySample] Showing Rewarded Video Ad");
+                rewardedVideoAd.ShowAd();
             }
             else
             {
-                Debug.Log("unity-script: IronSource.Agent.isRewardedVideoAvailable - False");
+                Debug.Log("[LevelPlaySample] LevelPlay Rewarded Video Ad is not ready");
             }
         }
 
-        Rect loadInterstitialButton = new Rect(0.10f * Screen.width, 0.25f * Screen.height, 0.35f * Screen.width, 0.08f * Screen.height);
+        var loadInterstitialButton = new Rect(buttonXLeft, 0.25f * safeArea.height, buttonWidth, buttonHeight);
         if (GUI.Button(loadInterstitialButton, "Load Interstitial"))
         {
-            Debug.Log("unity-script: LoadInterstitialButtonClicked");
+            Debug.Log("[LevelPlaySample] LoadInterstitialButtonClicked");
             interstitialAd.LoadAd();
         }
 
-        Rect showInterstitialButton = new Rect(0.55f * Screen.width, 0.25f * Screen.height, 0.35f * Screen.width, 0.08f * Screen.height);
+        var showInterstitialButton = new Rect(buttonXRight, 0.25f * safeArea.height, buttonWidth, buttonHeight);
         if (GUI.Button(showInterstitialButton, "Show Interstitial"))
         {
-            Debug.Log("unity-script: ShowInterstitialButtonClicked");
+            Debug.Log("[LevelPlaySample] ShowInterstitialButtonClicked");
             if (interstitialAd.IsAdReady())
             {
+                Debug.Log("[LevelPlaySample] Showing Interstitial Ad");
                 interstitialAd.ShowAd();
             }
             else
             {
-                Debug.Log("unity-script: Levelplay Interstital Ad Ready? - False");
+                Debug.Log("[LevelPlaySample] LevelPlay Interstital Ad is not ready");
             }
         }
 
-        Rect loadBannerButton = new Rect(0.10f * Screen.width, 0.35f * Screen.height, 0.35f * Screen.width, 0.08f * Screen.height);
+        var loadBannerButton = new Rect(buttonXLeft, 0.35f * safeArea.height, buttonWidth, buttonHeight);
         if (GUI.Button(loadBannerButton, "Load Banner"))
         {
-            Debug.Log("unity-script: loadBannerButtonClicked");
+            Debug.Log("[LevelPlaySample] LoadBannerButtonClicked");
             bannerAd.LoadAd();
         }
 
-        Rect hideBannerButton = new Rect(0.55f * Screen.width, 0.35f * Screen.height, 0.35f * Screen.width, 0.08f * Screen.height);
+        var hideBannerButton = new Rect(buttonXRight, 0.35f * safeArea.height, buttonWidth, buttonHeight);
         if (GUI.Button(hideBannerButton, "Hide Banner"))
         {
-            Debug.Log("unity-script: HideButtonClicked");
+            Debug.Log("[LevelPlaySample] HideBannerButtonClicked");
             bannerAd.HideAd();
         }
+
+        GUI.EndGroup();
     }
+
 
     #region Init callback handlers
 
     void SdkInitializationCompletedEvent(LevelPlayConfiguration config)
     {
-        Debug.Log("unity-script: I got SdkInitializationCompletedEvent with config: "+ config);
+        Debug.Log($"[LevelPlaySample] Received SdkInitializationCompletedEvent with Config: {config}");
         EnableAds();
+        isAdsEnabled = true;
     }
 
     void SdkInitializationFailedEvent(LevelPlayInitError error)
     {
-        Debug.Log("unity-script: I got SdkInitializationFailedEvent with error: "+ error);
+        Debug.Log($"[LevelPlaySample] Received SdkInitializationFailedEvent with Error: {error}");
     }
 
     #endregion
 
     #region AdInfo Rewarded Video
-    void RewardedVideoOnAdOpenedEvent(IronSourceAdInfo adInfo)
+    void RewardedVideoOnLoadedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got RewardedVideoOnAdOpenedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnLoadedEvent With AdInfo: {adInfo}");
     }
 
-    void RewardedVideoOnAdClosedEvent(IronSourceAdInfo adInfo)
+    void RewardedVideoOnAdLoadFailedEvent(LevelPlayAdError error)
     {
-        Debug.Log("unity-script: I got RewardedVideoOnAdClosedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdLoadFailedEvent With Error: {error}");
     }
 
-    void RewardedVideoOnAdAvailable(IronSourceAdInfo adInfo)
+    void RewardedVideoOnAdDisplayedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got RewardedVideoOnAdAvailable With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdDisplayedEvent With AdInfo: {adInfo}");
+    }
+#pragma warning disable 0618
+    void RewardedVideoOnAdDisplayedFailedEvent(LevelPlayAdDisplayInfoError error)
+    {
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdDisplayedFailedEvent With Error: {error}");
+    }
+#pragma warning restore 0618
+    void RewardedVideoOnAdRewardedEvent(LevelPlayAdInfo adInfo, LevelPlayReward reward)
+    {
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdRewardedEvent With AdInfo: {adInfo} and Reward: {reward}");
     }
 
-    void RewardedVideoOnAdUnavailable()
+    void RewardedVideoOnAdClickedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got RewardedVideoOnAdUnavailable");
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdClickedEvent With AdInfo: {adInfo}");
     }
 
-    void RewardedVideoOnAdShowFailedEvent(IronSourceError ironSourceError, IronSourceAdInfo adInfo)
+    void RewardedVideoOnAdClosedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got RewardedVideoOnAdShowFailedEvent With Error" + ironSourceError + "And AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdClosedEvent With AdInfo: {adInfo}");
     }
 
-    void RewardedVideoOnAdRewardedEvent(IronSourcePlacement ironSourcePlacement, IronSourceAdInfo adInfo)
+    void RewardedVideoOnAdInfoChangedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got RewardedVideoOnAdRewardedEvent With Placement" + ironSourcePlacement + "And AdInfo " + adInfo);
-    }
-
-    void RewardedVideoOnAdClickedEvent(IronSourcePlacement ironSourcePlacement, IronSourceAdInfo adInfo)
-    {
-        Debug.Log("unity-script: I got RewardedVideoOnAdClickedEvent With Placement" + ironSourcePlacement + "And AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received RewardedVideoOnAdInfoChangedEvent With AdInfo {adInfo}");
     }
 
     #endregion
@@ -195,37 +226,37 @@ public class LevelPlaySample : MonoBehaviour
 
     void InterstitialOnAdLoadedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdLoadedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdLoadedEvent With AdInfo: {adInfo}");
     }
 
     void InterstitialOnAdLoadFailedEvent(LevelPlayAdError error)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdLoadFailedEvent With Error " + error);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdLoadFailedEvent With Error: {error}");
     }
 
     void InterstitialOnAdDisplayedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdDisplayedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdDisplayedEvent With AdInfo: {adInfo}");
     }
-
+#pragma warning disable 0618
     void InterstitialOnAdDisplayFailedEvent(LevelPlayAdDisplayInfoError infoError)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdDisplayFailedEvent With InfoError " + infoError);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdDisplayFailedEvent With InfoError: {infoError}");
     }
-
+#pragma warning restore 0618
     void InterstitialOnAdClickedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdClickedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdClickedEvent With AdInfo: {adInfo}");
     }
 
     void InterstitialOnAdClosedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdClosedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdClosedEvent With AdInfo: {adInfo}");
     }
 
     void InterstitialOnAdInfoChangedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got InterstitialOnAdInfoChangedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received InterstitialOnAdInfoChangedEvent With AdInfo: {adInfo}");
     }
 
     #endregion
@@ -234,52 +265,52 @@ public class LevelPlaySample : MonoBehaviour
 
     void BannerOnAdLoadedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got BannerOnAdLoadedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdLoadedEvent With AdInfo: {adInfo}");
     }
 
-    void BannerOnAdLoadFailedEvent(LevelPlayAdError ironSourceError)
+    void BannerOnAdLoadFailedEvent(LevelPlayAdError error)
     {
-        Debug.Log("unity-script: I got BannerOnAdLoadFailedEvent With Error " + ironSourceError);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdLoadFailedEvent With Error: {error}");
     }
 
     void BannerOnAdClickedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got BannerOnAdClickedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdClickedEvent With AdInfo: {adInfo}");
     }
 
     void BannerOnAdDisplayedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got BannerOnAdDisplayedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdDisplayedEvent With AdInfo: {adInfo}");
     }
-
+#pragma warning disable 0618
     void BannerOnAdDisplayFailedEvent(LevelPlayAdDisplayInfoError adInfoError)
     {
-        Debug.Log("unity-script: I got BannerOnAdDisplayFailedEvent With AdInfoError " + adInfoError);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdDisplayFailedEvent With AdInfoError: {adInfoError}");
     }
-
+#pragma warning restore 0618
     void BannerOnAdCollapsedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got BannerOnAdCollapsedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdCollapsedEvent With AdInfo: {adInfo}");
     }
 
     void BannerOnAdLeftApplicationEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got BannerOnAdLeftApplicationEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdLeftApplicationEvent With AdInfo: {adInfo}");
     }
 
     void BannerOnAdExpandedEvent(LevelPlayAdInfo adInfo)
     {
-        Debug.Log("unity-script: I got BannerOnAdExpandedEvent With AdInfo " + adInfo);
+        Debug.Log($"[LevelPlaySample] Received BannerOnAdExpandedEvent With AdInfo: {adInfo}");
     }
 
     #endregion
 
     #region ImpressionSuccess callback handler
 
-    void ImpressionDataReadyEvent(IronSourceImpressionData impressionData)
+    void ImpressionDataReadyEvent(LevelPlayImpressionData impressionData)
     {
-        Debug.Log("unity - script: I got ImpressionDataReadyEvent ToString(): " + impressionData.ToString());
-        Debug.Log("unity - script: I got ImpressionDataReadyEvent allData: " + impressionData.allData);
+        Debug.Log($"[LevelPlaySample] Received ImpressionDataReadyEvent ToString(): {impressionData}");
+        Debug.Log($"[LevelPlaySample] Received ImpressionDataReadyEvent allData: {impressionData.AllData}");
     }
 
     #endregion

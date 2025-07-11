@@ -33,7 +33,7 @@ namespace Unity.Services.LevelPlay
 
         public string AdUnitId { get; }
 
-        public string AdId { get {return m_RewardedAdJavaObject.Call<string>(k_FuncGetAdId);} }
+        public string AdId => m_RewardedAdJavaObject.Call<string>(k_FuncGetAdId);
 
         internal AndroidRewardedAd(string adUnitId)
         {
@@ -49,6 +49,28 @@ namespace Unity.Services.LevelPlay
                     }
                     m_RewardedAdJavaObject =
                         new AndroidJavaObject(k_AndroidRewardedAdClass, adUnitId, m_RewardedAdListener);
+                }
+                catch (Exception e)
+                {
+                    LevelPlayLogger.LogException(e);
+                }
+            });
+        }
+
+        internal AndroidRewardedAd(string adUnitId, Config config)
+        {
+            AdUnitId = adUnitId;
+            ThreadUtil.Send(state =>
+            {
+                try
+                {
+                    if (m_RewardedAdListener == null)
+                    {
+                        m_RewardedAdListener = new UnityRewardedAdListener(this);
+                    }
+
+                    m_RewardedAdJavaObject =
+                        new AndroidJavaObject(k_AndroidRewardedAdClass, adUnitId, config.ConfigJavaObject, m_RewardedAdListener);
                 }
                 catch (Exception e)
                 {
@@ -206,6 +228,38 @@ namespace Unity.Services.LevelPlay
                 LevelPlayLogger.LogError(k_ErrorDisposed);
             }
             return m_Disposed;
+        }
+
+        internal class Config : IPlatformRewardedAd.IConfig
+        {
+            internal AndroidJavaObject ConfigJavaObject { get; }
+
+            private Config(AndroidJavaObject config)
+            {
+                ConfigJavaObject = config;
+            }
+
+            internal class Builder : IPlatformRewardedAd.IConfigBuilder
+            {
+                private const string KBuilderClass = "com.ironsource.unity.androidbridge.RewardedAd$ConfigBuilder";
+                private readonly AndroidJavaObject m_BuilderJavaObject;
+
+                internal Builder()
+                {
+                    m_BuilderJavaObject = new AndroidJavaObject(KBuilderClass);
+                }
+
+                public void SetBidFloor(double bidFloor)
+                {
+                    m_BuilderJavaObject.Call("setBidFloor", bidFloor);
+                }
+
+                public IPlatformRewardedAd.IConfig Build()
+                {
+                    var androidConfig = m_BuilderJavaObject.Call<AndroidJavaObject>("build");
+                    return new Config(androidConfig);
+                }
+            }
         }
     }
 }

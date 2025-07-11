@@ -6,7 +6,7 @@ using System.Linq;
 
 #pragma warning disable 0618
 
-[Obsolete("This class will be removed in version 9.0.0. Please use ILevelPlayBannerAd instead.")]
+[Obsolete("Use Unity.Services.LevelPlay.LevelPlayBannerAd instead.")]
 /// <summary>
 /// Listener that handles banner events.
 /// </summary>
@@ -17,31 +17,37 @@ public class IronSourceBannerEvents : MonoBehaviour
     /// <summary>
     /// Event triggered when a banner has been loaded.
     /// </summary>
+    [Obsolete("Use ILevelPlayBannerAd.OnAdLoaded instead.")]
     public static event Action<IronSourceAdInfo> onAdLoadedEvent;
 
     /// <summary>
     /// Event triggered when a banner has left the application.
     /// </summary>
+    [Obsolete("Use ILevelPlayBannerAd.OnAdLeftApplication instead.")]
     public static event Action<IronSourceAdInfo> onAdLeftApplicationEvent;
 
     /// <summary>
     /// Event triggered when a banner screen has been dismissed.
     /// </summary>
+    [Obsolete("This event will be removed in version 9.0.0.")]
     public static event Action<IronSourceAdInfo> onAdScreenDismissedEvent;
 
     /// <summary>
     /// Event triggered when a banner screen has been presented.
     /// </summary>
+    [Obsolete("Use ILevelPlayBannerAd.OnAdDisplayed instead.")]
     public static event Action<IronSourceAdInfo> onAdScreenPresentedEvent;
 
     /// <summary>
     /// Event triggered when a banner has been clicked.
     /// </summary>
+    [Obsolete("Use ILevelPlayBannerAd.OnAdClicked instead.")]
     public static event Action<IronSourceAdInfo> onAdClickedEvent;
 
     /// <summary>
     /// Event triggered when a banner has failed to load.
     /// </summary>
+    [Obsolete("Use ILevelPlayBannerAd.OnAdLoadFailed instead.")]
     public static event Action<IronSourceError> onAdLoadFailedEvent;
 #endif
 
@@ -139,7 +145,7 @@ public class IronSourceBannerEvents : MonoBehaviour
     // ******************************* Banner Events *******************************
     private static event Action<IronSourceAdInfo> _onAdLoadedEvent;
 
-    [Obsolete("This event will be removed in version 9.0.0. Please use ILevelPlayBannerAd.OnAdLoaded instead.")]
+    [Obsolete("Use ILevelPlayBannerAd.OnAdLoaded instead.")]
     /// <summary>
     /// Event triggered when a banner has been loaded.
     /// </summary>
@@ -180,7 +186,7 @@ public class IronSourceBannerEvents : MonoBehaviour
 
     private static event Action<IronSourceError> _onAdLoadFailedEvent;
 
-    [Obsolete("This event will be removed in version 9.0.0. Please use ILevelPlayBannerAd.OnAdLoadFailed instead.")]
+    [Obsolete("Use ILevelPlayBannerAd.OnAdLoadFailed instead.")]
     /// <summary>
     /// Event triggered when a banner has failed to load.
     /// </summary>
@@ -215,7 +221,7 @@ public class IronSourceBannerEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdClickedEvent;
 
-    [Obsolete("This event will be removed in version 9.0.0. Please use ILevelPlayBannerAd.OnAdClicked instead.")]
+    [Obsolete("Use ILevelPlayBannerAd.OnAdClicked instead.")]
     /// <summary>
     /// Event triggered when a banner has been clicked.
     /// </summary>
@@ -250,7 +256,7 @@ public class IronSourceBannerEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdScreenPresentedEvent;
 
-    [Obsolete("This event will be removed in version 9.0.0. Please use ILevelPlayBannerAd.OnAdDisplayed instead.")]
+    [Obsolete("Use ILevelPlayBannerAd.OnAdDisplayed instead.")]
     /// <summary>
     /// Event triggered when a banner has been presented.
     /// </summary>
@@ -320,7 +326,7 @@ public class IronSourceBannerEvents : MonoBehaviour
 
     private static event Action<IronSourceAdInfo> _onAdLeftApplicationEvent;
 
-    [Obsolete("This event will be removed in version 9.0.0. Please use ILevelPlayBannerAd.OnAdLeftApplication instead.")]
+    [Obsolete("Use ILevelPlayBannerAd.OnAdLeftApplication instead.")]
     /// <summary>
     /// Event triggered when a banner has left the application.
     /// </summary>

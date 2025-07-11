@@ -1,5 +1,6 @@
 using System;
 
+[Obsolete("This class will be made private in version 9.0.0.")]
 /// <summary>
 /// Interface to access impression data events
 /// </summary>

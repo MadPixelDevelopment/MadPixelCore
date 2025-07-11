@@ -3,7 +3,7 @@ using Unity.Services.LevelPlay;
 using UnityEngine;
 using LevelPlayAdFormat = com.unity3d.mediation.LevelPlayAdFormat;
 
-[Obsolete("This class will be made private in a future version.", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceInitilizer
 {
 #if UNITY_IOS || UNITY_ANDROID
@@ -29,7 +29,7 @@ public class IronSourceInitilizer
                     IronSource.UNITY_PLUGIN_VERSION += IronSource.UNITY_PLUGIN_VERSION.Contains("-r") ? "i" : "-i";
 
                     LevelPlayAdFormat[] adFormats = { LevelPlayAdFormat.REWARDED, LevelPlayAdFormat.INTERSTITIAL, LevelPlayAdFormat.BANNER};
-                    LevelPlay.Init(appKey:appKey, adFormats:adFormats);
+                    LevelPlay.Init(appKey: appKey, adFormats: adFormats);
                 }
             }
 

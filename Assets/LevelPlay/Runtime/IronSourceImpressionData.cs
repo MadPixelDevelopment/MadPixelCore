@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Unity.Services.LevelPlay;
 
+[Obsolete("Please use LevelPlayImpressionData instead.")]
 /// <summary>
 /// Represents an impression event's data
 /// </summary>
@@ -10,7 +11,7 @@ public class IronSourceImpressionData
 {
     public readonly string auctionId;
     public readonly string CreativeId;
-    [Obsolete("This parameter will be removed in version 9.0.0. Please use the AdFormat parameter instead.")]
+    [Obsolete("Use the AdFormat parameter instead.")]
     public readonly string adUnit;
     public readonly string adFormat;
     public readonly string mediationAdUnitName;

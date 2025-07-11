@@ -14,7 +14,7 @@ typedef void (*DidLoadAdWithAdInfo)(void *rewardedAd, const char* adinfo);
 typedef void (*DidFailToLoadAdWithAdUnitId)(void *rewardedAd, const char *error);
 typedef void (*DidDisplayAdWithAdInfo)(void *rewardedAd, const char *adinfo);
 typedef void (*DidFailToDisplayAdWithAdInfo)(void *rewardedAd, const char *adInfo, const char *error);
-typedef void (*DidAdRewardedWithAdInfo)(void *rewardedAd, const char *adInfo, const char *rewardName, int *rewardAmount);
+typedef void (*DidAdRewardedWithAdInfo)(void *rewardedAd, const char *adInfo, const char *rewardName, int rewardAmount);
 typedef void (*DidClickAdWithAdInfo)(void *rewardedAd, const char *adinfo);
 typedef void (*DidCloseWithAdInfo)(void *rewardedAd, const char *adinfo);
 typedef void (*DidChangeAdInfo)(void *rewardedAd, const char *adinfo);

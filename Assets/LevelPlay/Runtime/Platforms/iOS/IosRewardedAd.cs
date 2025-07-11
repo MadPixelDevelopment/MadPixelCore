@@ -3,6 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using com.unity3d.mediation;
 
+#pragma warning disable 0618
 namespace Unity.Services.LevelPlay
 {
     class IosRewardedAd : IosNativeObject, IPlatformRewardedAd
@@ -17,7 +18,7 @@ namespace Unity.Services.LevelPlay
         public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdInfoChanged;
 
         public string AdUnitId { get; }
-        public string AdId { get {return GetAdId();} }
+        public string AdId => GetAdId();
 
         IosRewardedAdListener m_RewardedAdListener;
 
@@ -25,6 +26,14 @@ namespace Unity.Services.LevelPlay
         {
             AdUnitId = adUnitId;
             NativePtr = RewardedAdCreate(adUnitId);
+            m_RewardedAdListener = new IosRewardedAdListener(this);
+            RewardedAdSetDelegate(NativePtr, m_RewardedAdListener.NativePtr);
+        }
+
+        public IosRewardedAd(string adUnitId, Config config) : base(true)
+        {
+            AdUnitId = adUnitId;
+            NativePtr = RewardedAdCreate(adUnitId, config.IosConfig);
             m_RewardedAdListener = new IosRewardedAdListener(this);
             RewardedAdSetDelegate(NativePtr, m_RewardedAdListener.NativePtr);
         }
@@ -114,6 +123,9 @@ namespace Unity.Services.LevelPlay
         [DllImport("__Internal", EntryPoint = "LPMRewardedAdCreate")]
         static extern IntPtr RewardedAdCreate(string adUnitId);
 
+        [DllImport("__Internal", EntryPoint = "LPMRewardedAdCreateWithConfig")]
+        static extern IntPtr RewardedAdCreate(string adUnitId, IntPtr config);
+
         [DllImport("__Internal", EntryPoint = "LPMRewardedAdSetDelegate")]
         static extern void RewardedAdSetDelegate(IntPtr rewardedAd, IntPtr rewardedAdListener);
 
@@ -131,6 +143,42 @@ namespace Unity.Services.LevelPlay
 
         [DllImport("__Internal", EntryPoint = "LPMRewardedAdAdId")]
         static extern string RewardedAdId(IntPtr rewardedAd);
+
+        internal class Config : IPlatformRewardedAd.IConfig
+        {
+            internal IntPtr IosConfig { get; }
+
+            private Config(IntPtr iosConfig)
+            {
+                IosConfig = iosConfig;
+            }
+
+            internal class Builder : IPlatformRewardedAd.IConfigBuilder
+            {
+                private readonly IntPtr m_Builder = RewardedAdCreateConfigBuilder();
+
+                public void SetBidFloor(double bidFloor)
+                {
+                    RewardedConfigBuilderSetBidFloor(m_Builder, bidFloor);
+                }
+
+                public IPlatformRewardedAd.IConfig Build()
+                {
+                    var iosConfig = RewardedConfigBuilderBuild(m_Builder);
+                    return new Config(iosConfig);
+                }
+
+                [DllImport("__Internal", EntryPoint = "LPMRewardedAdCreateConfigBuilder")]
+                static extern IntPtr RewardedAdCreateConfigBuilder();
+
+                [DllImport("__Internal", EntryPoint = "LPMRewardedAdConfigBuilderSetBidFloor")]
+                static extern IntPtr RewardedConfigBuilderSetBidFloor(IntPtr builder, double bidFloor);
+
+                [DllImport("__Internal", EntryPoint = "LPMRewardedAdConfigBuilderBuild")]
+                static extern IntPtr RewardedConfigBuilderBuild(IntPtr builder);
+            }
+        }
     }
 }
+#pragma warning restore 0618
 #endif

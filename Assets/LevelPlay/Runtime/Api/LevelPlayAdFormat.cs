@@ -5,7 +5,7 @@ namespace com.unity3d.mediation
     /// <summary>
     /// Defines the types of advertisement formats available in the LevelPlay SDK.
     /// </summary>
-    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayAdFormat under the new namespace Unity.Services.LevelPlay.")]
+    [Obsolete("com.unity3d.mediation.LevelPlayAdFormat is deprecated and will be removed from the LevelPlay.Init method in version 9.0.0.")]
     public enum LevelPlayAdFormat
     {
         BANNER,

@@ -58,6 +58,7 @@ namespace Unity.Services.LevelPlay.Editor
                 var version = m_LevelPlayNetworkManager.CompatibleAdapterVersions(unityAdsAdapter).FirstOrDefault();
                 if (version != null)
                 {
+                    EditorServices.Instance.EditorAnalyticsService.SendInstallAdapterEvent(unityAdsAdapter.KeyName, version.Version, null);
                     await m_LevelPlayNetworkManager.Install(unityAdsAdapter, version);
                     AssetDatabase.Refresh();
                     m_LevelPlayNetworkManager.UiUpdate();
@@ -76,6 +77,7 @@ namespace Unity.Services.LevelPlay.Editor
                 var latestIronSourceSdkVersion = m_LevelPlayNetworkManager.CompatibleIronSourceSdkVersions().FirstOrDefault();
                 if (latestIronSourceSdkVersion != null)
                 {
+                    EditorServices.Instance.EditorAnalyticsService.SendInstallLPSDKEvent(latestIronSourceSdkVersion.Version);
                     await m_LevelPlayNetworkManager.Install(latestIronSourceSdkVersion);
                     AssetDatabase.Refresh();
                     m_LevelPlayNetworkManager.UiUpdate();

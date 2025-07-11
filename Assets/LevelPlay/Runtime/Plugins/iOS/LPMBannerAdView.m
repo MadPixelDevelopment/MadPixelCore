@@ -2,6 +2,8 @@
 #import "LPMBannerAdViewCallbacksWrapper.h"
 #import "LPMUtilities.h"
 #import <IronSource/LPMBannerAdView.h>
+#import <IronSource/LPMBannerAdViewConfig.h>
+#import <IronSource/LPMBannerAdViewConfigBuilder.h>
 #import <UIKit/UIKit.h>
 #import "LPMBannerPosition.h"
 
@@ -9,12 +11,16 @@
 extern "C" {
 #endif
     static UIWindow *getActiveWindow(void) {
-        for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
-            if ([scene isKindOfClass:[UIWindowScene class]] && scene.activationState == UISceneActivationStateForegroundActive) {
-                return scene.windows.firstObject;
+        if (@available(iOS 13.0, *)) {
+            for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
+                if ([scene isKindOfClass:[UIWindowScene class]] && scene.activationState == UISceneActivationStateForegroundActive) {
+                    return scene.windows.firstObject;
+                }
             }
+            return nil;
+        } else {
+            return [UIApplication sharedApplication].keyWindow;
         }
-        return nil;
     }
 
     void *LPMCreateAdaptiveAdSize() {
@@ -67,6 +73,16 @@ extern "C" {
 
         [bannerAdView setPlacementName:[LPMUtilities getStringFromCString:placementName]];
         [bannerAdView setAdSize:adSize];
+
+        bannerAdView.frame = CGRectMake(0, 0, (CGFloat)adSize.width, (CGFloat)adSize.height);
+
+        return (__bridge_retained void *)bannerAdView;
+    }
+
+    void *LPMBannerAdViewCreateWithConfig(const char *adUnitId, void *configRef, LPMAdSize *adSize) {
+        NSString *adUnitIdStr = [LPMUtilities getStringFromCString:adUnitId];
+        LPMBannerAdViewConfig *config = (__bridge LPMBannerAdViewConfig *)configRef;
+        LPMBannerAdView *bannerAdView = [[LPMBannerAdView alloc] initWithAdUnitId:adUnitIdStr config:config];
 
         bannerAdView.frame = CGRectMake(0, 0, (CGFloat)adSize.width, (CGFloat)adSize.height);
 
@@ -245,6 +261,38 @@ extern "C" {
     const char *LPMBannerAdViewAdId(void *bannerAdViewRef) {
         LPMBannerAdView *bannerAdView = (__bridge LPMBannerAdView *)bannerAdViewRef;
         return strdup([[bannerAdView adId] UTF8String]);
+    }
+
+    // Config
+    void *LPMBannerAdAdCreateConfigBuilder() {
+        LPMBannerAdViewConfigBuilder *builder = [[LPMBannerAdViewConfigBuilder alloc] init];
+
+        return (__bridge_retained void *)builder;
+    }
+
+    void LPMBannerAdAdConfigBuilderSetBidFloor(void *builderRef, double bidFloor) {
+        LPMBannerAdViewConfigBuilder *builder = (__bridge LPMBannerAdViewConfigBuilder *)builderRef;
+        NSNumber *bidFloorNum = [NSNumber numberWithDouble:bidFloor];
+        [builder setWithBidFloor:bidFloorNum];
+    }
+
+    void LPMBannerAdConfigBuilderSetSize(void *builderRef, void *adSizeRef) {
+        LPMBannerAdViewConfigBuilder *builder = (__bridge LPMBannerAdViewConfigBuilder *)builderRef;
+        LPMAdSize *adSize = (__bridge LPMAdSize *)adSizeRef;
+        [builder setWithAdSize:adSize];
+    }
+
+    void LPMBannerAdConfigBuilderSetPlacementName(void *builderRef, const char *placementName) {
+        LPMBannerAdViewConfigBuilder *builder = (__bridge LPMBannerAdViewConfigBuilder *)builderRef;
+        NSString *placementNameStr = [LPMUtilities getStringFromCString:placementName];
+        [builder setWithPlacementName:placementNameStr];
+    }
+
+    void *LPMBannerAdAdConfigBuilderBuild(void *builderRef) {
+        LPMBannerAdViewConfigBuilder *builder = (__bridge LPMBannerAdViewConfigBuilder *)builderRef;
+        LPMBannerAdViewConfig *config = [builder build];
+
+        return (__bridge_retained void *)config;
     }
 
 #ifdef __cplusplus

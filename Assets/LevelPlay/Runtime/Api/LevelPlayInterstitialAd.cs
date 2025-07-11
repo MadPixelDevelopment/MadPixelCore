@@ -1,21 +1,26 @@
 using System;
+using JetBrains.Annotations;
 using Unity.Services.LevelPlay;
 
 namespace com.unity3d.mediation
 {
-    [Obsolete("The namespace com.unity3d.mediation is deprecated. Use LevelPlayInterstitialAd under the new namespace Unity.Services.LevelPlay.")]
+    [Obsolete(
+        "The namespace com.unity3d.mediation is deprecated. Use LevelPlayInterstitialAd under the new namespace Unity.Services.LevelPlay.")]
     public class LevelPlayInterstitialAd : Unity.Services.LevelPlay.LevelPlayInterstitialAd
     {
         public LevelPlayInterstitialAd(string adUnitId) : base(adUnitId) {}
-        internal LevelPlayInterstitialAd(IPlatformInterstitialAd platformInterstitialAd) : base(platformInterstitialAd) {}
+
+        internal LevelPlayInterstitialAd(IPlatformInterstitialAd platformInterstitialAd) : base(platformInterstitialAd)
+        {
+        }
     }
 }
 
 namespace Unity.Services.LevelPlay
 {
-#pragma warning disable 0618
-    public class LevelPlayInterstitialAd : com.unity3d.mediation.ILevelPlayInterstitialAd
+    public class LevelPlayInterstitialAd : ILevelPlayInterstitialAd
     {
+#pragma warning disable 0618
         /// <summary>
         /// Invoked when the interstitial ad is loaded.
         /// </summary>
@@ -65,14 +70,41 @@ namespace Unity.Services.LevelPlay
         /// <param name="adUnitId">The unique ID for the ad unit.</param>
         public LevelPlayInterstitialAd(string adUnitId)
         {
-            #if UNITY_ANDROID && !UNITY_EDITOR
-            m_InterstitialAd = new AndroidInterstitialAd(adUnitId);
-            #elif UNITY_IOS && !UNITY_EDITOR
-            m_InterstitialAd = new IosInterstitialAd(adUnitId);
-            #else
+#if !UNITY_IOS && !UNITY_ANDROID
             m_InterstitialAd = new UnsupportedInterstitialAd(adUnitId);
-            #endif
+#elif UNITY_EDITOR
+            m_InterstitialAd = new EditorInterstitialAd(adUnitId);
+#elif UNITY_ANDROID
+            m_InterstitialAd = new AndroidInterstitialAd(adUnitId);
+#elif UNITY_IOS
+            m_InterstitialAd = new IosInterstitialAd(adUnitId);
+#endif
 
+            SetupEvents();
+        }
+
+        /// <summary>
+        /// Creates and Initializes a new instance of the LevelPlay Interstitial Ad with a config.
+        /// </summary>
+        /// <param name="adUnitId">The unique ID for the ad unit.</param>
+        /// <param name="config">The ad unit configuration.</param>
+        public LevelPlayInterstitialAd(string adUnitId, Config config)
+        {
+#if UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            m_InterstitialAd = new EditorInterstitialAd(adUnitId);
+#elif UNITY_ANDROID
+            m_InterstitialAd = new AndroidInterstitialAd(adUnitId, (AndroidInterstitialAd.Config)config.PlatformConfig);
+#elif UNITY_IOS
+            m_InterstitialAd = new IosInterstitialAd(adUnitId, (IosInterstitialAd.Config)config.PlatformConfig);
+#else
+            m_InterstitialAd = new UnsupportedInterstitialAd(adUnitId);
+#endif
+
+            SetupEvents();
+        }
+
+        private void SetupEvents()
+        {
             m_InterstitialAd.OnAdLoaded += (info) => OnAdLoaded?.Invoke(info);
             m_InterstitialAd.OnAdLoadFailed += (error) => OnAdLoadFailed?.Invoke(error);
             m_InterstitialAd.OnAdDisplayed += (info) => OnAdDisplayed?.Invoke(info);
@@ -128,12 +160,15 @@ namespace Unity.Services.LevelPlay
         /// <returns>Returns true if placement is capped, returns false if not.</returns>
         public static bool IsPlacementCapped(string placementName)
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_IOS && !UNITY_ANDROID
+            return false;
+#elif UNITY_EDITOR
+            return EditorInterstitialAd.IsPlacementCapped(placementName);
+#elif UNITY_ANDROID
             return AndroidInterstitialAd.IsPlacementCapped(placementName);
-#elif UNITY_IOS && !UNITY_EDITOR
+#elif UNITY_IOS
             return IosInterstitialAd.IsPlacementCapped(placementName);
 #else
-            LevelPlayLogger.LogError("Unsupported platform: This API is not available on this platform.");
             return false;
 #endif
         }
@@ -153,6 +188,61 @@ namespace Unity.Services.LevelPlay
         public string GetAdId()
         {
             return m_InterstitialAd.AdId;
+        }
+
+        /// <summary>
+        /// Interstitial ad configuration, use a <see cref="LevelPlayInterstitialAd.Config.Builder"/> to initialize
+        ///<br/>
+        /// </summary>
+        public class Config
+        {
+            [CanBeNull] internal IPlatformInterstitialAd.IConfig PlatformConfig { get; }
+
+            private Config([CanBeNull] IPlatformInterstitialAd.IConfig platformConfig)
+            {
+                PlatformConfig = platformConfig;
+            }
+
+            /// <summary>
+            /// A config builder
+            /// </summary>
+            public class Builder
+            {
+                private readonly IPlatformInterstitialAd.IConfigBuilder m_Builder;
+
+                /// <summary>
+                /// Initialize a new config builder
+                /// </summary>
+                public Builder()
+                {
+                    #if UNITY_ANDROID && !UNITY_EDITOR
+                    m_Builder = new AndroidInterstitialAd.Config.Builder();
+                    #elif UNITY_IOS && !UNITY_EDITOR
+                    m_Builder = new IosInterstitialAd.Config.Builder();
+                    #else
+                    m_Builder = new UnsupportedInterstitialAd.Config.Builder();
+                    #endif
+                }
+
+                /// <summary>
+                /// Set a bid floor
+                /// <param name="bidFloor">bid floor in USD</param>
+                /// </summary>
+                public Builder SetBidFloor(double bidFloor)
+                {
+                    m_Builder.SetBidFloor(bidFloor);
+                    return this;
+                }
+
+                /// <summary>
+                /// Build a new config object
+                /// </summary>
+                public Config Build()
+                {
+                    var platformConfig = m_Builder.Build();
+                    return new Config(platformConfig);
+                }
+            }
         }
     }
 }

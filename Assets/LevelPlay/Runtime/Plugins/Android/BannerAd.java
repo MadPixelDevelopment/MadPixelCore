@@ -13,6 +13,7 @@ import com.unity3d.mediation.LevelPlayAdError;
 import com.unity3d.mediation.LevelPlayAdInfo;
 import com.unity3d.mediation.LevelPlayAdSize;
 import com.unity3d.mediation.banner.LevelPlayBannerAdView;
+import com.unity3d.mediation.banner.LevelPlayBannerAdView.Config;
 import com.unity3d.mediation.banner.LevelPlayBannerAdViewListener;
 import com.unity3d.player.UnityPlayer;
 
@@ -21,10 +22,19 @@ public class BannerAd {
     LevelPlayBannerAdView mBannerAdView;
     int mBannerAdViewVisibilityState = View.INVISIBLE;
 
+    public BannerAd(String adUnitId, Config config, IUnityBannerAdListener bannerListener) {
+        this.mActivity = UnityPlayer.currentActivity;
+        this.mBannerAdView = new LevelPlayBannerAdView(mActivity, adUnitId, config.config);
+
+        setup(config.description, config.x, config.y, config.displayOnLoad, config.respectSafeArea, bannerListener);
+    }
+
     public BannerAd(
         String adUnitId,
         LevelPlayAdSize size,
-        String position, float x, float y,
+        String position,
+        float x,
+        float y,
         String placementName,
         boolean displayOnLoad,
         boolean respectSafeArea,
@@ -42,44 +52,55 @@ public class BannerAd {
             this.mBannerAdView.setPlacementName(placementName);
         }
 
+        setup(position, x, y, displayOnLoad, respectSafeArea, bannerListener);
+    }
+
+    private void setup(
+        String description,
+        float x,
+        float y,
+        boolean displayOnLoad,
+        boolean respectSafeArea,
+        IUnityBannerAdListener bannerListener
+    ) {
         this.mBannerAdView.setBackgroundColor(Color.TRANSPARENT);
 
-        if(displayOnLoad) {
+        if (displayOnLoad) {
             mBannerAdView.setVisibility(View.VISIBLE);
             mBannerAdViewVisibilityState = View.VISIBLE;
-        } else{
+        } else {
             mBannerAdView.setVisibility(View.GONE);
             mBannerAdViewVisibilityState = View.GONE;
         }
 
-        if (respectSafeArea && android.os.Build.VERSION.SDK_INT >= 28){
+        if (respectSafeArea && android.os.Build.VERSION.SDK_INT >= 28) {
             mBannerAdView.setFitsSystemWindows(true);
             mBannerAdView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             mBannerAdView.setOnApplyWindowInsetsListener((v, insets) -> {
-                setPosition(position, x, y, true);
+                setPosition(description, x, y, true);
 
                 return insets;
             });
         }
 
-        setPosition(position, x, y, respectSafeArea);
+        setPosition(description, x, y, respectSafeArea);
 
         this.mBannerAdView.setBannerListener(new LevelPlayBannerAdViewListener() {
             @Override
             public void onAdLoaded(LevelPlayAdInfo levelPlayAdInfo) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdLoaded(LevelPlayUtils.adInfoToString(levelPlayAdInfo));
             }
 
             @Override
             public void onAdLoadFailed(LevelPlayAdError adError) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdLoadFailed(LevelPlayUtils.adErrorToString(adError));
             }
 
             @Override
             public void onAdDisplayed(LevelPlayAdInfo levelPlayAdInfo) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdDisplayed(LevelPlayUtils.adInfoToString(levelPlayAdInfo));
             }
 
@@ -92,25 +113,25 @@ public class BannerAd {
 
             @Override
             public void onAdClicked(LevelPlayAdInfo levelPlayAdInfo) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdClicked(LevelPlayUtils.adInfoToString(levelPlayAdInfo));
             }
 
             @Override
             public void onAdExpanded(LevelPlayAdInfo levelPlayAdInfo) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdExpanded(LevelPlayUtils.adInfoToString(levelPlayAdInfo));
             }
 
             @Override
             public void onAdCollapsed(LevelPlayAdInfo levelPlayAdInfo) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdCollapsed(LevelPlayUtils.adInfoToString(levelPlayAdInfo));
             }
 
             @Override
             public void onAdLeftApplication(LevelPlayAdInfo levelPlayAdInfo) {
-                if(bannerListener != null)
+                if (bannerListener != null)
                     bannerListener.onAdLeftApplication(LevelPlayUtils.adInfoToString(levelPlayAdInfo));
             }
         });
@@ -288,5 +309,70 @@ public class BannerAd {
 
     private float pixelsToDp(float px) {
         return px / Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    public static class Config {
+        final LevelPlayBannerAdView.Config config;
+        final String description;
+        final float x;
+        final float y;
+        final boolean displayOnLoad;
+        final boolean respectSafeArea;
+
+        private Config(
+            LevelPlayBannerAdView.Config config,
+            String description,
+            float x,
+            float y,
+            boolean displayOnLoad,
+            boolean respectSafeArea
+        ) {
+            this.config = config;
+            this.description = description;
+            this.x = x;
+            this.y = y;
+            this.displayOnLoad = displayOnLoad;
+            this.respectSafeArea = respectSafeArea;
+        }
+
+        public static class Builder {
+            private LevelPlayBannerAdView.Config.Builder builder = new LevelPlayBannerAdView.Config.Builder();
+            private String description;
+            private float x;
+            private float y;
+            private boolean displayOnLoad;
+            private boolean respectSafeArea;
+
+            public void setBidFloor(double bidFloor) {
+                builder.setBidFloor(bidFloor);
+            }
+
+            public void setSize(LevelPlayAdSize size) {
+                builder.setAdSize(size);
+            }
+
+            public void setPlacementName(String placementName) {
+                builder.setPlacementName(placementName);
+            }
+
+            public void setPosition(String description, float x, float y) {
+                this.description = description;
+                this.x = x;
+                this.y = y;
+            }
+
+            public void setDisplayOnLoad(boolean displayOnLoad) {
+                this.displayOnLoad = displayOnLoad;
+            }
+
+            public void setRespectSafeArea(boolean respectSafeArea) {
+                this.respectSafeArea = respectSafeArea;
+            }
+
+            public Config build() {
+                LevelPlayBannerAdView.Config config = builder.build();
+                return new Config(config, description, x, y, displayOnLoad, respectSafeArea);
+            }
+        }
     }
 }

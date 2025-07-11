@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
-[Obsolete("Please use IronSourceInterstitialEvents", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceInterstitialLevelPlayAndroid : AndroidJavaProxy, IUnityLevelPlayInterstitial
 {
     //implements UnityInterstitialLevelPlayListener java interface

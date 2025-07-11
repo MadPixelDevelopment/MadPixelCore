@@ -15,12 +15,12 @@ namespace com.unity3d.mediation
 
 namespace Unity.Services.LevelPlay
 {
-#pragma warning disable 0618
     /// <summary>
     /// Implements ILevelPlayBannerAd to provide functionality for managing banner ads.
     /// </summary>
-    public class LevelPlayBannerAd : com.unity3d.mediation.ILevelPlayBannerAd
+    public class LevelPlayBannerAd : ILevelPlayBannerAd
     {
+#pragma warning disable 0618
         public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
         public event Action<com.unity3d.mediation.LevelPlayAdError> OnAdLoadFailed;
         public event Action<com.unity3d.mediation.LevelPlayAdInfo> OnAdClicked;
@@ -35,6 +35,26 @@ namespace Unity.Services.LevelPlay
         readonly IPlatformBannerAd _bannerAd;
 
         /// <summary>
+        /// Initializes a new instance of the LevelPlayBannerAd with a config.
+        /// </summary>
+        /// <param name="adUnitId">The unique ID for the ad unit.</param>
+        /// <param name="config">The ad unit configuration.</param>
+        public LevelPlayBannerAd(string adUnitId, Config config)
+        {
+#if !UNITY_ANDROID && !UNITY_IOS
+            _bannerAd = new UnsupportedBannerAd(adUnitId, (UnsupportedBannerAd.Config)config.PlatformConfig);
+#elif UNITY_EDITOR
+            _bannerAd = new EditorBannerAd(adUnitId, (EditorBannerAd.Config)config.PlatformConfig);
+#elif UNITY_ANDROID
+            _bannerAd = new AndroidBannerAd(adUnitId, (AndroidBannerAd.Config)config.PlatformConfig);
+#elif UNITY_IOS
+            _bannerAd = new iOSBannerAd(adUnitId, (iOSBannerAd.Config)config.PlatformConfig);
+#endif
+
+            SetupCallbacks();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the LevelPlayBannerAd with specified ad properties.
         /// </summary>
         /// <param name="adUnitId">The unique ID for the ad unit.</param>
@@ -45,7 +65,7 @@ namespace Unity.Services.LevelPlay
         /// <param name="placementName">Optional name used for reporting and targeting. This parameter is optional and can be null.</param>
         /// <param name="displayOnLoad">Determines whether the ad should be displayed immediately after loading.</param>
         /// <param name="respectSafeArea">Determines whether the ad should be displayed within the safe area of the screen, where no notch, status bar or camera is present.
-        /// Defaults to true.</param>
+        /// Defaults to false.</param>
         public LevelPlayBannerAd(
             string adUnitId,
             com.unity3d.mediation.LevelPlayAdSize size = null,
@@ -61,12 +81,14 @@ namespace Unity.Services.LevelPlay
 
             position = position ?? com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-            _bannerAd = new AndroidBannerAd(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea);
-#elif UNITY_IOS && !UNITY_EDITOR
-            _bannerAd = new iOSBannerAd(adUnitId, size, position, placementName, displayOnLoad);
-#else
+#if !UNITY_IOS && !UNITY_ANDROID
             _bannerAd = new UnsupportedBannerAd(adUnitId, size, position, placementName);
+#elif UNITY_EDITOR
+            _bannerAd = new EditorBannerAd(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea);
+#elif UNITY_ANDROID
+            _bannerAd = new AndroidBannerAd(adUnitId, size, position, placementName, displayOnLoad, respectSafeArea);
+#elif UNITY_IOS
+            _bannerAd = new iOSBannerAd(adUnitId, size, position, placementName, displayOnLoad);
 #endif
 
             SetupCallbacks();
@@ -180,6 +202,115 @@ namespace Unity.Services.LevelPlay
         public void Dispose()
         {
             _bannerAd?.DestroyAd();
+        }
+
+        public class Config
+        {
+            internal IPlatformBannerAd.IConfig PlatformConfig { get; }
+
+            private Config(IPlatformBannerAd.IConfig platformConfig)
+            {
+                PlatformConfig = platformConfig;
+            }
+
+            public class Builder
+            {
+                private readonly IPlatformBannerAd.IConfigBuilder m_Builder;
+
+                public Builder()
+                {
+#if !UNITY_ANDROID && !UNITY_IOS
+                    m_Builder = new UnsupportedBannerAd.Config.Builder();
+#elif UNITY_EDITOR
+                    m_Builder = new EditorBannerAd.Config.Builder();
+#elif UNITY_ANDROID
+                    m_Builder = new AndroidBannerAd.Config.Builder();
+#elif UNITY_IOS
+                    m_Builder = new iOSBannerAd.Config.Builder();
+#endif
+                }
+
+                /// <summary>
+                /// Set a Bid floor
+                /// </summary>
+                /// <param name="bidFloor">Bid floor in USD</param>
+                /// <returns>this builder</returns>
+                public Builder SetBidFloor(double bidFloor)
+                {
+                    m_Builder.SetBidFloor(bidFloor);
+                    return this;
+                }
+
+                /// <summary>
+                /// Set a size
+                /// </summary>
+                /// <param name="size">Size of the banner ad. Defaults to <see cref="LevelPlayAdSize.BANNER"/>.</param>
+                /// <returns>this builder</returns>
+                public Builder SetSize(com.unity3d.mediation.LevelPlayAdSize size)
+                {
+                    m_Builder.SetSize(size);
+                    return this;
+                }
+
+                /// <summary>
+                /// Set a position
+                /// </summary>
+                /// <param name="position">Position on the screen where the ad will be displayed.
+                /// Defaults to <see cref="LevelPlayBannerPosition.BottomCenter"/>.</param>
+                /// <returns>this builder</returns>
+                public Builder SetPosition(com.unity3d.mediation.LevelPlayBannerPosition position)
+                {
+                    m_Builder.SetPosition(position);
+                    return this;
+                }
+
+                /// <summary>
+                /// Set a placement name, ignores `null`
+                /// </summary>
+                /// <param name="placementName">Name used for reporting and targeting</param>
+                /// <returns>this builder</returns>
+                public Builder SetPlacementName(string placementName)
+                {
+                    if (placementName != null)
+                    {
+                        m_Builder.SetPlacementName(placementName);
+                    }
+                    return this;
+                }
+
+                /// <summary>
+                /// Set the "displayOnLoad" flag
+                /// </summary>
+                /// <param name="displayOnLoad">Determines whether the ad should be displayed immediately after loading.
+                /// Defaults to true.</param>
+                /// <returns>this builder</returns>
+                public Builder SetDisplayOnLoad(bool displayOnLoad)
+                {
+                    m_Builder.SetDisplayOnLoad(displayOnLoad);
+                    return this;
+                }
+
+                /// <summary>
+                /// Set the "respectSafeArea" flag
+                /// </summary>
+                /// <param name="respectSafeArea">Determine whether the ad should be displayed within the safe area of the screen,
+                /// where no notch, status bar or camera is present. Defaults to false</param>
+                /// <returns>this builder</returns>
+                public Builder SetRespectSafeArea(bool respectSafeArea)
+                {
+                    m_Builder.SetRespectSafeArea(respectSafeArea);
+                    return this;
+                }
+
+                /// <summary>
+                /// Build a new config object
+                /// </summary>
+                public Config Build()
+                {
+                    var platformConfig = m_Builder.Build();
+                    return new Config(platformConfig);
+                }
+            }
         }
     }
 }

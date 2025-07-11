@@ -5,6 +5,7 @@ import com.unity3d.mediation.LevelPlayAdError;
 import com.unity3d.mediation.LevelPlayAdInfo;
 import com.unity3d.mediation.rewarded.LevelPlayReward;
 import com.unity3d.mediation.rewarded.LevelPlayRewardedAd;
+import com.unity3d.mediation.rewarded.LevelPlayRewardedAd.Config;
 import com.unity3d.mediation.rewarded.LevelPlayRewardedAdListener;
 import com.unity3d.player.UnityPlayer;
 
@@ -17,6 +18,17 @@ public class RewardedAd {
       this.mActivity = UnityPlayer.currentActivity;
 
       this.mRewardedAd = new LevelPlayRewardedAd(adUnitId);
+      setupRewardedListener(rewardedAdListener);
+   }
+
+   public RewardedAd(String adUnitId, Config config, IUnityRewardedAdListener rewardedAdListener) {
+      this.mActivity = UnityPlayer.currentActivity;
+
+      this.mRewardedAd = new LevelPlayRewardedAd(adUnitId, config);
+      setupRewardedListener(rewardedAdListener);
+   }
+
+   private void setupRewardedListener(IUnityRewardedAdListener rewardedAdListener) {
       this.mRewardedAd.setListener(new LevelPlayRewardedAdListener() {
          @Override
          public void onAdLoaded(LevelPlayAdInfo levelPlayAdInfo) {
@@ -96,4 +108,16 @@ public class RewardedAd {
    public String getAdId() {
       return this.mRewardedAd.getAdId();
    }
+
+    public static class ConfigBuilder {
+        private final Config.Builder builder = new Config.Builder();
+
+        public void setBidFloor(double bidFloor) {
+            builder.setBidFloor(bidFloor);
+        }
+
+        public Config build() {
+            return builder.build();
+        }
+    }
 }

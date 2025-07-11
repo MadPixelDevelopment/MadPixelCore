@@ -3,7 +3,7 @@ using Unity.Services.LevelPlay;
 
 namespace com.unity3d.mediation
 {
-    [Obsolete("UnsupportedBannerAd will be deprecated.")]
+    [Obsolete("This class will be made private in version 9.0.0.")]
     public class UnsupportedBannerAd : Unity.Services.LevelPlay.UnsupportedBannerAd
     {
         public UnsupportedBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition position, string placementId) : base(adUnitId, size, position, placementId) {}
@@ -17,7 +17,10 @@ namespace Unity.Services.LevelPlay
     {
         public UnsupportedBannerAd(string adUnitId, com.unity3d.mediation.LevelPlayAdSize size, com.unity3d.mediation.LevelPlayBannerPosition position, string placementId)
         {
-            LevelPlayLogger.Log("UnsupportedBannerAd is not supported on this platform");
+        }
+
+        internal UnsupportedBannerAd(string adUnitId, Config config)
+        {
         }
 
         public event EventHandler<com.unity3d.mediation.LevelPlayAdInfo> OnAdLoaded;
@@ -68,5 +71,28 @@ namespace Unity.Services.LevelPlay
         public com.unity3d.mediation.LevelPlayAdSize AdSize { get; }
         public LevelPlayAdSize Size { get; }
         public string PlacementName { get; }
+
+        internal class Config : IPlatformBannerAd.IConfig
+        {
+            internal class Builder : IPlatformBannerAd.IConfigBuilder
+            {
+                public void SetBidFloor(double bidFloor) {}
+
+                public void SetSize(com.unity3d.mediation.LevelPlayAdSize size) {}
+
+                public void SetPosition(com.unity3d.mediation.LevelPlayBannerPosition position) {}
+
+                public void SetPlacementName(string placementName) {}
+
+                public void SetDisplayOnLoad(bool displayOnLoad) {}
+
+                public void SetRespectSafeArea(bool respectSafeArea) {}
+
+                public IPlatformBannerAd.IConfig Build()
+                {
+                    return new Config();
+                }
+            }
+        }
     }
 }

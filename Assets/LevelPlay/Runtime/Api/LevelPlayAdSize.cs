@@ -95,9 +95,11 @@ namespace Unity.Services.LevelPlay
 
         LevelPlayAdSize(PlatformLevelPlayAdSizeType adSizeType)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if !UNITY_IOS && !UNITY_ANDROID
             m_PlatformLevelPlayAdSize = new UnsupportedLevelPlayAdSize();
-#elif (UNITY_IPHONE || UNITY_IOS)
+#elif UNITY_EDITOR
+            m_PlatformLevelPlayAdSize = new EditorLevelPlayAdSize(adSizeType);
+#elif UNITY_IOS
             m_PlatformLevelPlayAdSize = new IosLevelPlayAdSize(adSizeType);
 #elif UNITY_ANDROID
             m_PlatformLevelPlayAdSize = new AndroidLevelPlayAdSize(adSizeType);
@@ -106,9 +108,11 @@ namespace Unity.Services.LevelPlay
 
         LevelPlayAdSize(int width, int height)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if !UNITY_IOS && !UNITY_ANDROID
             m_PlatformLevelPlayAdSize = new UnsupportedLevelPlayAdSize();
-#elif (UNITY_IPHONE || UNITY_IOS)
+#elif UNITY_EDITOR
+            m_PlatformLevelPlayAdSize = new EditorLevelPlayAdSize(width, height);
+#elif UNITY_IOS
             m_PlatformLevelPlayAdSize = new IosLevelPlayAdSize(width, height);
 #elif UNITY_ANDROID
             m_PlatformLevelPlayAdSize = new AndroidLevelPlayAdSize(width, height);
@@ -137,26 +141,26 @@ namespace Unity.Services.LevelPlay
         {
             if (customWidth < 0)
             {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if !UNITY_IOS && !UNITY_ANDROID
                 return new LevelPlayAdSize(new UnsupportedLevelPlayAdSize());
-#elif (UNITY_IPHONE || UNITY_IOS)
+#elif UNITY_EDITOR
+                return new LevelPlayAdSize(EditorLevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
+#elif UNITY_IOS
                 return new LevelPlayAdSize(IosLevelPlayAdSize.CreateAdaptiveAdSize());
 #elif UNITY_ANDROID
                 return new LevelPlayAdSize(AndroidLevelPlayAdSize.CreateAdaptiveAdSize());
-#else
-                throw new PlatformNotSupportedException("Adaptive Ad Size is not supported on this platform.");
 #endif
             }
             else
             {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if !UNITY_IOS && !UNITY_ANDROID
                 return new LevelPlayAdSize(new UnsupportedLevelPlayAdSize());
-#elif (UNITY_IPHONE || UNITY_IOS)
+#elif UNITY_EDITOR
+                return new LevelPlayAdSize(EditorLevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
+#elif UNITY_IOS
                 return new LevelPlayAdSize(IosLevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
 #elif UNITY_ANDROID
                 return new LevelPlayAdSize(AndroidLevelPlayAdSize.CreateAdaptiveAdSize(customWidth));
-#else
-                throw new PlatformNotSupportedException("Adaptive Ad Size is not supported on this platform.");
 #endif
             }
         }
@@ -201,7 +205,7 @@ namespace Unity.Services.LevelPlay
         /// <summary>
         /// Custom width of the banner in DP
         /// </summary>
-        [Obsolete("CustomWidth will be removed in version 9.0.0. Please use LevelPlayAdSize.Width instead.")]
+        [Obsolete("Use LevelPlayAdSize.Width instead.")]
         public int CustomWidth { get { return m_PlatformLevelPlayAdSize.Width; } }
 
         public override string ToString()

@@ -1,5 +1,6 @@
 using System;
 
+[Obsolete("This interface will be made private in version 9.0.0.")]
 /// <summary>
 /// Interface representing LevelPlay's user segment
 /// </summary>

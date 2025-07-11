@@ -37,5 +37,28 @@ namespace Unity.Services.LevelPlay
         void HideAd();
         void PauseAutoRefresh();
         void ResumeAutoRefresh();
+
+        internal interface IConfig
+        {
+        }
+
+        internal interface IConfigBuilder
+        {
+            void SetBidFloor(double bidFloor);
+
+#pragma warning disable 0618
+            void SetSize(com.unity3d.mediation.LevelPlayAdSize size);
+
+            void SetPosition(com.unity3d.mediation.LevelPlayBannerPosition position);
+#pragma warning restore 0618
+
+            void SetPlacementName(string placementName);
+
+            void SetDisplayOnLoad(bool displayOnLoad);
+
+            void SetRespectSafeArea(bool respectSafeArea);
+
+            IConfig Build();
+        }
     }
 }

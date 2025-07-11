@@ -4,6 +4,7 @@ import com.ironsource.mediationsdk.adunit.adapter.utility.AdInfo;
 import com.ironsource.mediationsdk.impressionData.ImpressionData;
 import com.ironsource.mediationsdk.logger.IronSourceError;
 import com.ironsource.mediationsdk.model.Placement;
+import com.unity3d.mediation.impression.LevelPlayImpressionData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,6 +85,11 @@ public class AndroidBridgeUtilities {
     public static String getImpressionDataString(ImpressionData impressionData){
         return (impressionData == null) ? AndroidBridgeConstants.EMPTY_STRING : impressionData.getAllData().toString();
     }
+
+    public static String getImpressionDataString(LevelPlayImpressionData impressionData){
+        return (impressionData == null) ? AndroidBridgeConstants.EMPTY_STRING : impressionData.getAllData().toString();
+    }
+
     public static void postBackgroundTask(Runnable runnable) {
         if (callbackExecutor.isShutdown()) {
             return;

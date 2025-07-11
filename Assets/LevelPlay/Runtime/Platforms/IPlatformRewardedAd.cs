@@ -27,5 +27,16 @@ namespace Unity.Services.LevelPlay
         void ShowAd(string placementName);
 
         bool IsAdReady();
+
+        internal interface IConfig
+        {
+        }
+
+        internal interface IConfigBuilder
+        {
+            void SetBidFloor(double bidFloor);
+
+            IConfig Build();
+        }
     }
 }

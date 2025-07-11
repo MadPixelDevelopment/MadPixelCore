@@ -8,7 +8,7 @@ using System;
 using System.Globalization;
 using Unity.Services.LevelPlay;
 
-[Obsolete("Please use IronSource.Agent", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class iOSAgent : IronSourceIAgent
 {
     struct IOSWaterfallConfiguration

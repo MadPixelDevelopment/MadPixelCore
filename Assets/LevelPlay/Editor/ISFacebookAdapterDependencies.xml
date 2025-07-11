@@ -1,5 +1,5 @@
 <dependencies>
-  <unityversion>4.3.72.0</unityversion>
+  <unityversion>4.3.73.1</unityversion>
   <androidPackages>
     <androidPackage spec="com.facebook.android:audience-network-sdk:6.20.0">
       <repositories>
@@ -12,7 +12,7 @@
     </androidPackage>
   </androidPackages>
   <iosPods>
-    <iosPod name="IronSourceFacebookAdapter" version="4.3.49.0">
+    <iosPod name="IronSourceFacebookAdapter" version="4.3.50.1">
       <sources>
         <source>https://github.com/CocoaPods/Specs</source>
       </sources>

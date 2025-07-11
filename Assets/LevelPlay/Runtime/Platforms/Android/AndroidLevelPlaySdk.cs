@@ -5,16 +5,18 @@ using UnityEngine;
 
 namespace com.unity3d.mediation
 {
-    [Obsolete("This class will be deprecated in version 9.0.0. Please use LevelPlaySdk instead.")]
-    public class AndroidLevelPlaySdk : Unity.Services.LevelPlay.IUnityLevelPlayInitListener
+    [Obsolete("This class will be made private in version 9.0.0.")]
+    public class AndroidLevelPlaySdk : Unity.Services.LevelPlay.IUnityLevelPlayInitListener, IUnityLevelPlayImpressionDataListener
     {
         private static AndroidJavaObject _levelPlayBridge;
         static readonly string LevelPlayBridge = "com.ironsource.unity.androidbridge.LevelPlayBridge";
 
         public static event Action<LevelPlayConfiguration> OnInitSuccess;
         public static event Action<LevelPlayInitError> OnInitFailed;
-        private static Unity.Services.LevelPlay.IUnityLevelPlayInitListener _listener;
+        internal static event Action<LevelPlayImpressionData> OnImpressionDataReady;
 
+        private static Unity.Services.LevelPlay.IUnityLevelPlayInitListener _listener;
+        private static Unity.Services.LevelPlay.IUnityLevelPlayImpressionDataListener _impressionListener;
 
         public void onInitSuccess(string configuration)
         {
@@ -24,6 +26,11 @@ namespace com.unity3d.mediation
         public void onInitFailed(string error)
         {
             OnInitFailed?.Invoke(new LevelPlayInitError(error));
+        }
+
+        public void onImpressionSuccess(string impressionData)
+        {
+            OnImpressionDataReady?.Invoke(new LevelPlayImpressionData(impressionData));
         }
 
         private AndroidLevelPlaySdk()
@@ -52,6 +59,11 @@ namespace com.unity3d.mediation
             {
                 _listener = new UnityLevelPlayInitListener(new AndroidLevelPlaySdk());
             }
+            if (_impressionListener == null)
+            {
+                _impressionListener = new UnityLevelPlayImpressionDataListener(new AndroidLevelPlaySdk());
+                GetBridge().Call("setUnityImpressionDataListener", _impressionListener);
+            }
             GetBridge().Call("initialize", appKey, userId, GetAdFormatArray(adFormats), _listener);
         }
 
@@ -67,6 +79,53 @@ namespace com.unity3d.mediation
                 adFormatsArray[i] = adFormats[i].ToString();
             }
             return adFormatsArray;
+        }
+
+        internal static bool SetDynamicUserId(string dynamicUserId)
+        {
+            return GetBridge().Call<bool>("setDynamicUserId", dynamicUserId);
+        }
+
+        internal static void LaunchTestSuite()
+        {
+            GetBridge().Call("launchTestSuite");
+        }
+
+        internal static void SetAdaptersDebug(bool enabled)
+        {
+            GetBridge().Call("setAdaptersDebug", enabled);
+        }
+
+        internal static void ValidateIntegration()
+        {
+            GetBridge().Call("validateIntegration");
+        }
+
+        internal static void SetNetworkData(string networkKey, string networkData)
+        {
+            GetBridge().Call("setNetworkData", networkKey, networkData);
+        }
+
+        internal static void SetMetaData(string key, string value)
+        {
+            GetBridge().Call("setMetaData", key, value);
+        }
+
+        internal static void SetMetaData(string key, params string[] values)
+        {
+            GetBridge().Call("setMetaData", key, values);
+        }
+
+        internal static void SetConsent(bool consent)
+        {
+            GetBridge().Call("setConsent", consent);
+        }
+
+        internal static void SetSegment(LevelPlaySegment segment)
+        {
+            var dict = segment.GetSegmentAsDictionary();
+            var json = IronSourceJSON.Json.Serialize(dict);
+            GetBridge().Call("setSegment", json);
         }
     }
 }

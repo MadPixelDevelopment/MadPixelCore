@@ -1,5 +1,6 @@
 using System;
 
+[Obsolete("Use LevelPlayAdError instead.")]
 /// <summary>
 /// Represents an error received from LevelPlay
 /// </summary>

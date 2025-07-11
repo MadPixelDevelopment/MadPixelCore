@@ -3,7 +3,7 @@ using System;
 /// <summary>
 /// Interface representing LevelPlay's banner events
 /// </summary>
-[Obsolete("IUnityLevelPlayBanner will be deprecated.")]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public interface IUnityLevelPlayBanner
 {
     /// <summary>

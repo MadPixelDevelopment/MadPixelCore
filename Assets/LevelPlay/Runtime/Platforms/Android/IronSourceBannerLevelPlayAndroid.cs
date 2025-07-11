@@ -3,7 +3,7 @@ using System;
 using Unity.Services.LevelPlay;
 using UnityEngine;
 
-[Obsolete("Please use IronSourceBannerEvents", false)]
+[Obsolete("This class will be made private in version 9.0.0.")]
 public class IronSourceBannerLevelPlayAndroid : AndroidJavaProxy, IUnityLevelPlayBanner
 {
     public event Action<IronSourceAdInfo> OnAdLoaded = delegate {};
