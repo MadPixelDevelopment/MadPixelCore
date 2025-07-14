@@ -21,7 +21,7 @@ namespace MadPixel.Editor {
             string[] assetGUIDs = AssetDatabase.FindAssets("", foldersToInclude);
             AddGUIDs(ref exportGUIDs, assetGUIDs);
 
-            string defaultPackageName = $"MPC_levelPlay_{MPCSetupWindow.GetMPCLevelPlayVersion().TrimEnd()}.unitypackage";
+            string defaultPackageName = $"MPC_levelPlay_{MPCSetupWindow.GetVersion().TrimEnd()}.unitypackage";
             string exportPath = EditorUtility.SaveFilePanel(
                 "Export MPC_levelPlay Folder as UnityPackage",
                 "",
