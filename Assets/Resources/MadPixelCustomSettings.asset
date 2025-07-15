@@ -25,7 +25,7 @@ MonoBehaviour:
   BannerBackground: {r: 0, g: 0, b: 0, a: 1}
   appmetricaKey: appmetricaAPIKey
   appsFlyerID_ios: 1234567890
-  levelPlayKey: 
-  levelPlayKey_ios: 
+  levelPlayKey: levelplay_a
+  levelPlayKey_ios: levelplay_i
   useBanner: 1
   useTopBannerPosition: 0
