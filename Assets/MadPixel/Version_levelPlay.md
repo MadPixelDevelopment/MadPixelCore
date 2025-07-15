@@ -2,6 +2,7 @@
 * LevelPlay 8.10.0
 * Firebase 12.10.1
 * AppsFlyer 6.17.1 (with af purchase connector)
+* Google Mobile Ads 10.3.0 (Unresponsive consent error fixed)
 * Refactoring
 
 # Version 33 - June 06, 2025
