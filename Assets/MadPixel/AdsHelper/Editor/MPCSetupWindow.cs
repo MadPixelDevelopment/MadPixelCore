@@ -11,8 +11,7 @@ namespace MadPixel.Editor {
         private const string NEW_CONFIGS_PATH = "Assets/Resources/MadPixelCustomSettings.asset";
         private const string LP_MAXPACK_PACKAGE_PATH = "Assets/MadPixel/AdsHelper/Configs/MPC_LevelPlay_MaximunPack.unitypackage";
 
-        private const string LP_FOLDER = "https://drive.google.com/drive/u/0/folders/1Lr8CUtKAu6DpOrcfJ6xQ9f7Viu67x8BN";
-        private const string LP_MAXPACK_DRIVE = "https://drive.google.com/file/d/1MUzNhwh6LnT_fv6viwMbIzMzc42e7kfL/view?usp=sharing";
+        private const string LP_FOLDER = "https://madpixel.gitbook.io/docs";
 
         private Vector2 m_scrollPosition;
         private static readonly Vector2 m_windowMinSize = new Vector2(450, 250);
