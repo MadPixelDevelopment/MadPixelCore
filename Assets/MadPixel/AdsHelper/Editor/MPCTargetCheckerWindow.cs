@@ -16,7 +16,7 @@ namespace MadPixel.Editor {
 
             GUILayout.Space(20);
 
-            GUILayout.Label($"We have updated your target API to 33");
+            GUILayout.Label($"We have updated your target API to 35");
             GUILayout.Label("We have updated your min API to 24 ");
 
             GUILayout.Space(20);

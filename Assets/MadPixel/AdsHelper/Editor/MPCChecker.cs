@@ -46,7 +46,7 @@ namespace MadPixel.Editor {
                 target = highestInstalledVersion;
             }
 
-            if (target < 33 || PlayerSettings.Android.minSdkVersion < AndroidSdkVersions.AndroidApiLevel24) {
+            if (target < 35 || PlayerSettings.Android.minSdkVersion < AndroidSdkVersions.AndroidApiLevel24) {
                 if (EditorPrefs.HasKey(Key)) {
                     string lastMPCVersionChecked = EditorPrefs.GetString(Key);
                     string currVersion = MPCSetupWindow.GetVersion();
@@ -65,7 +65,7 @@ namespace MadPixel.Editor {
             MPCTargetCheckerWindow.ShowWindow(a_target, (int)PlayerSettings.Android.targetSdkVersion);
 
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
-            PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)34;
+            PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)35;
         }
 
 
