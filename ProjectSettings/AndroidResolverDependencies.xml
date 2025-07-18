@@ -14,12 +14,7 @@
     <package>com.fyber:marketplace-sdk:8.3.7</package>
     <package>com.google.android.gms:play-services-ads:24.2.0</package>
     <package>com.google.android.gms:play-services-ads-identifier:18.1.0</package>
-    <package>com.google.android.gms:play-services-base:18.6.0</package>
     <package>com.google.android.ump:user-messaging-platform:3.2.0</package>
-    <package>com.google.firebase:firebase-analytics:22.4.0</package>
-    <package>com.google.firebase:firebase-analytics-unity:12.8.0</package>
-    <package>com.google.firebase:firebase-app-unity:12.8.0</package>
-    <package>com.google.firebase:firebase-common:21.0.0</package>
     <package>com.inmobi.monetization:inmobi-ads-kotlin:10.8.3</package>
     <package>com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.71</package>
     <package>com.pangle.global:pag-sdk:7.1.0.8</package>
@@ -38,12 +33,7 @@
     <package>com.vungle:vungle-ads:7.5.0</package>
     <package>io.appmetrica.analytics:analytics:7.9.0</package>
   </packages>
-  <files>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.9.0/firebase-analytics-unity-12.9.0.aar</file>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/12.9.0/firebase-analytics-unity-12.9.0.pom</file>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.9.0/firebase-app-unity-12.9.0.aar</file>
-    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.9.0/firebase-app-unity-12.9.0.pom</file>
-  </files>
+  <files />
   <settings>
     <setting name="androidAbis" value="armeabi-v7a" />
     <setting name="bundleId" value="com.madpixel.example.project" />
