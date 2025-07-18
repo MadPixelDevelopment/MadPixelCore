@@ -29,6 +29,9 @@ allprojects {
             url "https://maven.google.com"
         }
         maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Assets/Firebase/Editor/AnalyticsDependencies.xml:18, Assets/Firebase/Editor/AppDependencies.xml:22
+        }
+        maven {
             url "https://maven.google.com/" // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:8, Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:12, Assets/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7, Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:12, Assets/LevelPlay/Editor/ISAppLovinAdapterDependencies.xml:12, Assets/LevelPlay/Editor/ISFacebookAdapterDependencies.xml:8, Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:16, Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:15, Assets/LevelPlay/Editor/ISUnityAdsAdapterDependencies.xml:12
         }
         maven {
@@ -67,7 +70,12 @@ dependencies {
     implementation 'com.fyber:marketplace-sdk:8.3.7' // Assets/LevelPlay/Editor/ISFyberAdapterDependencies.xml:8
     implementation 'com.google.android.gms:play-services-ads:24.2.0' // Assets/LevelPlay/Editor/ISAdMobAdapterDependencies.xml:8
     implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0' // Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:12
+    implementation 'com.google.android.gms:play-services-base:18.6.0' // Assets/Firebase/Editor/AppDependencies.xml:17
     implementation 'com.google.android.ump:user-messaging-platform:3.2.0' // Assets/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7
+    implementation 'com.google.firebase:firebase-analytics:22.4.0' // Assets/Firebase/Editor/AppDependencies.xml:15
+    implementation 'com.google.firebase:firebase-analytics-unity:12.10.1' // Assets/Firebase/Editor/AnalyticsDependencies.xml:18
+    implementation 'com.google.firebase:firebase-app-unity:12.10.1' // Assets/Firebase/Editor/AppDependencies.xml:22
+    implementation 'com.google.firebase:firebase-common:21.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
     implementation 'com.inmobi.monetization:inmobi-ads-kotlin:10.8.3' // Assets/LevelPlay/Editor/ISInMobiAdapterDependencies.xml:9
     implementation 'com.mbridge.msdk.oversea:mbridge_android_sdk:16.9.71' // Assets/LevelPlay/Editor/ISMintegralAdapterDependencies.xml:8
     implementation 'com.pangle.global:pag-sdk:7.1.0.8' // Assets/LevelPlay/Editor/ISPangleAdapterDependencies.xml:12

@@ -88,10 +88,7 @@ namespace MadPixel.Editor {
 
                     DrawSDKKeyPart();
                     DrawUnitIDsPart();
-
-                    DrawInstallButtons();
                     DrawAnalyticsKeys();
-
                     DrawLinks();
                 }
             }
@@ -166,11 +163,11 @@ namespace MadPixel.Editor {
                 GUI.enabled = true;
                 GUILayout.Space(4);
                 if (m_customSettings.bUseBanners) {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(24);
-                    m_customSettings.BannerBackground = EditorGUILayout.ColorField("Banner Background Color: ", m_customSettings.BannerBackground, m_bannerColorLabelOption);
-                    GUILayout.Space(4);
-                    GUILayout.EndHorizontal();
+                    //GUILayout.BeginHorizontal();
+                    //GUILayout.Space(24);
+                    //m_customSettings.BannerBackground = EditorGUILayout.ColorField("Banner Background Color: ", m_customSettings.BannerBackground, m_bannerColorLabelOption);
+                    //GUILayout.Space(4);
+                    //GUILayout.EndHorizontal();
 
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(24);
@@ -182,51 +179,10 @@ namespace MadPixel.Editor {
             }
         }
 
-        private void DrawInstallButtons() {
-            GUILayout.Space(16);
-            EditorGUILayout.LabelField("4. Install our full mediations", m_titleLabelStyle);
-            using (new EditorGUILayout.VerticalScope("box")) {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(10);
-
-                if (!MaxPackUnitypackageExists()) {
-                    EditorGUILayout.LabelField("You dont have MPC_LevelPlay_MaximunPack.unitypackage in your project. Probably your git added it to gitignore", m_sdkKeyTextFieldWidthOption);
-
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-
-                    if (GUILayout.Button(new GUIContent("Download latest Maximum mediations package"), m_adMobUnitTextWidthOption)) {
-                        Application.OpenURL(LP_MAXPACK_DRIVE);
-                    }
-
-                    GUILayout.EndHorizontal();
-                    GUILayout.Space(10);
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-                }
-
-                GUI.enabled = MaxPackUnitypackageExists();
-                if (m_isMaxVariantInstalled) {
-                    EditorGUILayout.LabelField("You have installed default Maximum pack of mediations", m_sdkKeyTextFieldWidthOption);
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
-                }
-                if (GUILayout.Button(new GUIContent(m_isMaxVariantInstalled ? "Reimport maximum pack" : "Install maximum pack"), m_buttonFieldWidth)) {
-                    AssetDatabase.ImportPackage(LP_MAXPACK_PACKAGE_PATH, true);
-                    //CheckMaxVersion();
-                }
-
-                GUI.enabled = true;
-                GUILayout.EndHorizontal();
-                GUILayout.Space(10);
-            }
-        }
 
         private void DrawAnalyticsKeys() {
             GUILayout.Space(16);
-            EditorGUILayout.LabelField("5. Insert analytics info", m_titleLabelStyle);
+            EditorGUILayout.LabelField("3. Insert analytics info", m_titleLabelStyle);
             GUILayout.BeginHorizontal();
             GUILayout.Space(10);
 
@@ -250,12 +206,12 @@ namespace MadPixel.Editor {
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetMPCLevelPlayVersion(), m_versionsLabelStyle, m_adUnitToggleOption);
+            EditorGUILayout.LabelField("MPC_LevelPlay_edition v" + GetVersion(), m_versionsLabelStyle, m_adUnitToggleOption);
             GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Forked from MPC v." + GetVersion(), m_versionsLabelStyle, m_adUnitTextWidthOption);
-            GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal();
+            //EditorGUILayout.LabelField("Forked from MPC v." + GetVersion(), m_versionsLabelStyle, m_adUnitTextWidthOption);
+            //GUILayout.EndHorizontal();
         }
 
         private string DrawTextField(string a_fieldTitle, string a_text, GUILayoutOption a_labelWidth, GUILayoutOption a_textFieldWidthOption = null) {
@@ -286,7 +242,7 @@ namespace MadPixel.Editor {
             }
         }
 
-        public static string GetVersion(string a_path = "Assets/MadPixel/Version.md") {
+        public static string GetVersion(string a_path = "Assets/MadPixel/Version_levelPlay.md") {
             var versionText = File.ReadAllText(a_path);
             if (string.IsNullOrEmpty(versionText)) {
                 return "--";
@@ -295,14 +251,6 @@ namespace MadPixel.Editor {
             int subLength = versionText.IndexOf('-');
             versionText = versionText.Substring(10, subLength - 10);
             return versionText;
-        }
-        
-        public static string GetMPCLevelPlayVersion() {
-            return GetVersion("Assets/MadPixel/Version_levelPlay.md");
-        }
-
-        private bool MaxPackUnitypackageExists() {
-            return File.Exists(LP_MAXPACK_PACKAGE_PATH);
         }
         #endregion
     }
