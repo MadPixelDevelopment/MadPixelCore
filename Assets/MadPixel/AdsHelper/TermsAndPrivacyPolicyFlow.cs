@@ -36,7 +36,6 @@ namespace MadPixel {
 
         #region Public
         public void StartFlow() {
-            MobileAds.RaiseAdEventsOnUnityMainThread = true; // NOTE: This is mandatory for Google UMP
             StartCoroutine(GatherUMPConsent(OnUMPConsentUpdated));
         }
         #endregion
