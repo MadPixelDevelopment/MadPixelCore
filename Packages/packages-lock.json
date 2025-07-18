@@ -1,14 +1,14 @@
 {
   "dependencies": {
     "appsflyer-unity-plugin": {
-      "version": "https://github.com/AppsFlyerSDK/appsflyer-unity-plugin.git#upm",
+      "version": "https://github.com/AppsFlyerSDK/appsflyer-unity-plugin.git#v6.15.3",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "804e7131595335e87bd59b88099b190e5bcac787"
+      "hash": "e1efa6ec2e5559e48c589413ec6d02ee43d98bbb"
     },
     "com.google.external-dependency-manager": {
-      "version": "1.2.185",
+      "version": "1.2.186",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -306,13 +306,13 @@
       "url": "https://packages.unity.com"
     },
     "io.appmetrica.analytics": {
-      "version": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.3.0",
+      "version": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.5.2",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.google.external-dependency-manager": "1.2.177"
+        "com.google.external-dependency-manager": "1.2.183"
       },
-      "hash": "bac19a45816e919f9cac22a5ad73a5460c30b5d3"
+      "hash": "49ca6c4c338c0913b067e3e8aa0ee45a54412a4a"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

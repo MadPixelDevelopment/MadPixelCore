@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "appsflyer-unity-plugin": "https://github.com/AppsFlyerSDK/appsflyer-unity-plugin.git#upm",
-    "com.google.external-dependency-manager": "1.2.185",
+    "appsflyer-unity-plugin": "https://github.com/AppsFlyerSDK/appsflyer-unity-plugin.git#v6.15.3",
+    "com.google.external-dependency-manager": "1.2.186",
     "com.unity.ads.ios-support": "1.0.0",
     "com.unity.ai.navigation": "2.0.8",
     "com.unity.collab-proxy": "2.8.2",
@@ -15,7 +15,7 @@
     "com.unity.timeline": "1.8.7",
     "com.unity.ugui": "2.0.0",
     "com.unity.visualscripting": "1.9.7",
-    "io.appmetrica.analytics": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.3.0",
+    "io.appmetrica.analytics": "https://github.com/appmetrica/appmetrica-unity-plugin.git#v6.5.2",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
