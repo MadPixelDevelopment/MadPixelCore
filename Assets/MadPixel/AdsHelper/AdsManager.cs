@@ -43,11 +43,11 @@ namespace MadPixel {
 
         public UnityAction e_onAdsManagerInitialized;
 
-        public UnityAction<EAdType> OnNewAdLoaded;
-        public UnityAction<LevelPlayAdDisplayInfoError, EAdType, string> OnAdDisplayError;
-        public UnityAction<AdInfo> OnAdShown;
-        public UnityAction<AdInfo> OnAdAvailable;
-        public UnityAction<AdInfo> OnAdStarted;
+        public UnityAction<EAdType> e_onNewAdLoaded;
+        public UnityAction<LevelPlayAdDisplayInfoError, EAdType, string> e_onAdDisplayError;
+        public UnityAction<AdInfo> e_onAdShown;
+        public UnityAction<AdInfo> e_onAdAvailable;
+        public UnityAction<AdInfo> e_onAdStarted;
 
         #endregion
 
@@ -134,7 +134,7 @@ namespace MadPixel {
         }
 
         private void LevelPlay_OnAdLoadedEvent(EAdType a_type) {
-            OnNewAdLoaded?.Invoke(a_type);
+            e_onNewAdLoaded?.Invoke(a_type);
         }
 
         private void LevelPlay_OnFinishAdsEvent(bool a_isFinished) {
@@ -144,7 +144,9 @@ namespace MadPixel {
                 m_callbackPending = null;
             }
             else {
-                Debug.LogWarning("[Mad Pixel] Ads Instigator was destroyed or nulled");
+                if (m_currentAdInfo != null) {
+                    Debug.LogWarning("[Mad Pixel] Ads Instigator was destroyed or nulled");
+                }
             }
 
             if (m_currentAdInfo == null) {
@@ -153,7 +155,7 @@ namespace MadPixel {
             }
 
             m_currentAdInfo.Availability = a_isFinished ? "watched" : "canceled";
-            OnAdShown?.Invoke(m_currentAdInfo);
+            e_onAdShown?.Invoke(m_currentAdInfo);
 
             RestartInterCooldown();
 
@@ -174,7 +176,7 @@ namespace MadPixel {
             RestartInterCooldown();
 
             if (m_currentAdInfo != null) {
-                OnAdShown?.Invoke(m_currentAdInfo);
+                e_onAdShown?.Invoke(m_currentAdInfo);
             }
 
             m_currentAdInfo = null;
@@ -183,17 +185,17 @@ namespace MadPixel {
 
         private void LevelPlay_OnErrorEvent(LevelPlayAdDisplayInfoError a_error, EAdType a_adType) {
             if (m_currentAdInfo != null) {
-                OnAdDisplayError?.Invoke(a_error, a_adType, m_currentAdInfo.Placement);
+                e_onAdDisplayError?.Invoke(a_error, a_adType, m_currentAdInfo.Placement);
             }
         }
 
 
         private void LevelPlay_OnBannerAdLoadedEvent(LevelPlayAdInfo a_levelPlayAdInfo) {
             AdInfo BannerInfo = new AdInfo("banner", EAdType.BANNER, m_hasInternet); 
-            OnAdAvailable?.Invoke(BannerInfo);
+            e_onAdAvailable?.Invoke(BannerInfo);
             if (m_canShowBanner) {
-                OnAdStarted?.Invoke(BannerInfo);
-                OnAdShown?.Invoke(BannerInfo);
+                e_onAdStarted?.Invoke(BannerInfo);
+                e_onAdShown?.Invoke(BannerInfo);
             }
         }
         #endregion
@@ -466,10 +468,8 @@ namespace MadPixel {
 
         private void ShowAdInner(EAdType a_adType, string a_placement) {
             m_currentAdInfo = new AdInfo(a_placement, a_adType);
-            OnAdAvailable?.Invoke(m_currentAdInfo);
-            OnAdStarted?.Invoke(m_currentAdInfo);
-            // NOTE: Temporary Disable Sounds
-
+            e_onAdAvailable?.Invoke(m_currentAdInfo);
+            e_onAdStarted?.Invoke(m_currentAdInfo);
 
 #if UNITY_EDITOR
             if (a_adType == EAdType.REWARDED) {
@@ -519,7 +519,7 @@ namespace MadPixel {
             if (m_currentAdInfo != null) {
                 m_currentAdInfo.Availability = "not_available";
                 m_currentAdInfo.HasInternet = bHasInternet;
-                OnAdAvailable?.Invoke(m_currentAdInfo);
+                e_onAdAvailable?.Invoke(m_currentAdInfo);
             }
 
             this.m_hasInternet = bHasInternet;
