@@ -11,6 +11,7 @@ using UnityEngine;
 namespace MadPixel {
     public class FirebaseComp : MonoBehaviour {
         #region Fields
+        [SerializeField] private bool m_debugLogsOn;
         private static bool m_initialized = false;
         #endregion
 
@@ -41,7 +42,7 @@ namespace MadPixel {
                 }
             }
             else {
-                Debug.LogError($"Trying to set consent status but Firebase isn't initialized! Please fix it!");
+                Debug.LogError($"[Mad Pixel] Trying to set consent status but Firebase isn't initialized! Please fix it!");
             }
         }
 
@@ -72,14 +73,13 @@ namespace MadPixel {
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
                 var dependencyStatus = task.Result;
                 if (dependencyStatus == Firebase.DependencyStatus.Available) {
-                    // Create and hold a reference to your FirebaseApp,
-                    // where app is a Firebase.FirebaseApp property of your application class.
                     FirebaseApp app = Firebase.FirebaseApp.DefaultInstance;
-
                     FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-                    InnerInit();
 
-                    // Set a flag here to indicate whether Firebase is ready to use by your app.
+                    InnerInit();
+                    if (m_debugLogsOn) {
+                        Debug.Log("[Mad Pixel] Firebase init successful. Don't forget to check DebugView");
+                    }
                 }
                 else {
                     Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
@@ -117,7 +117,9 @@ namespace MadPixel {
 
                 Firebase.Analytics.FirebaseAnalytics.LogEvent("ad_impression", impressionParameters);
 
-                //Debug.Log($"[MadPixel] Firebase Revenue logged {revenue}");
+                if (m_debugLogsOn) {
+                    Debug.Log($"[Mad Pixel] Firebase Revenue logged {revenue}");
+                }
             }
         }
         #endregion

@@ -83,10 +83,10 @@ namespace MadPixelAnalytics {
 
         private void OnDestroy() {
             if (AdsManager.Exist) {
-                AdsManager.Instance.OnAdAvailable -= OnAdAvailable;
-                AdsManager.Instance.OnAdShown -= OnAdWatched;
-                AdsManager.Instance.OnAdDisplayError -= OnAdError;
-                AdsManager.Instance.OnAdStarted -= OnAdStarted;
+                AdsManager.Instance.e_onAdAvailable -= OnAdAvailable;
+                AdsManager.Instance.e_onAdShown -= OnAdWatched;
+                AdsManager.Instance.e_onAdDisplayError -= OnAdError;
+                AdsManager.Instance.e_onAdStarted -= OnAdStarted;
             }
         }
 
@@ -98,10 +98,10 @@ namespace MadPixelAnalytics {
         public void SubscribeToAdsManager() {
             AdsManager Ads = FindFirstObjectByType<AdsManager>();
             if (Ads != null) {
-                Ads.OnAdAvailable += OnAdAvailable;
-                Ads.OnAdShown += OnAdWatched;
-                Ads.OnAdDisplayError += OnAdError;
-                Ads.OnAdStarted += OnAdStarted;
+                Ads.e_onAdAvailable += OnAdAvailable;
+                Ads.e_onAdShown += OnAdWatched;
+                Ads.e_onAdDisplayError += OnAdError;
+                Ads.e_onAdStarted += OnAdStarted;
             }
         }
 
@@ -201,14 +201,14 @@ namespace MadPixelAnalytics {
 
         #region Purchase
 
-        public static void PaymentSucceed(Product Product) {
+        public static void PaymentSucceed(Product a_product) {
             if (Exist) {
                 if (Instance.m_appMetricaComp != null && Instance.m_appsFlyerComp != null) {
-                    MPReceipt Receipt = ExtensionMethods.GetReceipt(Product);
+                    MPReceipt receipt = ExtensionMethods.GetReceipt(a_product);
 
 
                     if (Instance.m_appMetricaComp != null) {
-                        Instance.m_appMetricaComp.PurchaseSucceed(Receipt);
+                        Instance.m_appMetricaComp.PurchaseSucceed(receipt);
                     }
                     else {
                         Debug.LogError("[Mad Pixel] AppMetrica was not initialized!");
@@ -222,7 +222,7 @@ namespace MadPixelAnalytics {
                         }
 
                         if (!Instance.m_appsFlyerComp.UseInappConnector) {
-                            Instance.m_appsFlyerComp.VerificateAndSendPurchase(Receipt);
+                            Instance.m_appsFlyerComp.VerificateAndSendPurchase(receipt);
                         }
                     }
                     else {
