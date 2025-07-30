@@ -70,8 +70,8 @@ dependencies {
     implementation 'com.appsflyer:unity-wrapper:6.15.2' // Packages/appsflyer-unity-plugin/Editor/AppsFlyerDependencies.xml:8
     implementation 'com.google.android.gms:play-services-base:18.6.0' // Assets/Firebase/Editor/AppDependencies.xml:17
     implementation 'com.google.firebase:firebase-analytics:22.4.0' // Assets/Firebase/Editor/AppDependencies.xml:15
-    implementation 'com.google.firebase:firebase-analytics-unity:12.10.0' // Assets/Firebase/Editor/AnalyticsDependencies.xml:18
-    implementation 'com.google.firebase:firebase-app-unity:12.10.0' // Assets/Firebase/Editor/AppDependencies.xml:22
+    implementation 'com.google.firebase:firebase-analytics-unity:12.10.1' // Assets/Firebase/Editor/AnalyticsDependencies.xml:18
+    implementation 'com.google.firebase:firebase-app-unity:12.10.1' // Assets/Firebase/Editor/AppDependencies.xml:22
     implementation 'com.google.firebase:firebase-common:21.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
     implementation 'com.squareup.picasso:picasso:2.71828' // Assets/MaxSdk/Mediation/InMobi/Editor/Dependencies.xml:5
     implementation 'io.appmetrica.analytics:analytics:7.2.0' // Packages/io.appmetrica.analytics/Editor/AppMetricaDependencies.xml:4

@@ -1,4 +1,7 @@
-﻿# Version 135 - June 26, 2025
+﻿# Version 136 - July 30, 2025
+* Firebase 12.10.1
+
+# Version 135 - June 26, 2025
 * Firebase 12.10.0
 * Cleanup Smaato and VK mediations
 
