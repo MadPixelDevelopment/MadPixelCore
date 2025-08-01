@@ -122,7 +122,7 @@ namespace MadPixelAnalytics {
 #endif
 
 #if UNITY_IOS
-            AppsFlyer.validateAndSendInAppPurchase(a_receipt.SKU, revenueString,  currency,  receipt.Product.transactionID,  null,  this);
+            AppsFlyer.validateAndSendInAppPurchase(a_receipt.sku, revenueString,  currency,  a_receipt.product.transactionID,  null,  this);
 #endif
         }
 
